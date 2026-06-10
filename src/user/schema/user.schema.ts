@@ -1,7 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
+import { HydratedDocument, Types } from 'mongoose';
+import { UserStatusEnum } from '../../common/enums/user.status.enums';
 
-export type UserDocument = User & Document;
+export type UserDocument = HydratedDocument<User>;
 
 @Schema({ 
     timestamps: true
@@ -26,10 +27,12 @@ export class User {
       ref: 'OfficeDepartment', 
       default: null 
     })
-  officeDepartmentId!: Types.ObjectId;
+  officeDepartmentId!: Types.ObjectId | null;
 
-  @Prop()
-  employeeId!: string;
+  @Prop({
+    default: null
+  })
+  employeeId!: string | null;
 
   @Prop({ 
     required: true, 
@@ -42,23 +45,42 @@ export class User {
  })
   password!: string;
 
-  @Prop()
-  lastLoginAt!: Date;
+  @Prop({
+    type: String,
+    enum: UserStatusEnum,
+    default: UserStatusEnum.PENDING,
+  })
+  status!: UserStatusEnum;
 
-  @Prop()
-  lastAssignedAt!: Date;
+  @Prop({
+    default: null
+  })
+  lastLoginAt!: Date | null;
 
-  @Prop()
-  aadharCard!: string;
+  @Prop({
+    default: null
+  })
+  lastAssignedAt!: Date | null;
 
-  @Prop()
-  signature!: string;
+  @Prop({
+    default: null
+  })
+  aadharCard!: string | null; 
 
-  @Prop()
-  govEmployeIdCard!: string;
+  @Prop({
+    default: null
+  })
+  signature!: string | null;
 
-  @Prop()
-  refreshToken!: string;
+  @Prop({
+    default: null
+  })
+  govEmployeIdCard!: string | null;
+
+  @Prop({
+    default: null
+  })
+  refreshToken!: string | null;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
