@@ -37,7 +37,7 @@ export class User {
     ref: 'Employee',
     default: null
   })
-  employeeId!: Types.ObjectId | null;
+  employeeId?: Types.ObjectId | null;
 
   @Prop({ 
     required: true, 

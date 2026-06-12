@@ -2,25 +2,32 @@ import { Injectable } from '@nestjs/common';
 import { BadRequestException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-
+import { UpdateUserDto } from './dto/update-user.dto'
+import { EmailService } from 'src/email/email.service';
 
 @Injectable()
 export class UserService{
 
     constructor(
-        private userRepository: UserRepository
+        private readonly userRepository: UserRepository,
+        private readonly emailService: EmailService,
     ){}
-
+    
     async createUser(createUserDto: CreateUserDto) {
-    const existingUser = await this.userRepository.findByEmail(createUserDto.email);
+  const email = createUserDto.email.toLowerCase();
 
-    if (existingUser) {
-      throw new BadRequestException('Email already exists');
-    }
+  const existingUser = await this.userRepository.findByEmail(email);
 
-    return this.userRepository.createUser(createUserDto);
+  if (existingUser) {
+    throw new BadRequestException('Email already exists');
   }
+
+  const user = await this.userRepository.createUser({ ...createUserDto, email });
+
+  await this.emailService.sendWelcomeEmail(user.email , 'User');
+
+  return user;
+}
 
     async findByEmail( email: string ){
         return this.userRepository.findByEmail( email );
