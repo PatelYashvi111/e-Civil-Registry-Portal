@@ -43,6 +43,7 @@ export class UserService{
 
     async updateUser( id: string, updateUserDto: UpdateUserDto ){
         return this.userRepository.updateUser( id, updateUserDto );
+        
     }
 
     async deleteUser( id: string ){

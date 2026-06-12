@@ -1,34 +1,3 @@
-// import { Injectable } from '@nestjs/common';
-// import * as nodemailer from 'nodemailer';
-
-// @Injectable()
-// export class EmailService {
-//   private transporter;
-
-//   constructor() {
-//     this.transporter = nodemailer.createTransport({
-//       service: 'gmail',
-//       auth: {
-//         user: process.env.EMAIL_USER,
-//         pass: process.env.EMAIL_PASS,
-//       },
-//     });
-//   }
-
-//   async sendWelcomeEmail(to: string, name: string) {
-//     await this.transporter.sendMail({
-//       from: `"My App" <${process.env.EMAIL_USER}>`,
-//       to,
-//       subject: ' Welcome to My App ',
-//       html: `
-//         <h2>Hello ${name},</h2>
-//         <p>Welcome to our platform. Your account has been created successfully.</p>
-//       `,
-//     });
-//   }
-// }
-
-
 import { Injectable } from '@nestjs/common';
 import * as nodemailer from 'nodemailer';
 
