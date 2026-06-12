@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
-import { GenderEnum } from '../../common/enums/gender.enums';
+import { GenderEnum } from 'src/common/enums/gender.enums';
 
 export type AadharDocument = HydratedDocument<Aadhar>;
 
