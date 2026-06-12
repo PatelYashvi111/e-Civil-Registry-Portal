@@ -3,7 +3,7 @@ import { BadRequestException } from '@nestjs/common';
 import { UserRepository } from './user.repository';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto'
-import { EmailService } from 'src/email/email.service';
+import { EmailService } from 'src/module/email/email.service';
 
 @Injectable()
 export class UserService{
