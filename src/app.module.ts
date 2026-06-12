@@ -4,16 +4,24 @@ import { AppService } from './app.service';
 import { UserModule } from './user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
+import { EmailModule } from './email/email.module';
+
+console.log('MONGO_URI =', process.env.MONGO_URI);
 
 @Module({
   imports: [
-   ConfigModule.forRoot({
-      isGlobal: true,
-    }),
+   
+    ConfigModule.forRoot({
+    isGlobal: true,
+    envFilePath: '.env.local',
+  }),
 
     MongooseModule.forRoot(process.env.MONGO_URI as string),
 
+    UserModule,
+    EmailModule,
   ],
+
   controllers: [AppController],
   providers: [AppService],
 })
