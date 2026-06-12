@@ -1,35 +1,45 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, IsString ,IsEnum, IsDateString, IsMongoId, Length } from 'class-validator';
+import { UserStatusEnum } from '../../common/enums/user.status.enums';
 
 export class CreateUserDto {
 
-  @IsOptional()
-  @IsString()
-  roleId?: string;
+  @IsNotEmpty()
+  @IsMongoId()
+  roleId!: string;
 
-  @IsOptional()
-  @IsString()
-  aadharId?: string;
+  @IsNotEmpty()
+  @IsMongoId()
+  aadharId!: string;
 
-  
-  @IsOptional()
-  @IsString()
-  officeDepartmentId?: string;
+  @IsNotEmpty()
+  @IsMongoId()
+  officeDepartmentId!: string;
 
   @IsOptional()
   @IsString()
   employeeId?: string;
 
+  @IsNotEmpty()
   @IsEmail()
   email!: string;
 
   @IsNotEmpty()
   @IsString()
+  @Length(8, 20, {
+    message: 'Password must be between 8 and 20 characters long',
+  })
   password!: string;
 
   @IsOptional()
+  @IsEnum(UserStatusEnum)
+  status?: UserStatusEnum;
+
+  @IsOptional()
+  @IsDateString()
   lastLoginAt?: Date;
 
   @IsOptional()
+  @IsDateString()
   lastAssignedAt?: Date;
 
   @IsOptional()
@@ -42,7 +52,7 @@ export class CreateUserDto {
 
   @IsOptional()
   @IsString()
-  govEmployeIdCard?: string;
+  govEmployeeIdCard?: string;
 
   @IsOptional()
   @IsString()
