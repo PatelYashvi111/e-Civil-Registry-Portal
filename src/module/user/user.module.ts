@@ -5,6 +5,7 @@ import { UserRepository } from './user.repository';
 import { UserController } from './user.controller';
 import { User, UserSchema } from './schema/user.schema';
 import { EmailModule } from '../email/email.module';
+import { AuthModule } from '../auth/auth.module';
 
 @Module({
   imports: [
@@ -13,7 +14,8 @@ import { EmailModule } from '../email/email.module';
             name: User.name, schema: UserSchema
         }
     ]),
-  EmailModule
+  EmailModule,
+  AuthModule,
   ],
 
   controllers: [UserController],
