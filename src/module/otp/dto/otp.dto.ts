@@ -5,11 +5,11 @@ export class OtpDto {
 
     @IsOptional()
     @IsString()
-    userId?: string;
+    userId!: string;
 
     @IsOptional()
     @IsString()
-    aadharId?: string;
+    aadharId!: string;
 
     @IsNotEmpty()
     @IsString()

@@ -14,12 +14,12 @@ export class Otp {
         type: Types.ObjectId,
         ref:'User',
     })
-    userId?: Types.ObjectId;
+    userId!: Types.ObjectId;
 
     @Prop({
         type: Types.ObjectId
     })
-    aadharId?: Types.ObjectId;
+    aadharId!: Types.ObjectId;
 
     @Prop({
         required: true,
