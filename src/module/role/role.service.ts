@@ -1,8 +1,7 @@
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { RoleRepository } from './role.repository';
-import { Role } from './schema/role.schema';
 import { RoleEnum } from 'src/common/enums/role.enums';
+import { RoleDto } from './dto/role.dto';
 
 @Injectable()
 export class RoleService {
@@ -11,7 +10,13 @@ export class RoleService {
     private readonly roleRepository: RoleRepository,
   ) {}
 
-  async createRole(data:any) {
+  async createRole( data: RoleDto) {
+    const existingRole = await this.roleRepository.findByName(data.name);
+
+    if ( existingRole ) { 
+       throw new NotFoundException('Role already exists');
+    }
+
     return this.roleRepository.createRole( data );
   }
 
@@ -20,7 +25,23 @@ export class RoleService {
   }
 
   async findByName(name: RoleEnum) {
-    return this.roleRepository.findByName(name);
+    const role = await this.roleRepository.findByName(name);
+
+    if(!role) {
+      throw new NotFoundException('Role not Found');
+    }
+
+    return role;
   }
+
+  async findById(id: string) {
+  const role = await this.roleRepository.findById(id);
+
+  if (!role) {
+    throw new NotFoundException('Role not found');
+  }
+
+  return role;
+}
 
 }

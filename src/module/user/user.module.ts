@@ -6,6 +6,8 @@ import { UserController } from './user.controller';
 import { User, UserSchema } from './schema/user.schema';
 import { EmailModule } from '../email/email.module';
 import { AuthModule } from '../auth/auth.module';
+import { RoleModule } from '../role/role.module';
+import { AadharModule } from '../aadhar/aadhar.module';
 
 @Module({
   imports: [
@@ -16,6 +18,8 @@ import { AuthModule } from '../auth/auth.module';
     ]),
   EmailModule,
   AuthModule,
+  RoleModule,
+  AadharModule,
   ],
 
   controllers: [UserController],
