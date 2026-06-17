@@ -1,4 +1,6 @@
 import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common";
+import { CreateAadharDto } from "./dto/create-aadhar.dto";
+import { UpdateAadharDto } from "./dto/update-aadhar.dto";
 import { AadharRepository } from "./aadhar.repository";
 
 @Injectable()
@@ -8,7 +10,7 @@ export class AadharService {
         private readonly aadharRepository: AadharRepository,
     ){}
 
-    async createAadhar( data: any ) {
+    async createAadhar( data: CreateAadharDto) {
         const existingAadhar = await this.aadharRepository.findByAadharNumber( data.aadharNumber );
 
         if( existingAadhar ) {
@@ -43,7 +45,21 @@ export class AadharService {
 
     }
 
-    async updateAadhar( id: string, data: any ) {    
+    async updateAadhar( id: string, data: UpdateAadharDto ) { 
+        const aadhar = await this.aadharRepository.findById( id );
+        
+        if(!aadhar){
+            throw new NotFoundException('Aadhar Record not Found');
+        }
+
+          if (data.aadharNumber) {
+        const existing = await this.aadharRepository.findByAadharNumber(data.aadharNumber);
+
+        if (existing && existing.id !== id) {
+            throw new BadRequestException('Aadhar number already exists');
+        }
+    }
+    
         return await this.aadharRepository.updateAadhar( id, data );
     }
 
