@@ -24,4 +24,8 @@ export class RoleRepository {
     return await this.roleModel.findOne({name});
   }
 
+  async findById(id: string) {
+    return this.roleModel.findById(id);
+  }
+
 }
