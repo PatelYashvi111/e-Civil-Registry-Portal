@@ -7,5 +7,5 @@ export class CreateOfficeDepartmentDto {
     
     @IsString()
     @IsNotEmpty()
-    districtId!: string;
+    departmentId!: string;
   }

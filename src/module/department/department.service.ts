@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException,NotFoundException } from '@nestjs/common';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { DepartmentRepository } from './department.repository';
@@ -11,7 +11,12 @@ export class DepartmentService {
   ) {}
 
   async create(createDepartmentDto: CreateDepartmentDto) {
-    return await this.departmentRepository.create(createDepartmentDto);
+    const existingDepartment = await this.departmentRepository.findByName(createDepartmentDto.name.trim().toLowerCase());
+    
+    if (existingDepartment) {
+      throw new BadRequestException('Department already exists');
+    }
+   return await this.departmentRepository.create(createDepartmentDto);
   }
 
   async findAll() {
@@ -19,14 +24,41 @@ export class DepartmentService {
   }
 
   async findOne(id: string) {
-    return await this.departmentRepository.findById(id);
+    const department = await this.departmentRepository.findById(id);
+
+    if(!department) {
+      throw new NotFoundException('Department not found');
+    }
+    
+    return department;
   }
 
   async update(id: string, updateDepartmentDto: UpdateDepartmentDto) {
+    const department = await this.departmentRepository.findById(id);
+
+    if (!department) {
+      throw new NotFoundException('Department not found');
+    }
+
+    if (updateDepartmentDto.name) {
+      const existingDepartment = await this.departmentRepository.findByName(updateDepartmentDto.name.trim().toLowerCase());
+
+      if (existingDepartment && existingDepartment.id !== id) {
+        throw new BadRequestException('Department already exists');
+      }
+    }
+
     return await this.departmentRepository.update(id, updateDepartmentDto);
   }
 
   async delete(id: string) {
-    return await this.departmentRepository.delete(id);
+  const department = await this.departmentRepository.findById(id);
+
+  if (!department) {
+    throw new NotFoundException('Department not found');
   }
+
+  return await this.departmentRepository.delete(id);
+ }
+
 }

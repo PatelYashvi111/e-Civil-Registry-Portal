@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException , NotFoundException} from '@nestjs/common';
 import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
 import { DistrictRepository } from './district.repository';
@@ -12,22 +12,55 @@ export class DistrictService {
   ) {}
 
   async create(createDistrictDto: CreateDistrictDto) {
+    const existingDistrict = await this.districtRepository.findByName(createDistrictDto.name.trim().toLowerCase());
+    
+    if (existingDistrict) {
+      throw new BadRequestException('District already exists');
+    }
+
     return await this.districtRepository.create(createDistrictDto);
   }
 
   async findAll() {
-    return await this.districtRepository.findAll()
+    return await this.districtRepository.findAll();  
   }
 
   async findOne(id: string) {
-    return await this.districtRepository.findById(id);
+    const district = await this.districtRepository.findById(id);
+
+    if(!district) {
+      throw new NotFoundException('District not found');
+    }
+
+    return district;
   }
 
   async update(id: string, updateDistrictDto: UpdateDistrictDto) {
+    const district = await this.districtRepository.findById(id);
+
+    if (!district) {
+      throw new NotFoundException('District not found');
+    }
+
+    if (updateDistrictDto.name) {
+      const existingDistrict = await this.districtRepository.findByName(updateDistrictDto.name.trim().toLowerCase());
+
+      if (existingDistrict && existingDistrict.id !== id) {
+        throw new BadRequestException('District already exists');
+      }
+    }
+
     return await this.districtRepository.update(id, updateDistrictDto);
   }
 
   async delete(id: string) {
-    return await this.districtRepository.delete(id);
+    const district = await this.districtRepository.delete(id);
+
+    if(!district) {
+      throw new NotFoundException('District not found');
+    }
+
+    return district;
+  
   }
 }
