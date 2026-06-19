@@ -21,6 +21,10 @@ export class DepartmentRepository {
     return await this.model.find();
   }
 
+  async findByName(name: string) {
+    return await this.model.findOne({ name });
+  }
+
   async findById(id: string) {
     return await this.model.findById(id);
   }

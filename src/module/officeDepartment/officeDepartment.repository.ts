@@ -26,6 +26,10 @@ export class OfficeDepartmentRepository {
   async findById(id: string) {
     return await this.model.findById(id);
   }
+  
+   async findMapping( officeId: string, departmentId: string ) {
+    return await this.model.findOne({ officeId, departmentId });
+  }
 
   async findByOffice(officeId: string) {
     return await this.model
@@ -44,6 +48,6 @@ export class OfficeDepartmentRepository {
   }
 
   async delete(id: string) {
-    return await this.model.findByIdAndDelete(id);
+    return await this.model.findByIdAndDelete( id );
   }
 }

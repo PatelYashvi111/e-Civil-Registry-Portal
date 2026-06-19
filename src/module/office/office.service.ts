@@ -1,32 +1,63 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { OfficeRepository } from './office.repository';
 
 @Injectable()
-export class DistrictService {
+export class OfficeService {
   
     constructor(
     private readonly officeRepository: OfficeRepository, 
   ) {}
 
   async create(createOfficeDto: CreateOfficeDto) {
+    const existingOffice = await this.officeRepository.findByName(createOfficeDto.name.trim().toLowerCase());
+
+    if(existingOffice) {
+      throw new BadRequestException('Office already exists');
+    }
+
     return await this.officeRepository.create(createOfficeDto);
   }
 
   async findAll() {
-    return await this.officeRepository.findAll()
+    return await this.officeRepository.findAll();
   }
 
   async findOne(id: string) {
-    return await this.officeRepository.findById(id);
+    const office = await this.officeRepository.findById(id);
+
+    if(!office) {
+      throw new NotFoundException('Office not found');
+    }
+
+    return office;
   }
 
   async update(id: string, updateOfficeDto: UpdateOfficeDto) {
-    return await this.officeRepository.update(id, updateOfficeDto);
+    const office = await this.officeRepository.findById(id);
+
+    if (!office) {
+      throw new NotFoundException('Office not found');
+    }
+
+    if (updateOfficeDto.name) {
+    const existingOffice = await this.officeRepository.findByName(updateOfficeDto.name.trim().toLowerCase());
+
+    if (existingOffice && existingOffice.id !== id) {
+      throw new BadRequestException('Office already exists');
+    }
+  }
+    return await this.officeRepository.update( id, updateOfficeDto );
   }
 
-  async delete(id: string) {
+ async delete(id: string) {
+    const office = await this.officeRepository.findById(id);
+
+    if(!office) {
+      throw new NotFoundException('Office not found');
+    }
+
     return await this.officeRepository.delete(id);
   }
 }
