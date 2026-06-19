@@ -10,13 +10,13 @@ export class DepartmentService {
       private readonly departmentRepository: DepartmentRepository, 
   ) {}
 
-  async create(createDepartmentDto: CreateDepartmentDto) {
+  async createDepartment(createDepartmentDto: CreateDepartmentDto) {
     const existingDepartment = await this.departmentRepository.findByName(createDepartmentDto.name.trim().toLowerCase());
     
     if (existingDepartment) {
       throw new BadRequestException('Department already exists');
     }
-   return await this.departmentRepository.create(createDepartmentDto);
+   return await this.departmentRepository.createDepartment(createDepartmentDto);
   }
 
   async findAll() {
