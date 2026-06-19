@@ -27,13 +27,13 @@ export class Marriage {
         required: true,
         type: String,
       })
-      witnessAadharNumber!: string;
+      witnessAadharId!: string;
 
       @Prop({
         required: true,
         type: String,
       })
-      brahmanAadharNumber!: string;
+      brahmanAadharId!: string;
 
       @Prop({
         required: true,
