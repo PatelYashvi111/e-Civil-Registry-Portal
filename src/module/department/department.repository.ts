@@ -10,10 +10,10 @@ export class DepartmentRepository {
   
     constructor(
         @InjectModel(Department.name)
-        private model: Model<Department>
+        private readonly model: Model<Department>
     ) {}
 
-  async create(createDepartmentDto: CreateDepartmentDto) {
+  async createDepartment(createDepartmentDto: CreateDepartmentDto) {
     return await this.model.create( createDepartmentDto );
   }
 

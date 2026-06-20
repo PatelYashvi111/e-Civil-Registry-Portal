@@ -50,4 +50,5 @@ export class OfficeDepartmentRepository {
   async delete(id: string) {
     return await this.model.findByIdAndDelete( id );
   }
+  
 }
