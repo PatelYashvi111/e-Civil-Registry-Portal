@@ -28,14 +28,22 @@ export class Marriage {
         type: Types.ObjectId,
         ref: 'Aadhar',
       })
+<<<<<<< HEAD
       witnessAadharId!: Types.ObjectId;
+=======
+      witnessAadharId!: string;
+>>>>>>> 04b3cd46bd1414ecebbd9e45b281679b4c32f85b
 
       @Prop({
         required: true,
         type: Types.ObjectId,
         ref: 'Aadhar'
       })
+<<<<<<< HEAD
       brahmanAadharId!: Types.ObjectId;
+=======
+      brahmanAadharId!: string;
+>>>>>>> 04b3cd46bd1414ecebbd9e45b281679b4c32f85b
 
       @Prop({
         required: true,
