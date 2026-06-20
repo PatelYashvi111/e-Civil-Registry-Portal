@@ -10,12 +10,12 @@ export class CreateMarriageDto {
     @IsMongoId()
     groomAadharId!: string;
 
-    @IsString()
     @IsNotEmpty()
+    @IsMongoId()
     witnessAadharId!: string;
 
-    @IsString()
-    @IsNotEmpty()                                                                                       
+    @IsNotEmpty() 
+    @IsMongoId()                                                                                      
     brahmanAadharId!: string;
 
     @IsString()
