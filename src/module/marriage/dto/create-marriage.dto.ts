@@ -12,11 +12,11 @@ export class CreateMarriageDto {
 
     @IsString()
     @IsNotEmpty()
-    witnessAadharNumber!: string;
+    witnessAadharId!: string;
 
     @IsString()
-    @IsNotEmpty()
-    brahmanAadharNumber!: string;
+    @IsNotEmpty()                                                                                       
+    brahmanAadharId!: string;
 
     @IsString()
     @IsNotEmpty()
