@@ -25,15 +25,17 @@ export class Marriage {
 
       @Prop({
         required: true,
-        type: String,
+        type: Types.ObjectId,
+        ref: 'Aadhar',
       })
-      witnessAadharNumber!: string;
+      witnessAadharId!: Types.ObjectId;
 
       @Prop({
         required: true,
-        type: String,
+        type: Types.ObjectId,
+        ref: 'Aadhar'
       })
-      brahmanAadharNumber!: string;
+      brahmanAadharId!: Types.ObjectId;
 
       @Prop({
         required: true,
