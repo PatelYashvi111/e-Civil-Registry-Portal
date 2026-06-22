@@ -5,7 +5,6 @@ import { UserRepository } from './user.repository';
 import { UserController } from './user.controller';
 import { User, UserSchema } from './schema/user.schema';
 import { EmailModule } from '../email/email.module';
-import { AuthModule } from '../auth/auth.module';
 import { RoleModule } from '../role/role.module';
 import { AadharModule } from '../aadhar/aadhar.module';
 
@@ -17,7 +16,6 @@ import { AadharModule } from '../aadhar/aadhar.module';
         }
     ]),
   EmailModule,
-  AuthModule,
   RoleModule,
   AadharModule,
   ],

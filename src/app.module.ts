@@ -5,10 +5,16 @@ import { UserModule } from './module/user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './module/email/email.module';
+<<<<<<< HEAD
+import { AuthModule } from './module/auth/auth.module';
+import { AadharModule } from './module/aadhar/aadhar.module';
+import { BirthModule } from './module/birth/birth.module';
+=======
 import { AuthModule } from '../src/module/auth/auth.module';
 import { OfficeModule } from './office/office.module';
 
 console.log('MONGO_URI =', process.env.MONGO_URI);
+>>>>>>> staging
 
 @Module({
   imports: [
@@ -23,7 +29,12 @@ console.log('MONGO_URI =', process.env.MONGO_URI);
     UserModule,
     EmailModule,
     AuthModule,
+<<<<<<< HEAD
+    AadharModule,
+    BirthModule,
+=======
     OfficeModule,
+>>>>>>> staging
   ],
 
   controllers: [AppController],
