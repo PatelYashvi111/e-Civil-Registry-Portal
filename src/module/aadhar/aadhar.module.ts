@@ -18,7 +18,7 @@ import { Aadhar, AadharSchema } from './schema/aadhar.schema';
 
   controllers: [AadharController],
   providers: [AadharService, AadharRepository],
-  exports: [AadharService, AadharRepository], 
+  exports: [AadharService, AadharRepository,MongooseModule], 
 
 })
 export class AadharModule {}

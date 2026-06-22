@@ -2,6 +2,7 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
+import { Module } from '@nestjs/common';
 import { Aadhar, AadharDocument } from '../aadhar/schema/aadhar.schema';
 import { Role, RoleDocument } from '../role/schema/role.schema';
 import { OtpEnum } from '../../common/enums/otp.enums';
