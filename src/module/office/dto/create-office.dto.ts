@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsString, MaxLength } from 'class-validator';
+import { IsNotEmpty, IsString, MaxLength, IsMongoId } from 'class-validator';
 
 export class CreateOfficeDto {
     @IsString()
@@ -6,7 +6,7 @@ export class CreateOfficeDto {
     @MaxLength(15)
     name!: string;
     
-    @IsString()
     @IsNotEmpty()
+    @IsMongoId()
     districtId!: string;
   }

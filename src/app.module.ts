@@ -8,12 +8,19 @@ import { EmailModule } from './module/email/email.module';
 import { AadharModule } from './module/aadhar/aadhar.module';
 import { AuthModule } from './module/auth/auth.module';
 import { SeedModule } from './database/seeds/seed.module';
+import { StateModule } from './module/state/state.module';
+import { DistrictModule } from './module/district/district.module';
+import { OfficeDepartment } from './module/officeDepartment/schema/officeDepartment.schema';
+import { OfficeDepartmentModule } from './module/officeDepartment/officeDepartment.module';
+import { OfficeModule } from './module/office/office.module';
+import { DepartmentModule } from './module/department/department.module';
+
 
 @Module({
   imports: [   
     ConfigModule.forRoot({
     isGlobal: true,
-    envFilePath: '.env.local',
+    envFilePath:  '.env.local',
   }),
 
     MongooseModule.forRoot(process.env.MONGO_URI as string),
@@ -23,7 +30,13 @@ import { SeedModule } from './database/seeds/seed.module';
     AuthModule,
     AadharModule,
     SeedModule,
-  ],
+    StateModule,
+    DistrictModule,
+    OfficeDepartmentModule,
+    OfficeModule,
+    DepartmentModule,
+
+],
 
   controllers: [AppController],
   providers: [AppService],
