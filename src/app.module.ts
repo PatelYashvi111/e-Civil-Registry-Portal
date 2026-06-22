@@ -6,11 +6,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './module/email/email.module';
 import { AadharModule } from './module/aadhar/aadhar.module';
-import { AuthModule } from '../src/module/auth/auth.module';
+import { AuthModule } from './module/auth/auth.module';
+import { SeedModule } from './database/seeds/seed.module';
 
 @Module({
-  imports: [
-   
+  imports: [   
     ConfigModule.forRoot({
     isGlobal: true,
     envFilePath: '.env.local',
@@ -22,6 +22,7 @@ import { AuthModule } from '../src/module/auth/auth.module';
     EmailModule,
     AuthModule,
     AadharModule,
+    SeedModule,
   ],
 
   controllers: [AppController],

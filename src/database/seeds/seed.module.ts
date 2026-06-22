@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule} from '@nestjs/mongoose';
-import { SeedService } from '../seeds/seed.service';
+import { SeedService } from './seed.service';
+import { SeedController } from './seed.controller';
 import { State, StateSchema } from '../../module/state/schema/state.schema';
 import { District, DistrictSchema } from '../../module/district/schema/district.schema';
 import { Office, OfficeSchema } from '../../module/office/schema/office.schema';
@@ -17,7 +18,10 @@ import { Department, DepartmentSchema } from '../../module/department/schema/dep
         { name: Department.name, schema: DepartmentSchema },
     ]),
   ],
+
+  controllers: [SeedController],
   providers: [SeedService],
+
 })
 
-export class DatabaseModule {}
+export class SeedModule {}
