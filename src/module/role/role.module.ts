@@ -17,7 +17,7 @@ import { Role, RoleSchema } from './schema/role.schema';
 
     controllers: [RoleController],
     providers: [RoleService, RoleRepository],
-    exports: [RoleService, RoleRepository],
+    exports: [RoleService, RoleRepository,MongooseModule],
 
 })
 
