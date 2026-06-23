@@ -21,6 +21,14 @@ export class MarriageRepository {
         return await this.MarriageModel.find();
     }
 
+    async findDuplication( 
+        brideAadharId: string, 
+        groomAadharId: string, 
+        marriageDate: Date, 
+    ){
+        return await this.MarriageModel.findOne({brideAadharId, groomAadharId, marriageDate})
+    }
+
     async findById( id: string ) {
         return await this.MarriageModel.findById( id );
     }
