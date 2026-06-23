@@ -22,7 +22,7 @@ import { AadharModule } from '../aadhar/aadhar.module';
 
   controllers: [UserController],
   providers: [UserService, UserRepository],
-  exports: [UserService, UserRepository],
+  exports: [UserService, UserRepository,MongooseModule],
 })
 
 export class UserModule {}
