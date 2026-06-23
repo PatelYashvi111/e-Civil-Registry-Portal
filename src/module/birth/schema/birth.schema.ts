@@ -32,7 +32,7 @@ export class Birth {
         type: Types.ObjectId,
         ref: 'District',
     })
-    birthDistrict!: Types.ObjectId;
+    birthDistrictId!: Types.ObjectId;
 
     @Prop({
         required: true,
