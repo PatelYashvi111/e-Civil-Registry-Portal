@@ -6,7 +6,11 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './module/email/email.module';
 import { AadharModule } from './module/aadhar/aadhar.module';
-import { AuthModule } from '../src/module/auth/auth.module';
+import { AuthModule } from './module/auth/auth.module';
+import { BirthModule } from './module/birth/birth.module';
+import { MarriageModule } from './module/marriage/marriage.module';
+import { DeathModule } from './module/death/death.module';
+
 
 @Module({
   imports: [
@@ -22,6 +26,9 @@ import { AuthModule } from '../src/module/auth/auth.module';
     EmailModule,
     AuthModule,
     AadharModule,
+    BirthModule,
+    MarriageModule,
+    DeathModule,
   ],
 
   controllers: [AppController],
