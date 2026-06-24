@@ -2,20 +2,26 @@ import { Injectable, BadRequestException, NotFoundException } from "@nestjs/comm
 import { CreateAadharDto } from "./dto/create-aadhar.dto";
 import { UpdateAadharDto } from "./dto/update-aadhar.dto";
 import { AadharRepository } from "./aadhar.repository";
+import { CloudinaryService } from "../../common/cloudinary/cloudinary.service";
 
 @Injectable()
 export class AadharService {
 
     constructor(
         private readonly aadharRepository: AadharRepository,
+        private readonly cloudinaryService: CloudinaryService,
     ){}
 
-    async createAadhar( data: CreateAadharDto) {
+    async createAadhar( data: CreateAadharDto, filePath: string) {
         const existingAadhar = await this.aadharRepository.findByAadharNumber( data.aadharNumber );
 
         if( existingAadhar ) {
             throw new BadRequestException('Aadhar already exists');
         }
+
+        const uploadedFile = await this.cloudinaryService.uploadFile(filePath,'aadhar');
+
+        data.photo = uploadedFile.url;
 
         return this.aadharRepository.createAadhar( data );
     }
