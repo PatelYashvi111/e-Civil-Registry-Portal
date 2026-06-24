@@ -10,7 +10,6 @@ import { AuthModule } from './module/auth/auth.module';
 import { SeedModule } from './database/seeds/seed.module';
 import { StateModule } from './module/state/state.module';
 import { DistrictModule } from './module/district/district.module';
-import { OfficeDepartment } from './module/officeDepartment/schema/officeDepartment.schema';
 import { OfficeDepartmentModule } from './module/officeDepartment/officeDepartment.module';
 import { OfficeModule } from './module/office/office.module';
 import { DepartmentModule } from './module/department/department.module';
@@ -43,3 +42,4 @@ import { DepartmentModule } from './module/department/department.module';
   
 })
 export class AppModule {}
+

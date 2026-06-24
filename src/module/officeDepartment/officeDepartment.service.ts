@@ -32,7 +32,7 @@ export class OfficeDepartmentService {
       createOfficeDepartmentDto.departmentId
     );
 
-    if(!existingMapping) {
+    if(existingMapping) {
       throw new BadRequestException('Mapping already exists');
     }
 

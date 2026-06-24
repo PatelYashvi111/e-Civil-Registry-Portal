@@ -10,14 +10,14 @@ export class AadharService {
         private readonly aadharRepository: AadharRepository,
     ){}
 
-    async createAadhar( data: CreateAadharDto) {
+    async createAadhar( data: CreateAadharDto ) {
         const existingAadhar = await this.aadharRepository.findByAadharNumber( data.aadharNumber );
 
         if( existingAadhar ) {
             throw new BadRequestException('Aadhar already exists');
         }
 
-        return this.aadharRepository.createAadhar( data );
+        return this.aadharRepository.createAadhar(data);
     }
 
     async findAll() {

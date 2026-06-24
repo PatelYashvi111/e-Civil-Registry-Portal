@@ -3,7 +3,6 @@ import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
 import { DistrictRepository } from './district.repository';
 
-
 @Injectable()
 export class DistrictService {
   
@@ -20,10 +19,7 @@ export class DistrictService {
     throw new BadRequestException('District already exists');
   }
 
-  return await this.districtRepository.create({
-    ...createDistrictDto,
-    name,
-  });
+  return await this.districtRepository.create({...createDistrictDto,name });
 }
   async findAll() {
     return await this.districtRepository.findAll();  

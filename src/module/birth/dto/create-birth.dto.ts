@@ -17,7 +17,7 @@ export class CreateBirthDto {
 
     @IsNotEmpty()
     @IsMongoId()
-    birthDistrict!: string;
+    birthDistrictId!: string;
 
     @IsString()
     @IsNotEmpty()
