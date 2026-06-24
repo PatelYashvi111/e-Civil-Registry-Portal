@@ -39,7 +39,7 @@ export class BirthService {
         if(!motherAadhar) {
             throw new NotFoundException('Mother Aadhar ID not found')
         }
-
+        
         return await this.birthRepository.create( createBirthDto );
     }
 
