@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 // import { Injectable, BadRequestException } from '@nestjs/common';
 // import { InjectModel } from '@nestjs/mongoose';
 // import * as bcrypt from 'bcrypt';
@@ -16,6 +17,27 @@
 // import { ResetPasswordDto } from './dto/reset.password.dto';
 // import { RoleEnum } from 'src/common/enums/role.enums';
 // import { JwtService } from '@nestjs/jwt';
+=======
+import { Injectable, BadRequestException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import * as bcrypt from 'bcrypt';
+import { Model } from 'mongoose';
+import { Module } from '@nestjs/common';
+import { Aadhar, AadharDocument } from '../aadhar/schema/aadhar.schema';
+import { Role, RoleDocument } from '../role/schema/role.schema';
+import { OtpEnum } from '../../common/enums/otp.enums';
+import { RequestAadharDto } from './dto/request.aadhar.dto';
+import { VerifyAadharDto } from './dto/verify.aadhar.dto';
+import { User, UserDocument } from '../user/schema/user.schema';
+import { Otp, OtpDocument } from '../otp/schema/otp.schema';
+import { RegisterDto } from './dto/register.dto';
+import { LoginDto } from './dto/login.dto';
+import { ForgotPasswordDto } from './dto/forgot.password.dto';
+import { VerifyForgotPasswordDto } from './dto/verify.forgot.password.dto';
+import { ResetPasswordDto } from './dto/reset.password.dto';
+import { RoleEnum } from 'src/common/enums/role.enums';
+import { JwtService } from '@nestjs/jwt';
+>>>>>>> feat/user
 
 // @Injectable()
  export class AuthService {

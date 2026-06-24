@@ -3,6 +3,7 @@ import { CreateDeathDto } from "./dto/create-death.dto";
 import { UpdateDeathDto } from "./dto/update-death.dto";
 import { DeathRepository } from "./death.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
+import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
 
 @Injectable()
 export class DeathService {
@@ -10,9 +11,10 @@ export class DeathService {
     constructor(
         private readonly deathRepository: DeathRepository,
         private readonly aadharRepository: AadharRepository,
+        private readonly cloudinaryService: CloudinaryService,
     ){}
 
-    async create( createDeathDto: CreateDeathDto ) {
+    async create( createDeathDto: CreateDeathDto , filePath: string) {
        const existingDeath = await this.deathRepository.findDuplication(
             createDeathDto.deceasedAadharId,
             new Date(createDeathDto.dateOfDeath),   
@@ -34,6 +36,10 @@ export class DeathService {
         if(!spouseAadhar) {
             throw new NotFoundException('Spouse Aadhar ID not found.');
         }
+        
+        const uploadedFile = await this.cloudinaryService.uploadFile(filePath,'death');
+
+        createDeathDto.deceasedPhoto = uploadedFile.url;
 
         return await this.deathRepository.create( createDeathDto );
     }

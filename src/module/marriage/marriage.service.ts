@@ -3,6 +3,7 @@ import { CreateMarriageDto } from "./dto/create-marriage.dto";
 import { UpdateMarriageDto } from "./dto/update-marriage.dto";
 import { MarriageRepository } from "./marriage.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
+import { CloudinaryService } from "../../common/cloudinary/cloudinary.service";
 
 @Injectable()
 export class MarriageService {
@@ -10,9 +11,10 @@ export class MarriageService {
     constructor(
         private readonly marriageRepository: MarriageRepository,
         private readonly aadharRepository: AadharRepository,
+        private readonly cloudinaryService: CloudinaryService,
     ){}
 
-    async create( createMarriageDto: CreateMarriageDto ) {
+    async create( createMarriageDto: CreateMarriageDto, filePath: string ) {
        const existingMarriage = await this.marriageRepository.findDuplication(
             createMarriageDto.brideAadharId,
             createMarriageDto.groomAadharId,

@@ -5,19 +5,23 @@ import { UserModule } from './module/user/user.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ConfigModule } from '@nestjs/config';
 import { EmailModule } from './module/email/email.module';
+import { AuthModule } from './module/auth/auth.module';
 import { AadharModule } from './module/aadhar/aadhar.module';
+<<<<<<< HEAD
 import { AuthModule } from './module/auth/auth.module';
 import { BirthModule } from './module/birth/birth.module';
 import { MarriageModule } from './module/marriage/marriage.module';
 import { DeathModule } from './module/death/death.module';
 
+=======
+>>>>>>> feat/user
 
 @Module({
   imports: [
    
     ConfigModule.forRoot({
     isGlobal: true,
-    envFilePath: '.env.local',
+    envFilePath:  '.env.local',
   }),
 
     MongooseModule.forRoot(process.env.MONGO_URI as string),
