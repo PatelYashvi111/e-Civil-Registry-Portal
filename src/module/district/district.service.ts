@@ -12,15 +12,19 @@ export class DistrictService {
   ) {}
 
   async create(createDistrictDto: CreateDistrictDto) {
-    const existingDistrict = await this.districtRepository.findByName(createDistrictDto.name.trim().toLowerCase());
-    
-    if (existingDistrict) {
-      throw new BadRequestException('District already exists');
-    }
+  const name = createDistrictDto.name.trim().toLowerCase();
 
-    return await this.districtRepository.create(createDistrictDto);
+  const existingDistrict = await this.districtRepository.findByName(name);
+
+  if (existingDistrict) {
+    throw new BadRequestException('District already exists');
   }
 
+  return await this.districtRepository.create({
+    ...createDistrictDto,
+    name,
+  });
+}
   async findAll() {
     return await this.districtRepository.findAll();  
   }

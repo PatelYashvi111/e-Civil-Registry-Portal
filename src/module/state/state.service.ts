@@ -13,7 +13,7 @@ export class StateService {
   async create(createStateDto: CreateStateDto) {
     const existingState = await this.stateRepository.findByName(createStateDto.name.trim().toLowerCase());
 
-    if(existingState) {
+    if(!existingState) {
       throw new BadRequestException('State already exists');
     }
 

@@ -13,7 +13,7 @@ export class OfficeService {
   async create(createOfficeDto: CreateOfficeDto) {
     const existingOffice = await this.officeRepository.findByName(createOfficeDto.name.trim().toLowerCase());
 
-    if(existingOffice) {
+    if(!existingOffice) {
       throw new BadRequestException('Office already exists');
     }
 
