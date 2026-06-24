@@ -3,6 +3,7 @@ import { CreateBirthDto } from "./dto/create-birth.dto";
 import { UpdateBirthDto } from "./dto/update-birth.dto";
 import { BirthRepository } from "./birth.repositroy";
 import { AadharRepository } from "../aadhar/aadhar.repository";
+import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
 
 @Injectable()
 export class BirthService {
@@ -10,12 +11,13 @@ export class BirthService {
     constructor(
         private readonly birthRepository: BirthRepository,
         private readonly aadharRepository: AadharRepository,
+        private readonly cloudinaryService: CloudinaryService,
     ){}
 
-    async create( createBirthDto: CreateBirthDto ) {
+    async create( createBirthDto: CreateBirthDto , files: any) {
       const existingBirth = await this.birthRepository.findDuplication(
             createBirthDto.babyName, 
-           new Date(createBirthDto.birthDate),  
+            new Date(createBirthDto.birthDate),  
             createBirthDto.fatherAadharId, 
             createBirthDto.motherAadharId,
         )
@@ -39,6 +41,31 @@ export class BirthService {
         if(!motherAadhar) {
             throw new NotFoundException('Mother Aadhar ID not found')
         }
+
+        const fatherAadharCard = await this.cloudinaryService.uploadFile(
+            files.fatherAadharCard[0].path,
+            'birth',
+            );
+
+        const motherAadharCard = await this.cloudinaryService.uploadFile(
+            files.motherAadharCard[0].path,
+            'birth',
+            );
+
+        const marriageCertificate = await this.cloudinaryService.uploadFile(
+            files.marriageCertificate[0].path,
+            'birth',
+            );
+
+        const birthHospitalReport = await this.cloudinaryService.uploadFile(
+            files.birthHospitalReport[0].path,
+            'birth',
+            );
+
+        const rationCard = await this.cloudinaryService.uploadFile(
+            files.rationCard[0].path,
+            'birth',
+            );
 
         return await this.birthRepository.create( createBirthDto );
     }
