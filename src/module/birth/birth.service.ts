@@ -4,6 +4,7 @@ import { UpdateBirthDto } from "./dto/update-birth.dto";
 import { BirthRepository } from "./birth.repositroy";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
+import { CounterService } from "../counter/counter.service";
 
 @Injectable()
 export class BirthService {
@@ -12,6 +13,7 @@ export class BirthService {
         private readonly birthRepository: BirthRepository,
         private readonly aadharRepository: AadharRepository,
         private readonly cloudinaryService: CloudinaryService,
+        private readonly counterService: CounterService,
     ){}
 
     async create( createBirthDto: CreateBirthDto , files: {
@@ -89,8 +91,13 @@ export class BirthService {
             'birth',
         );
 
+        const applicationNumber = await this.counterService.generateBirthApplication();
+
+        console.log('Generated Application Number:', applicationNumber);
+
         const finalData = {
             ...createBirthDto,
+            applicationNumber,
             fatherAadharCard: fatherAadharCard.url,
             motherAadharCard: motherAadharCard.url,
             marriageCertificate: marriageCertificate.url,
@@ -99,6 +106,7 @@ export class BirthService {
 };
 
         return await this.birthRepository.create( finalData );
+
     }
 
     async findAll() {

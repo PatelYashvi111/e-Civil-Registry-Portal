@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
 import { StatusEnum } from 'src/common/enums/status.enums';
+import { ServiceEnum } from 'src/common/enums/service.enums';
 
 export type ApplicationDocument = HydratedDocument<Application>;
 
@@ -47,26 +48,15 @@ export class Application {
    @Prop({
     required: true,
     type: Types.ObjectId,
-    ref: 'Birth',
-    default: null,
    })
-   birthId!: Types.ObjectId | null;
+   serviceId!: Types.ObjectId;
 
    @Prop({
     required: true,
-    type: Types.ObjectId,
-    ref: 'Marriage',
-    default: null,
+    type: String,
+    enum: ServiceEnum,
    })
-   marriageId!: Types.ObjectId | null;
-
-   @Prop({
-    required: true,
-    type: Types.ObjectId,
-    ref: 'Death',
-    default: null,
-   })
-   deathId!: Types.ObjectId | null;
+   serviceType!: ServiceEnum;
   
   @Prop({
     type: String,

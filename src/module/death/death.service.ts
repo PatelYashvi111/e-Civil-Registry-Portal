@@ -4,6 +4,7 @@ import { UpdateDeathDto } from "./dto/update-death.dto";
 import { DeathRepository } from "./death.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
+import { CounterService } from "../counter/counter.service";
 
 @Injectable()
 export class DeathService {
@@ -12,6 +13,7 @@ export class DeathService {
         private readonly deathRepository: DeathRepository,
         private readonly aadharRepository: AadharRepository,
         private readonly cloudinaryService: CloudinaryService,
+        private readonly counterService: CounterService,
     ){}
 
     async create( createDeathDto: CreateDeathDto , files: {
@@ -101,8 +103,11 @@ export class DeathService {
         'Death'
         );
 
+        const applicationNumber = await this.counterService.generateDeathApplication();
+
         const finalData = {
-            ...createDeathDto,
+        ...createDeathDto,
+        applicationNumber,
         deceasedAadharCard: deceasedAadharCard.url,
         spouseAadharCard: spouseAadharCard.url,
         deceasedRationCard: deceasedRationCard.url,
@@ -113,6 +118,7 @@ export class DeathService {
         }
 
         return await this.deathRepository.create( finalData );
+
     }
 
     async findAll() {

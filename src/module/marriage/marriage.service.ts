@@ -4,6 +4,7 @@ import { UpdateMarriageDto } from "./dto/update-marriage.dto";
 import { MarriageRepository } from "./marriage.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "../../common/cloudinary/cloudinary.service";
+import { CounterService } from "../counter/counter.service";
 
 @Injectable()
 export class MarriageService {
@@ -12,6 +13,7 @@ export class MarriageService {
         private readonly marriageRepository: MarriageRepository,
         private readonly aadharRepository: AadharRepository,
         private readonly cloudinaryService: CloudinaryService,
+        private readonly counterService: CounterService,
     ){}
 
     async create( createMarriageDto: CreateMarriageDto, files: {
@@ -137,8 +139,11 @@ export class MarriageService {
             'marriage'
             );
 
+        const applicationNumber = await this.counterService.generateMarriageApplication();
+
         const finalData = {
         ...createMarriageDto ,
+        applicationNumber,
         brideAadharCard: brideAadharCard.url,
         groomAadharCard: groomAadharCard.url,
         witnessAadharCard: witnessAadharCard.url,

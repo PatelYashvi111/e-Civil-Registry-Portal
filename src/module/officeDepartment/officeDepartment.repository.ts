@@ -27,7 +27,7 @@ export class OfficeDepartmentRepository {
     return await this.model.findById(id);
   }
   
-   async findMapping( officeId: string, departmentId: string ) {
+  async findMapping( officeId: string, departmentId: string ) {
     return await this.model.findOne({ officeId, departmentId });
   }
 
