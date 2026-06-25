@@ -1,5 +1,5 @@
 import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common";
-import { } from "./dto/create-marriage.dto";
+import { CreateMarriageDto } from "./dto/create-marriage.dto";
 import { UpdateMarriageDto } from "./dto/update-marriage.dto";
 import { MarriageRepository } from "./marriage.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
@@ -14,7 +14,7 @@ export class MarriageService {
         private readonly cloudinaryService: CloudinaryService,
     ){}
 
-    async create(   files: {
+    async create( createMarriageDto: CreateMarriageDto, files: {
         brideAadharCard?: Express.Multer.File[];
         groomAadharCard?: Express.Multer.File[];
         witnessAadharCard?: Express.Multer.File[];
@@ -26,45 +26,45 @@ export class MarriageService {
         invitationCard?: Express.Multer.File[];
     } ) {
        const existingMarriage = await this.marriageRepository.findDuplication(
-            brideAadharId,
-            groomAadharId,
-            new Date(marriageDate),
+            createMarriageDto.brideAadharId,
+            createMarriageDto.groomAadharId,
+            new Date(createMarriageDto.marriageDate),
         )
 
         if(existingMarriage) {
             throw new BadRequestException('Marriage records is already exists.');
         }
 
-       const brideAadhar = await this.aadharRepository.findById(brideAadharId);
+       const brideAadhar = await this.aadharRepository.findById(createMarriageDto.brideAadharId);
 
         if(!brideAadhar) {
             throw new NotFoundException('Bride Aadhar ID not found.');
         
         }
 
-       const groomAadhar = await this.aadharRepository.findById(groomAadharId);
+       const groomAadhar = await this.aadharRepository.findById(createMarriageDto.groomAadharId);
 
         if(!groomAadhar) {
             throw new NotFoundException('Groom Aadhar ID not found.');
         }
 
-       const witnessAadhar = await this.aadharRepository.findById(witnessAadharId);
+       const witnessAadhar = await this.aadharRepository.findById(createMarriageDto.witnessAadharId);
 
         if(!witnessAadhar) {
             throw new NotFoundException('Witness Aadhar ID not found.');
         }
 
-       const brahmanAadhar = await this.aadharRepository.findById(brahmanAadharId);
+       const brahmanAadhar = await this.aadharRepository.findById(createMarriageDto.brahmanAadharId);
 
         if(!brahmanAadhar) {
             throw new NotFoundException('Brahman Aadhar ID not found.');
         }
 
-        if(witnessAadharId.toString() === brideAadharId.toString()) {
+        if(createMarriageDto.witnessAadharId.toString() === createMarriageDto.brideAadharId.toString()) {
             throw new BadRequestException('Witness cannot be Bride');
         }
 
-        if(witnessAadharId.toString() === groomAadharId.toString()) {
+        if(createMarriageDto.witnessAadharId.toString() === createMarriageDto.groomAadharId.toString()) {
             throw new BadRequestException('Witness cannot be Groom');
         }
         
@@ -138,7 +138,7 @@ export class MarriageService {
             );
 
         const finalData = {
-        ...AadharRepository,
+        ...createMarriageDto ,
         brideAadharCard: brideAadharCard.url,
         groomAadharCard: groomAadharCard.url,
         witnessAadharCard: witnessAadharCard.url,
@@ -148,7 +148,7 @@ export class MarriageService {
         bridePhoto: bridePhoto.url,
         groomPhoto: groomPhoto.url,
         invitationCard: invitationCard.url,
-        }
+        };
 
         return await this.marriageRepository.create( finalData );
     }

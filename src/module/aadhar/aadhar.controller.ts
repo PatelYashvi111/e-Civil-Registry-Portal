@@ -15,14 +15,8 @@ export class AadharController {
 
    @Post('create')
    @UseInterceptors(
-    FileInterceptor('photo', {
-    storage: diskStorage({
-      destination: './uploads',
-      filename: (req, file, cb) => {
-        cb(null, Date.now() + extname(file.originalname));
-      },
-    }),
-  }),
+    FileInterceptor('photo', {}
+    )
 )
 async createAadhar(
   @Body() dto: CreateAadharDto,
