@@ -101,15 +101,18 @@ export class DeathService {
         'Death'
         );
 
-        createDeathDto.deceasedAadharCard = deceasedAadharCard.url;
-        createDeathDto.spouseAadharCard = spouseAadharCard.url;
-        createDeathDto.deceasedRationCard = deceasedRationCard.url;
-        createDeathDto.deceasedPhoto = deceasedPhoto.url;
-        createDeathDto.deceasedMedicalCertificate = deceasedMedicalCertificate.url;
-        createDeathDto.pmReport = pmReport.url;
-        createDeathDto.fir = fir.url;
+        const finalData = {
+            ...createDeathDto,
+        deceasedAadharCard: deceasedAadharCard.url,
+        spouseAadharCard: spouseAadharCard.url,
+        deceasedRationCard: deceasedRationCard.url,
+        deceasedPhoto: deceasedPhoto.url,
+        deceasedMedicalCertificate: deceasedMedicalCertificate.url,
+        pmReport: pmReport.url,
+        fir: fir.url,
+        }
 
-        return await this.deathRepository.create( createDeathDto );
+        return await this.deathRepository.create( finalData );
     }
 
     async findAll() {

@@ -88,7 +88,7 @@ export class BirthService {
             rationCardFile,
             'birth',
         );
-        
+
         const finalData = {
             ...createBirthDto,
             fatherAadharCard: fatherAadharCard.url,

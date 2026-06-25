@@ -15,15 +15,14 @@ export class AadharController {
 
    @Post('create')
    @UseInterceptors(
-    FileInterceptor('photo', {}
-    )
-)
-async createAadhar(
-  @Body() dto: CreateAadharDto,
-  @UploadedFile() file: Express.Multer.File,
-) {
-  return this.aadharService.createAadhar(dto, file);
-}
+    FileInterceptor('photo', {})
+  )
+  async createAadhar(
+    @Body() dto: CreateAadharDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.aadharService.createAadhar(dto, file);
+  }
 
    @Get('all')
    async findAll() {
