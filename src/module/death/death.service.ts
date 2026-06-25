@@ -3,6 +3,7 @@ import { CreateDeathDto } from "./dto/create-death.dto";
 import { UpdateDeathDto } from "./dto/update-death.dto";
 import { DeathRepository } from "./death.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
+import { CounterModule } from "../counter/counter.module";
 
 @Injectable()
 export class DeathService {
@@ -10,6 +11,7 @@ export class DeathService {
     constructor(
         private readonly deathRepository: DeathRepository,
         private readonly aadharRepository: AadharRepository,
+        private readonly counterModule: CounterModule,
     ){}
 
     async create( createDeathDto: CreateDeathDto ) {
@@ -34,6 +36,8 @@ export class DeathService {
         if(!spouseAadhar) {
             throw new NotFoundException('Spouse Aadhar ID not found.');
         }
+
+        const applicationNumber = await this.counterModule.generateDeathApplicationNumber();
 
         return await this.deathRepository.create( createDeathDto );
     }

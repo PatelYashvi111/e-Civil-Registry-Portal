@@ -4,6 +4,7 @@ import { BirthRepository } from "./birth.repositroy";
 import { BirthService } from "./birth.service";
 import { BirthController } from "./birth.controller";
 import { Birth, BirthSchema } from "./schema/birth.schema";
+import { CounterModule } from "../counter/counter.module";
 
 @Module({
     imports: [
@@ -12,7 +13,8 @@ import { Birth, BirthSchema } from "./schema/birth.schema";
                 name:Birth.name,
                 schema: BirthSchema
             }
-        ])
+        ]),
+        CounterModule,
     ], 
 
         controllers: [BirthController],

@@ -12,7 +12,7 @@ export class BirthService {
         private readonly aadharRepository: AadharRepository,
     ){}
 
-    async create( createBirthDto: CreateBirthDto ) {
+    async create( createBirthDto: CreateBirthDto) {
       const existingBirth = await this.birthRepository.findDuplication(
             createBirthDto.babyName, 
            new Date(createBirthDto.birthDate),  
@@ -40,7 +40,7 @@ export class BirthService {
             throw new NotFoundException('Mother Aadhar ID not found')
         }
         
-        return await this.birthRepository.create( createBirthDto );
+        return await this.birthRepository.create(createBirthDto);
     }
 
     async findAll() {

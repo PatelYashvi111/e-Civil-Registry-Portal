@@ -3,7 +3,9 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { DeathRepository } from "./death.repository";
 import { DeathService } from "./death.service";
 import { DeathController } from "./death.controller";
-import { Death, DeathSchema } from "./schema/death.schema"
+import { Death, DeathSchema } from "./schema/death.schema";
+import { CounterModule } from "../counter/counter.module";
+
 @Module({
     imports: [
         MongooseModule.forFeature([
@@ -11,7 +13,8 @@ import { Death, DeathSchema } from "./schema/death.schema"
                 name:Death.name,
                 schema: DeathSchema
             }
-        ])
+        ]),
+        CounterModule,
     ], 
 
     controllers: [DeathController],

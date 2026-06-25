@@ -13,7 +13,7 @@ export class BirthRepository {
         private readonly BirthModel: Model<BirthDocument>
     ){}
 
-    async create( createBirthDto: CreateBirthDto) {
+    async create( createBirthDto: CreateBirthDto ) {
         return await this.BirthModel.create(createBirthDto);
     }
 
