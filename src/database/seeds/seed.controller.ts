@@ -1,13 +1,15 @@
-import { Controller, Post, Get } from "@nestjs/common";
+import { Controller, Post } from "@nestjs/common";
 import { SeedService } from "./seed.service";
 
 @Controller('seed')
 export class SeedController {
 
     constructor(
-        private readonly seedService: SeedService
+        private readonly seedService: SeedService,
     ){}
 
-    @Post('create')
-    async create( @Body )
+    @Post()
+    async seedDatabase() {
+        return await this.seedService.seed();
+    }
 }

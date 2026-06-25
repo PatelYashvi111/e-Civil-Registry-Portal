@@ -1,7 +1,10 @@
-import { Controller, Get, Param, Post, Body, Patch, Delete} from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Patch, Delete, UploadedFile, UseInterceptors} from '@nestjs/common';
 import { CreateAadharDto } from './dto/create-aadhar.dto';
 import { UpdateAadharDto } from './dto/update-aadhar.dto';
 import { AadharService } from './aadhar.service';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { diskStorage } from 'multer';
+import { extname } from 'path';
 
 @Controller('aadhar')
 export class AadharController {
@@ -11,9 +14,15 @@ export class AadharController {
   ) {}
 
    @Post('create')
-   async createAadhar( @Body() createAadharDto: CreateAadharDto ) {
-    return this.aadharService.createAadhar( createAadharDto );
-   }
+   @UseInterceptors(
+    FileInterceptor('photo', {})
+  )
+  async createAadhar(
+    @Body() dto: CreateAadharDto,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    return this.aadharService.createAadhar(dto, file);
+  }
 
    @Get('all')
    async findAll() {

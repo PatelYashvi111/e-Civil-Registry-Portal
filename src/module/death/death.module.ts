@@ -4,6 +4,9 @@ import { DeathRepository } from "./death.repository";
 import { DeathService } from "./death.service";
 import { DeathController } from "./death.controller";
 import { Death, DeathSchema } from "./schema/death.schema"
+import { AadharModule } from "../aadhar/aadhar.module";
+import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
+
 @Module({
     imports: [
         MongooseModule.forFeature([
@@ -11,7 +14,10 @@ import { Death, DeathSchema } from "./schema/death.schema"
                 name:Death.name,
                 schema: DeathSchema
             }
-        ])
+        ]),
+        
+        AadharModule,
+        CloudinaryModule,
     ], 
 
     controllers: [DeathController],
