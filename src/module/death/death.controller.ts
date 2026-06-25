@@ -1,7 +1,8 @@
-import { Get, Post, Patch, Delete, Body, Controller, Param} from '@nestjs/common';
+import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { CreateDeathDto } from './dto/create-death.dto';
 import { UpdateDeathDto } from './dto/update-death.dto';
 import { DeathService } from './death.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('death')
 export class DeathController {
@@ -11,8 +12,19 @@ export class DeathController {
     ){}
     
     @Post('create')
-    async create( @Body()  createDeathDto: CreateDeathDto ){
-        return this.deathService.create( createDeathDto );
+    @UseInterceptors(
+    FileFieldsInterceptor([
+    { name: 'deceasedAadharCard', maxCount: 1 },
+    { name: 'spouseAadharCard', maxCount: 1 },
+    { name: 'deceasedRationCard', maxCount: 1 },
+    { name: 'deceasedPhoto', maxCount: 1 },
+    { name: 'deceasedMedicalCertificate', maxCount: 1 },
+    { name: 'pmReport', maxCount: 1 },
+    { name: 'fir', maxCount: 1 },
+  ]),
+)
+    async create( @Body()  createDeathDto: CreateDeathDto, @UploadedFiles() files: any){
+        return this.deathService.create( createDeathDto, files);
     }
 
     @Get('all')

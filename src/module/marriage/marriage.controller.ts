@@ -1,7 +1,8 @@
-import { Get, Post, Patch, Delete, Body, Controller, Param} from '@nestjs/common';
+import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { CreateMarriageDto } from './dto/create-marriage.dto';
 import { UpdateMarriageDto } from './dto/update-marriage.dto';
 import { MarriageService } from './marriage.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('marriage')
 export class MarriageController {
@@ -11,8 +12,22 @@ export class MarriageController {
     ){}
     
     @Post('create')
-    async create( @Body()  createMarriageDto: CreateMarriageDto ){
-        return this.marriageService.create( createMarriageDto );
+    @UseInterceptors(
+    FileFieldsInterceptor([
+        { name: 'brideAadharCard', maxCount: 1 },
+        { name: 'groomAadharCard', maxCount: 1 },
+        { name: 'witnessAadharCard', maxCount: 1 },
+        { name: 'brahmanAadharCard', maxCount: 1 },
+        { name: 'brideRationCard', maxCount: 1 },
+        { name: 'groomRationCard', maxCount: 1 },
+        { name: 'bridePhoto', maxCount: 1 },
+        { name: 'groomPhoto', maxCount: 1 },
+        { name: 'invitationCard', maxCount: 1 },
+        
+    ])
+    )
+    async create( @Body()  createMarriageDto: CreateMarriageDto, @UploadedFiles() files: any){
+        return this.marriageService.create( createMarriageDto, files);
     }
 
     @Get('all')

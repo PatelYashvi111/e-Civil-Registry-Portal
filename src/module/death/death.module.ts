@@ -5,6 +5,8 @@ import { DeathService } from "./death.service";
 import { DeathController } from "./death.controller";
 import { Death, DeathSchema } from "./schema/death.schema";
 import { CounterModule } from "../counter/counter.module";
+import { AadharModule } from "../aadhar/aadhar.module";
+import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
 
 @Module({
     imports: [
@@ -14,7 +16,9 @@ import { CounterModule } from "../counter/counter.module";
                 schema: DeathSchema
             }
         ]),
-        CounterModule,
+        CounterModule,    
+        AadharModule,
+        CloudinaryModule,
     ], 
 
     controllers: [DeathController],
