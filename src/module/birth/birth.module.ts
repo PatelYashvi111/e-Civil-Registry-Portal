@@ -5,6 +5,7 @@ import { BirthService } from "./birth.service";
 import { BirthController } from "./birth.controller";
 import { Birth, BirthSchema } from "./schema/birth.schema";
 import { AadharModule } from "../aadhar/aadhar.module";
+import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { AadharModule } from "../aadhar/aadhar.module";
         ]),
 
         AadharModule,
+        CloudinaryModule,
     ], 
 
         controllers: [BirthController],

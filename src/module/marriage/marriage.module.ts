@@ -5,6 +5,7 @@ import { MarriageService } from "./marriage.service";
 import { MarriageController } from "./marriage.controller";
 import { Marriage, MarriageSchema } from "./schema/marriage.schema";
 import { AadharModule } from "../aadhar/aadhar.module";
+import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { AadharModule } from "../aadhar/aadhar.module";
         ]),
         
         AadharModule,
+        CloudinaryModule,
     ],
 
         controllers: [MarriageController],

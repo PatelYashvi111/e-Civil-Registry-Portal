@@ -12,14 +12,18 @@ export class AadharService {
         private readonly cloudinaryService: CloudinaryService,
     ){}
 
-    async createAadhar( data: CreateAadharDto, filePath: string) {
+    async createAadhar( data: CreateAadharDto, file: Express.Multer.File ) {
         const existingAadhar = await this.aadharRepository.findByAadharNumber( data.aadharNumber );
 
         if( existingAadhar ) {
             throw new BadRequestException('Aadhar already exists');
         }
 
-        const uploadedFile = await this.cloudinaryService.uploadFile(filePath,'aadhar');
+        if(!file) {
+            throw new BadRequestException('Photo is required');
+        }
+
+        const uploadedFile = await this.cloudinaryService.uploadFile(file,'aadhar');
 
         data.photo = uploadedFile.url;
 

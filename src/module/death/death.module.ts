@@ -5,6 +5,7 @@ import { DeathService } from "./death.service";
 import { DeathController } from "./death.controller";
 import { Death, DeathSchema } from "./schema/death.schema"
 import { AadharModule } from "../aadhar/aadhar.module";
+import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
 
 @Module({
     imports: [
@@ -16,6 +17,7 @@ import { AadharModule } from "../aadhar/aadhar.module";
         ]),
         
         AadharModule,
+        CloudinaryModule,
     ], 
 
     controllers: [DeathController],

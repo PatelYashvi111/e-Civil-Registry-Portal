@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
 import { CreateBirthDto } from './dto/create-birth.dto';
 import { UpdateBirthDto } from './dto/update-birth.dto';
 import { BirthService } from './birth.service';
+import { FileFieldsInterceptor } from '@nestjs/platform-express';
 
 @Controller('birth')
 export class BirthController {
@@ -11,8 +12,29 @@ export class BirthController {
     ){}
 
     @Post('create')
-    async create( @Body() createBirthDto: CreateBirthDto) {
-        return await this.birthService.create( createBirthDto );
+    @UseInterceptors(
+    FileFieldsInterceptor([
+        { name: 'fatherAadharCard', maxCount: 1 },
+        { name: 'motherAadharCard', maxCount: 1 },
+        { name: 'marriageCertificate', maxCount: 1 },
+        { name: 'birthHospitalReport', maxCount: 1 },
+        { name: 'rationCard', maxCount: 1 },
+    ]),
+)
+    async create( @Body() createBirthDto: CreateBirthDto, @UploadedFiles() files: {
+        fatherAadharCard?: Express.Multer.File[];
+        motherAadharCard?: Express.Multer.File[];
+        marriageCertificate?: Express.Multer.File[];
+        birthHospitalReport?: Express.Multer.File[];
+        rationCard?: Express.Multer.File[];
+    }) {
+        return await this.birthService.create( createBirthDto, {
+            fatherAadharCard: files?.fatherAadharCard,
+            motherAadharCard: files?.motherAadharCard,
+            marriageCertificate: files?.marriageCertificate,
+            birthHospitalReport: files?.birthHospitalReport,
+            rationCard: files?.rationCard,
+        } );
     }
 
     @Get('all')
