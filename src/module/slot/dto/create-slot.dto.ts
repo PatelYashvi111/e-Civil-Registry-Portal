@@ -23,7 +23,7 @@ export class CreateSlotDto {
 
         @IsNotEmpty()
         @IsNumber()
-        bookCount!: number;
+        bookedCount!: number;
 
         @IsNotEmpty()
         @IsBoolean()
