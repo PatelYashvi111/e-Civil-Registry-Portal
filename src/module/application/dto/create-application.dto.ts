@@ -1,5 +1,6 @@
 import { IsString, IsMongoId, IsEnum, IsNotEmpty, IsOptional } from "class-validator";
 import { StatusEnum } from "src/common/enums/status.enums";
+import { ServiceEnum } from "src/common/enums/service.enums";
 
 export class CreateApplicationDto {
 
@@ -25,15 +26,11 @@ export class CreateApplicationDto {
 
   @IsNotEmpty()
   @IsMongoId()
-  birthId!: string;
+  serviceId!: string;
 
   @IsNotEmpty()
-  @IsMongoId()
-  marriageId!: string;
-
-  @IsNotEmpty()
-  @IsMongoId()
-  deathId!: string;
+  @IsEnum(ServiceEnum)
+  serviceType!: ServiceEnum;
 
   @IsOptional()
   @IsEnum(StatusEnum)

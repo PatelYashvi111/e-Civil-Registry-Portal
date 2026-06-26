@@ -93,6 +93,8 @@ export class BirthService {
 
         const applicationNumber = await this.counterService.generateBirthApplication();
 
+        console.log('Generated Application Number:', applicationNumber);
+
         const finalData = {
             ...createBirthDto,
             applicationNumber,

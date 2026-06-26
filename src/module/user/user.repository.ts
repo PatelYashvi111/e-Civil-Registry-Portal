@@ -29,6 +29,11 @@ export class UserRepository {
         return this.userModel.find();
     }
 
+    async countClerksByOfficeDepartment( officeDepartmentId: string, clerkRoleId: string ){
+        return this.userModel.countDocuments({ officeDepartmentId, role: clerkRoleId });
+    }
+
+
     async updateUser( id: string, updateUserDto: UpdateUserDto ){
         return this.userModel.findByIdAndUpdate( id, updateUserDto, { new: true } );
     }

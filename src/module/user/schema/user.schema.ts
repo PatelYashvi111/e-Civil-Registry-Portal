@@ -33,11 +33,11 @@ export class User {
   officeDepartmentId!: Types.ObjectId | null;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: 'Employee',
-    default: null
+    type: String,
+    unique: true,
+    default: null,
   })
-  employeeId?: Types.ObjectId | null;
+  employeeId?: string | null;
 
   @Prop({ 
     required: true, 

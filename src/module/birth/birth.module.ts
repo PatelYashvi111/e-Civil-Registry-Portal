@@ -4,9 +4,9 @@ import { BirthRepository } from "./birth.repositroy";
 import { BirthService } from "./birth.service";
 import { BirthController } from "./birth.controller";
 import { Birth, BirthSchema } from "./schema/birth.schema";
-import { CounterModule } from "../counter/counter.module";
 import { AadharModule } from "../aadhar/aadhar.module";
 import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
+import { CounterModule } from "../counter/counter.module";
 
 @Module({
     imports: [
@@ -16,9 +16,9 @@ import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
                 schema: BirthSchema
             }
         ]),
-        CounterModule,
         AadharModule,
         CloudinaryModule,
+        CounterModule,
     ], 
 
         controllers: [BirthController],
