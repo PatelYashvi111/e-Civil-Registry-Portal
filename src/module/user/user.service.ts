@@ -6,6 +6,8 @@ import { UpdateUserDto } from './dto/update-user.dto'
 import { EmailService } from 'src/module/email/email.service';
 import { RoleService } from '../role/role.service';
 import { AadharService } from '../aadhar/aadhar.service';
+import { CounterService } from '../counter/counter.service';
+import { RoleEnum } from 'src/common/enums/role.enums';
 
 @Injectable()
 export class UserService{
@@ -14,13 +16,14 @@ export class UserService{
         private readonly userRepository: UserRepository,
         private readonly emailService: EmailService,
         private readonly roleService: RoleService,
-        private readonly aadharService: AadharService
+        private readonly aadharService: AadharService,
+        private readonly counterService: CounterService,
     ){}
     
-  async createUser(createUserDto: CreateUserDto) {
+  async createUser(createUserDto: CreateUserDto, file: Express.Multer.File) {
     const email = createUserDto.email.toLowerCase();
 
-    await this.roleService.findById(createUserDto.roleId);
+    const role =await this.roleService.findById(createUserDto.roleId);
 
     await this.aadharService.findById(createUserDto.aadharId);
 
@@ -28,6 +31,12 @@ export class UserService{
 
     if (existingUser) {
         throw new BadRequestException('Email already exists');
+    }
+
+    let employeeId: string | null = null;
+
+    if( role.name === RoleEnum.CLERK || role.name === RoleEnum.ADMIN) {
+      createUserDto.employeeId = await this.counterService.generateEmployeeId();
     }
 
     const user = await this.userRepository.createUser({ ...createUserDto, email });

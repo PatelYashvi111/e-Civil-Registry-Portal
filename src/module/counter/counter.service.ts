@@ -49,4 +49,12 @@ export class CounterService {
 
     return `${prefix}${dateStr}${sequence}`;
   }
+
+  async generateEmployeeId(): Promise<string> {
+    const key = 'EMP';
+    const counter = await this.counterRepo.increment(key);
+    const sequence = this.formatSequence(counter.sequence);
+
+    return `EMP-${sequence}`;
+}
 }

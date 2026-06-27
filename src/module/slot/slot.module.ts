@@ -3,7 +3,11 @@ import { MongooseModule } from "@nestjs/mongoose";
 import { SlotRepository } from "./slot.repository";
 import { SlotService } from "./slot.service";
 import { SlotController } from "./slot.controller";
+import { SlotCron } from "./slot.cron";
 import { Slot, SlotSchema } from "./schema/slot.schema";
+import { UserModule } from "../user/user.module";
+import { RoleModule } from "../role/role.module";
+import { OfficeDepartmentModule } from "../officeDepartment/officeDepartment.module";
 
 @Module({
     imports: [
@@ -13,10 +17,13 @@ import { Slot, SlotSchema } from "./schema/slot.schema";
                 schema: SlotSchema
             }
         ]),
+        UserModule,
+        RoleModule,
+        OfficeDepartmentModule
     ],
 
     controllers: [SlotController],
-    providers: [SlotService,SlotRepository],
+    providers: [SlotService,SlotRepository,SlotCron],
     exports: [SlotService,SlotRepository],
 
 })

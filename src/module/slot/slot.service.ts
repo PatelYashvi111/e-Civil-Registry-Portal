@@ -1,7 +1,9 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
+import { Types } from 'mongoose';
 import { SlotRepository } from './slot.repository';
 import { UserRepository } from '../user/user.repository';
 import { RoleRepository } from '../role/role.repository';
+import { OfficeDepartmentRepository } from '../officeDepartment/officeDepartment.repository';
 import { RoleEnum } from 'src/common/enums/role.enums';
 
 @Injectable()
@@ -10,39 +12,45 @@ export class SlotService {
     private readonly slotRepository: SlotRepository,
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
+    private readonly officeDepartmentRepository: OfficeDepartmentRepository,
   ) {}
 
   async generateSlots(officeDepartmentId: string, slotDate: string) {
-    const officeDepartment = await this.slotRepository.findById(officeDepartmentId);
+    const officeDepartment = await this.officeDepartmentRepository.findById(officeDepartmentId);
     
     if (!officeDepartment) {
-      throw new Error('Office department not found');
+      throw new NotFoundException('Office department not found');
     }
 
     const clerkRole = await this.roleRepository.findByName(RoleEnum.CLERK);
 
     if(!clerkRole) {
-      throw new Error('Clerk role not found');
+      throw new NotFoundException('Clerk role not found');
     }
 
+    console.log("OfficeDepartmentId:", officeDepartmentId);
+    console.log("Clerk Role Id:", clerkRole.id);
+
     const clerkCount =
-      await this.userRepository.countClerksByOfficeDepartment(
-        officeDepartmentId,
-        clerkRole.id,
-      );
+    await this.userRepository.countClerksByOfficeDepartment(
+      officeDepartmentId,
+      clerkRole._id,
+  );
+
+      console.log("Clerk Count:", clerkCount);
 
       if(clerkCount === 0) {
-        throw new Error('No clerks found for the office department');
+        throw new NotFoundException('No clerks found for the office department');
       }
 
     const existingSlot =
       await this.slotRepository.findByOfficeDepartmentAndDate(
         officeDepartmentId,
-        new Date(slotDate),
+        new Date(slotDate)
       );
     
       if(existingSlot) {
-        throw new Error('Slot already exists for the given date');
+        throw new BadRequestException('Slot already exists for the given date');
       }
 
     const timings = [
@@ -51,19 +59,19 @@ export class SlotService {
       ['11:00', '11:30'],
       ['11:30', '12:00'],
       ['12:00', '12:30'],
-      ['12:30', '01:00'],
-      ['02:00', '02:30'],
-      ['02:30', '03:00'],
-      ['03:00', '03:30'],
-      ['03:30', '04:00'],
-      ['04:00', '04:30'],
-      ['04:30', '05:00'],
-      ['05:00', '05:30'],
-      ['05:30', '06:00'],
+      ['12:30', '13:00'], 
+      ['14:00', '14:30'],
+      ['14:30', '15:00'],
+      ['15:00', '15:30'],
+      ['15:30', '16:00'],
+      ['16:00', '16:30'],
+      ['16:30', '17:00'],
+      ['17:00', '17:30'],
+      ['17:30', '18:00'],
     ];
 
     const slots = timings.map(([startTime, endTime]) => ({
-      officeDepartmentId,
+      officeDepartmentId: new Types.ObjectId(officeDepartmentId),
       slotDate: new Date(slotDate),
       startTime,
       endTime,
@@ -90,7 +98,7 @@ export class SlotService {
   }
 
   async getAvailableDates(officeDepartmentId: string) {
-    const officeDepartment = await this.slotRepository.findById(officeDepartmentId);
+    const officeDepartment = await this.officeDepartmentRepository.findById(officeDepartmentId);
 
     if(!officeDepartment) {
       throw new Error('Office department not found');
@@ -103,7 +111,7 @@ export class SlotService {
     officeDepartmentId: string,
     slotDate: string,
   ) {
-    const officeDepartment = await this.slotRepository.findById(officeDepartmentId);
+    const officeDepartment = await this.officeDepartmentRepository.findById(officeDepartmentId);
 
     if(!officeDepartment) {
       throw new Error('Office department not found');

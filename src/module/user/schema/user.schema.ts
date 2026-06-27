@@ -44,7 +44,7 @@ export class User {
     unique: true,
     lowercase: true,
     trim: true,
-    type: String
+    type: String,
   })
   email!: string;
 

@@ -16,6 +16,8 @@ import { OfficeModule } from './module/office/office.module';
 import { OfficeDepartmentModule } from './module/officeDepartment/officeDepartment.module';
 import { StateModule } from './module/state/state.module';
 import { DistrictModule } from './module/district/district.module';
+import { SlotModule } from './module/slot/slot.module';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -24,6 +26,8 @@ import { DistrictModule } from './module/district/district.module';
     isGlobal: true,
     envFilePath:  '.env.local',
   }),
+
+    ScheduleModule.forRoot(),
 
     MongooseModule.forRoot(process.env.MONGO_URI as string),
 
@@ -40,6 +44,7 @@ import { DistrictModule } from './module/district/district.module';
     OfficeDepartmentModule,
     StateModule,
     DistrictModule,
+    SlotModule,
   ],
 
   controllers: [AppController],
