@@ -1,24 +1,25 @@
-import { IsEmail, IsNotEmpty, IsString, Length} from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
-export class ResetPasswordDto{
+export class ResetPasswordDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email!: string;
 
-    @IsEmail()
-    email!: string;
+  @IsNotEmpty()
+  @IsString()
+  otp!: string;
 
-    @IsNotEmpty()
-    otp!: string;
-
-    @IsString()
-    @Length(8, 20, {
+  @IsNotEmpty()
+  @IsString()
+  @Length(8, 20, {
     message: 'Password must be between 8 and 20 characters long',
-   })
-    password!: string;
+  })
+  password!: string;
 
-    @IsString()
-    @Length(8, 20, {
+  @IsNotEmpty()
+  @IsString()
+  @Length(8, 20, {
     message: 'Confirm password must be between 8 and 20 characters long',
-    })
-    confirmPassword!: string;
-
+  })
+  confirmPassword!: string;
 }
-

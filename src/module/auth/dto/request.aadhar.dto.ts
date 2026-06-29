@@ -1,10 +1,10 @@
-import { IsString, IsNotEmpty, Length } from "class-validator";
+import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class RequestAadharDto {
-
-    @IsString()
-    @IsNotEmpty()
-    @Length(12, 12)
-    aadharNumber!: string;
-
+  @IsNotEmpty()
+  @IsString()
+  @Length(12, 12, {
+    message: 'Aadhar number must be exactly 12 characters long',
+  })
+  aadharNumber!: string;
 }
