@@ -10,6 +10,7 @@ export type StateDocument = HydratedDocument<State>;
 export class State {
     @Prop({
         required: true,
+        type: String,
     })
     name!: string;
 }

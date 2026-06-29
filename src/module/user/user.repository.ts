@@ -2,6 +2,7 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model } from "mongoose";
 import { User, UserDocument } from "./schema/user.schema";
+import { Types } from "mongoose";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
 
@@ -29,10 +30,15 @@ export class UserRepository {
         return this.userModel.find();
     }
 
-    async countClerksByOfficeDepartment( officeDepartmentId: string, clerkRoleId: string ){
-        return this.userModel.countDocuments({ officeDepartmentId, role: clerkRoleId });
+    async countClerksByOfficeDepartment(
+        officeDepartmentId: string,
+        clerkRoleId: string,
+    ) {
+        return this.userModel.countDocuments({
+            officeDepartmentId: officeDepartmentId,
+            roleId: clerkRoleId,
+    });
     }
-
 
     async updateUser( id: string, updateUserDto: UpdateUserDto ){
         return this.userModel.findByIdAndUpdate( id, updateUserDto, { new: true } );

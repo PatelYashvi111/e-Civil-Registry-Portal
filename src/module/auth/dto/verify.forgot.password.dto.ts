@@ -1,13 +1,14 @@
-import { IsEmail, IsNotEmpty, Length } from "class-validator";
+import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 
-export class VerifyForgotPasswordDto{
+export class VerifyForgotPasswordDto {
+  @IsNotEmpty()
+  @IsEmail()
+  email!: string;
 
-    @IsEmail()
-    email!: string;
-
-    @IsNotEmpty()
-    @Length(6,6)
-    otp!: string;
-
+  @IsNotEmpty()
+  @IsString()
+  @Length(6, 6, {
+    message: 'OTP must be exactly 6 characters long',
+  })
+  otp!: string;
 }
-
