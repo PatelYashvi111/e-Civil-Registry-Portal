@@ -35,7 +35,7 @@ export class UserRepository {
         clerkRoleId: string,
     ) {
         return this.userModel.countDocuments({
-            officeDepartmentId: officeDepartmentId,
+            officeDepartmentId: new Types.ObjectId(officeDepartmentId),
             roleId: clerkRoleId,
     });
     }
