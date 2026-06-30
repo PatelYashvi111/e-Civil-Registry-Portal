@@ -5,6 +5,7 @@ import { User, UserDocument } from "./schema/user.schema";
 import { Types } from "mongoose";
 import { CreateUserDto } from "./dto/create-user.dto";
 import { UpdateUserDto } from "./dto/update-user.dto";
+import { toObjectId } from "src/common/utils/objectId.utils";
 
 @Injectable()
 export class UserRepository {
@@ -14,7 +15,16 @@ export class UserRepository {
     ){}
 
     async createUser( createUserDto: CreateUserDto ){
-        const createdUser = new this.userModel( createUserDto );
+
+        const createdUser = new this.userModel({
+            ...createUserDto,
+            roleId: toObjectId(createUserDto.roleId),
+            aadharId: toObjectId(createUserDto.aadharId),
+            officeDepartmentId: createUserDto.officeDepartmentId
+            ? toObjectId(createUserDto.officeDepartmentId)
+            : undefined,
+    });
+        
         return createdUser.save();
     }
 
@@ -35,8 +45,8 @@ export class UserRepository {
         clerkRoleId: string,
     ) {
         return this.userModel.countDocuments({
-            officeDepartmentId: officeDepartmentId,
-            roleId: clerkRoleId,
+            officeDepartmentId: toObjectId(officeDepartmentId),
+            roleId: toObjectId(clerkRoleId),
     });
     }
 
