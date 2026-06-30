@@ -10,6 +10,8 @@ export type DistrictDocument = HydratedDocument<District>;
 export class District {
     @Prop({
         required: true,
+        type: String,
+        trim: true,
     })
     name!: string;
 

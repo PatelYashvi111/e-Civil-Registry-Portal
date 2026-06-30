@@ -8,6 +8,7 @@ import { RoleService } from '../role/role.service';
 import { AadharService } from '../aadhar/aadhar.service';
 import { CounterService } from '../counter/counter.service';
 import { RoleEnum } from 'src/common/enums/role.enums';
+import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 
 @Injectable()
 export class UserService{
@@ -18,9 +19,14 @@ export class UserService{
         private readonly roleService: RoleService,
         private readonly aadharService: AadharService,
         private readonly counterService: CounterService,
+        private readonly cloudinaryService: CloudinaryService,
     ){}
     
-  async createUser(createUserDto: CreateUserDto, file: Express.Multer.File) {
+  async createUser(createUserDto: CreateUserDto, files: {
+    aadharCard?: Express.Multer.File[];
+    signature?: Express.Multer.File[];
+    govEmployeeIdCard?: Express.Multer.File[];
+  }) {
     const email = createUserDto.email.toLowerCase();
 
     const role =await this.roleService.findById(createUserDto.roleId);
@@ -33,13 +39,56 @@ export class UserService{
         throw new BadRequestException('Email already exists');
     }
 
-    let employeeId: string | null = null;
+    let employeeId: string | undefined;
 
     if( role.name === RoleEnum.CLERK || role.name === RoleEnum.ADMIN) {
       createUserDto.employeeId = await this.counterService.generateEmployeeId();
     }
 
-    const user = await this.userRepository.createUser({ ...createUserDto, email });
+    const aadharCardFile = files.aadharCard?.[0];
+    const signatureFile = files.signature?.[0];
+    const govEmployeeIdCardFile = files.govEmployeeIdCard?.[0];
+
+    let aadharCard: string | undefined;
+    let signature: string | undefined;
+    let govEmployeeIdCard: string | undefined;
+
+    if (aadharCardFile) {
+      const uploaded = await this.cloudinaryService.uploadFile(
+        aadharCardFile,
+        'user/aadhar-card',
+      );
+
+      aadharCard = uploaded.url;
+    }
+
+    if (signatureFile) {
+      const uploaded = await this.cloudinaryService.uploadFile(
+        signatureFile,
+        'user/signature',
+      );
+
+      signature = uploaded.url;
+    }
+
+    if (govEmployeeIdCardFile) {
+      const uploaded = await this.cloudinaryService.uploadFile(
+        govEmployeeIdCardFile,
+        'user/gov-employee-id-card',
+      );
+
+      govEmployeeIdCard = uploaded.url;
+    }
+
+
+    const user = await this.userRepository.createUser({
+      ...createUserDto,
+      email,
+      employeeId,
+      aadharCard,
+      signature,
+      govEmployeeIdCard,
+    });
 
     await this.emailService.sendWelcomeEmail(user.email , 'User');
 

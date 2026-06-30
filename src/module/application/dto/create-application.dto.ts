@@ -14,11 +14,11 @@ export class CreateApplicationDto {
 
   @IsNotEmpty()
   @IsMongoId()
-  ClerkId!: string;
+  clerkId!: string;
 
   @IsNotEmpty()
   @IsMongoId()
-  OfficeDepartmentId!: string;
+  officeDepartmentId!: string;
 
   @IsNotEmpty()
   @IsMongoId()

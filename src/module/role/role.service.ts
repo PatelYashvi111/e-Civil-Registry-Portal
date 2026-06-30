@@ -1,7 +1,7 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RoleRepository } from './role.repository';
 import { RoleEnum } from 'src/common/enums/role.enums';
-import { RoleDto } from './dto/role.dto';
+import { CreateRoleDto } from './dto/create-role.dto';
 
 @Injectable()
 export class RoleService {
@@ -10,7 +10,7 @@ export class RoleService {
     private readonly roleRepository: RoleRepository,
   ) {}
 
-  async createRole( data: RoleDto) {
+  async createRole( data: CreateRoleDto) {
     const existingRole = await this.roleRepository.findByName(data.name);
 
     if ( existingRole ) { 

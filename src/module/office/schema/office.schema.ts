@@ -10,6 +10,7 @@ export type OfficeDocument = HydratedDocument<Office>;
 export class Office { 
     @Prop({
         required: true,
+        type: String,
     })
     name!: string;
 
