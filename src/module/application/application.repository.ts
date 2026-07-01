@@ -17,12 +17,16 @@ export class ApplicationRepository {
         return await this.applicationModel.create(createApplicationDto);
     }
 
-    async findAll() {
-        return await this.applicationModel.find();
+    async findAll(skip: number, limit: number) {
+        return await this.applicationModel.find().skip(skip).limit(limit).sort({ createdAt: -1 });
     }
 
     async findById(id: string) {
         return await this.applicationModel.findById(id);
+    }
+
+    async findByUserId(userId: string, skip: number, limit: number) {
+        return await this.applicationModel.find({ userId }).skip(skip).limit(limit).sort({ createdAt: -1 });
     }
 
     async findByApplicationNumber( applicationNumber: string ) {

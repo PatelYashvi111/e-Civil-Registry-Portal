@@ -18,6 +18,13 @@ export class Death {
     deceasedAadharId!: Types.ObjectId;
 
     @Prop({
+         required: true,
+         type: Types.ObjectId,
+         ref: 'District',
+    })
+    deathDistrictId!: Types.ObjectId;
+    
+    @Prop({
         required: true,
         type: Types.ObjectId,
         ref: 'Aadhar'
