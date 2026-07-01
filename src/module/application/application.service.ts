@@ -7,9 +7,11 @@ import { OfficeDepartmentRepository } from "../officeDepartment/officeDepartment
 import { SlotRepository } from "../slot/slot.repository";
 import { CounterService } from "../counter/counter.service";
 import { ServiceEnum } from "src/common/enums/service.enums";
+import { AadharService } from "../aadhar/aadhar.service";
+import { JwtPayload } from "src/common/interface/jwt-payload.interface";
 
 @Injectable()
-export class ApplicationService {
+export class ApplicationService { 
 
     constructor(
         private readonly applicationRepository: ApplicationRepository,
@@ -17,6 +19,7 @@ export class ApplicationService {
         private readonly officeDepartmentRepository: OfficeDepartmentRepository,
         private readonly slotRepository: SlotRepository,
         private readonly counterService: CounterService,
+        private readonly  aadharService: AadharService,
     ) {}
 
     async createApplication( createApplicationDto: CreateApplicationDto ) {
@@ -83,13 +86,14 @@ export class ApplicationService {
 
         return createdApplication;
 
-    }                                                                                       
+    }   
+
 
     async findAll() {
         return await this.applicationRepository.findAll();  
     }
     
-    async findByApplicationNumber( applicationNumber: string ) {
+    async findByApplicationNumber( applicationNumber: string, user: JwtPayload ) {
         const application = await this.applicationRepository.findByApplicationNumber(applicationNumber);
 
         if(!application) {
@@ -99,7 +103,7 @@ export class ApplicationService {
         return await this.applicationRepository.findByApplicationNumber(applicationNumber);
     }
 
-    async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto ) {
+    async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto, user: JwtPayload ) {
         const application = await this.applicationRepository.findById( id );
 
         if(!application) {
@@ -109,7 +113,7 @@ export class ApplicationService {
          return await this.applicationRepository.updateApplication( id, updateApplicationDto );
 
     }
-
+    
     async deleteApplication( id: string ) {
         const application = await this.applicationRepository.findById( id );
 

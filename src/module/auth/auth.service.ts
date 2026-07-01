@@ -54,7 +54,7 @@ import { JwtService } from '@nestjs/jwt';
       
       aadharId: aadhar._id,
       otpNumber: otp,
-      serviceType: OtpEnum.AADHAR_VERIFICATION_OTP,
+      serviceType: OtpEnum.AADHAR_VERIFICATION,
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
 
     }); 
@@ -86,7 +86,7 @@ import { JwtService } from '@nestjs/jwt';
 
     const otpRecord = await this.otpModel.findOne({
       aadharId: aadhar._id,
-      serviceType: OtpEnum.AADHAR_VERIFICATION_OTP,
+      serviceType: OtpEnum.AADHAR_VERIFICATION,
     });
 
     if(!otpRecord) {
@@ -179,10 +179,12 @@ async login(loginDto: LoginDto) {
     throw new BadRequestException('Invalid password');
   }
 
+  const role = await this.roleModel.findById(user.roleId);
+
   const payload = {
     userId: user._id,
     email: user.email,
-    roleId: user.roleId,
+    role: role.name,
   };
 
   const accessToken = this.jwtService.sign(payload, {
@@ -214,7 +216,7 @@ async login(loginDto: LoginDto) {
     await this.otpModel.create({
     userId: user._id,
     otpNumber: otp,
-    serviceType: OtpEnum.FORGOT_PASSWORD_OTP,
+    serviceType: OtpEnum.FORGOT_PASSWORD,
     expiredAt: new Date(Date.now() + 5 * 60 * 1000),
   });
 
@@ -233,7 +235,7 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User not found');
     }
 
-    const otpRecord = await this.otpModel.findOne({ userId: user._id, serviceType: OtpEnum.FORGOT_PASSWORD_OTP})
+    const otpRecord = await this.otpModel.findOne({ userId: user._id, serviceType: OtpEnum.FORGOT_PASSWORD})
 
     if(!otpRecord) {
       throw new BadRequestException('OTP not found');
@@ -262,7 +264,7 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User Not Found');
     }
 
-   const otpRecord = await this.otpModel.findOne({ userId: user._id, serviceType: OtpEnum.FORGOT_PASSWORD_OTP });
+   const otpRecord = await this.otpModel.findOne({ userId: user._id, serviceType: OtpEnum.FORGOT_PASSWORD });
 
     if(!otpRecord) {
       throw new BadRequestException('OTP Not Found');
