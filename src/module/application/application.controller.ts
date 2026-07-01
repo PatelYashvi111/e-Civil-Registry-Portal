@@ -29,4 +29,9 @@ export class ApplicationController {
     async updateApplication( @Param('id') id: string, @Body() updateApplicationDto: UpdateApplicationDto ) {
         return await this.applicationService.updateApplication( id, updateApplicationDto );
     }
+
+    @Delete(':id')
+    async deleteApplication( @Param('id') id: string ) {
+        return await this.applicationService.deleteApplication( id );
+    }
 }

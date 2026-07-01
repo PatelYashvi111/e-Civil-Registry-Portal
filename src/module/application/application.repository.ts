@@ -21,6 +21,10 @@ export class ApplicationRepository {
         return await this.applicationModel.find();
     }
 
+    async findById(id: string) {
+        return await this.applicationModel.findById(id);
+    }
+
     async findByApplicationNumber( applicationNumber: string ) {
         return await this.applicationModel.findOne({ applicationNumber });
     }

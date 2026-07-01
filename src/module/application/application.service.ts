@@ -44,10 +44,16 @@ export class ApplicationService {
             throw new NotFoundException('slot Not Found');
         }
 
-        const service = await this.userRepository.findById( createApplicationDto.serviceId );
+        if(!slot.isAvailable) {
+            throw new BadRequestException('Slot is not available');
+        }
 
-        if(!service) {
-            throw new NotFoundException('Service Not Found');
+        if(slot.bookedCount >= slot.maxCapacity) {
+            throw new BadRequestException('Slot is full');
+        }
+
+        if(slot.officeDepartmentId.toString() !== officeDepartment._id.toString()) {
+            throw new BadRequestException('Slot does not belong to this office department');
         }
 
         let applicationNumber: string;
@@ -65,30 +71,52 @@ export class ApplicationService {
             throw new BadRequestException('Invalid Service Type');
         }
 
+        const existingApplicationNumber = await this.applicationRepository.findByApplicationNumber(applicationNumber);
+
+        if(existingApplicationNumber) {
+            throw new BadRequestException('Application Number Already Exists');
+        }
+
         const application = {...createApplicationDto, applicationNumber};
-              
-        return await this.applicationRepository.createApplication( application );
+        
+        const createdApplication = await this.applicationRepository.createApplication( application );
+
+        return createdApplication;
+
     }                                                                                       
 
     async findAll() {
-        return await this.applicationRepository.findAll();
+        return await this.applicationRepository.findAll();  
     }
-
+    
     async findByApplicationNumber( applicationNumber: string ) {
-        const existingApplication = await this.applicationRepository.findByApplicationNumber( applicationNumber );
+        const application = await this.applicationRepository.findByApplicationNumber(applicationNumber);
 
-        if(!existingApplication) {
+        if(!application) {
             throw new NotFoundException('Application Not found');
         }
-
+        
         return await this.applicationRepository.findByApplicationNumber(applicationNumber);
     }
 
     async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto ) {
+        const application = await this.applicationRepository.findById( id );
+
+        if(!application) {
+            throw new NotFoundException('Application Not found');
+        }
+        
          return await this.applicationRepository.updateApplication( id, updateApplicationDto );
+
     }
 
     async deleteApplication( id: string ) {
+        const application = await this.applicationRepository.findById( id );
+
+        if(!application) {
+            throw new NotFoundException('Application Not found');
+        }
+
         return await this.applicationRepository.deleteApplication( id );
     }
 }
