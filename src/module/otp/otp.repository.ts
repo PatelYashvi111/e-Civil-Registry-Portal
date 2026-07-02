@@ -2,6 +2,9 @@ import { Injectable } from "@nestjs/common";
 import { InjectModel } from "@nestjs/mongoose";
 import { Model, QueryFilter } from "mongoose";
 import { Otp, OtpDocument } from "./schema/otp.schema";
+import { CreateOtpDto } from "./dto/create-otp.dto";
+import { UpdateOtpDto } from "./dto/update-otp.dto";
+
 
 @Injectable()
 export class OtpRepository {
@@ -11,8 +14,8 @@ export class OtpRepository {
         private readonly otpModel: Model<OtpDocument>
     ) {}
 
-    async createOtp( otp: Otp ) {
-        return await this.otpModel.create(otp);
+    async createOtp( createOtpDto: CreateOtpDto ) {
+        return await this.otpModel.create(createOtpDto);
     }
 
     async findOne(filter: QueryFilter<OtpDocument>) {
@@ -23,8 +26,8 @@ export class OtpRepository {
         return await this.otpModel.findById(id);
     }
 
-    async updateOtp(id: string, otp: Partial<Otp>) {
-        return await this.otpModel.findByIdAndUpdate(id, otp, { new: true});
+    async updateOtp(id: string, updateOtpDto: UpdateOtpDto) {
+        return await this.otpModel.findByIdAndUpdate(id, updateOtpDto, { new: true });
     }
 
     async deleteOtp(id: string) {

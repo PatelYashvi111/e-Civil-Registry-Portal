@@ -9,8 +9,18 @@ export class OtpService {
     private readonly otpRepository: OtpRepository,
   ) {}
 
-  // Generate OTP for Aadhaar Verification
-  async generateAadharVerificationOtp(aadharId: string) {
+  // Generate Aadhaar Verification OTP
+  async generateAadharVerificationOtp(aadharId: string): Promise<void> {
+    // Delete old OTP if exists
+    const existingOtp = await this.otpRepository.findOne({
+      aadharId,
+      serviceType: OtpEnum.AADHAR_VERIFICATION,
+    });
+
+    if (existingOtp) {
+      await this.otpRepository.deleteOtp(existingOtp._id.toString());
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     await this.otpRepository.createOtp({
@@ -18,18 +28,19 @@ export class OtpService {
       otpNumber: otp,
       serviceType: OtpEnum.AADHAR_VERIFICATION,
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
-    } as Otp);
+    });
 
-    console.log('Aadhar OTP:', otp);
+    console.log('Aadhaar OTP:', otp);
 
-    return otp;
+    // Later replace with:
+    // await this.emailService.sendOtp(...);
   }
 
-  // Verify Aadhaar OTP
+  // Verify Aadhaar Verification OTP
   async verifyAadharVerificationOtp(
     aadharId: string,
     otp: string,
-  ) {
+  ): Promise<void> {
     const otpRecord = await this.otpRepository.findOne({
       aadharId,
       serviceType: OtpEnum.AADHAR_VERIFICATION,
@@ -47,15 +58,21 @@ export class OtpService {
       throw new BadRequestException('Invalid OTP');
     }
 
-    await this.otpRepository.deleteOtp(
-      otpRecord._id.toString(),
-    );
-
-    return true;
+    await this.otpRepository.deleteOtp(otpRecord._id.toString());
   }
 
   // Generate Forgot Password OTP
-  async generateForgotPasswordOtp(userId: string) {
+  async generateForgotPasswordOtp(userId: string): Promise<void> {
+    // Delete old OTP if exists
+    const existingOtp = await this.otpRepository.findOne({
+      userId,
+      serviceType: OtpEnum.FORGOT_PASSWORD,
+    });
+
+    if (existingOtp) {
+      await this.otpRepository.deleteOtp(existingOtp._id.toString());
+    }
+
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
     await this.otpRepository.createOtp({
@@ -63,18 +80,19 @@ export class OtpService {
       otpNumber: otp,
       serviceType: OtpEnum.FORGOT_PASSWORD,
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
-    } as Otp);
+    });
 
     console.log('Forgot Password OTP:', otp);
 
-    return otp;
+    // Later replace with:
+    // await this.emailService.sendOtp(...);
   }
 
   // Verify Forgot Password OTP
   async verifyForgotPasswordOtp(
     userId: string,
     otp: string,
-  ) {
+  ): Promise<void> {
     const otpRecord = await this.otpRepository.findOne({
       userId,
       serviceType: OtpEnum.FORGOT_PASSWORD,
@@ -92,10 +110,6 @@ export class OtpService {
       throw new BadRequestException('Invalid OTP');
     }
 
-    await this.otpRepository.deleteOtp(
-      otpRecord._id.toString(),
-    );
-
-    return true;
+    await this.otpRepository.deleteOtp(otpRecord._id.toString());
   }
 }
