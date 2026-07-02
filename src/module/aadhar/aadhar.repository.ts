@@ -17,8 +17,16 @@ export class AadharRepository {
             return await this.aadharModel.create(data);
         }
 
-        async findAll() {
-            return await this.aadharModel.find();
+        async findAll(skip: number, limit: number, page: number) {
+            const data = await this.aadharModel.find().skip(skip).limit(limit).sort({ createdAt: -1 });
+            const total = await this.aadharModel.countDocuments();
+            return {
+            data,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+       };
         }
 
         async findById(id: string) {

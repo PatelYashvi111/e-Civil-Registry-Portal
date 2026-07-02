@@ -153,7 +153,6 @@ import { JwtService } from '@nestjs/jwt';
   const user = await this.userModel.create({
     roleId: userRole._id,
     aadharId: aadhar._id,
-    email: aadhar.email,
     password: hashedPassword,
   });
 
@@ -181,6 +180,10 @@ async login(loginDto: LoginDto) {
 
   const role = await this.roleModel.findById(user.roleId);
 
+  if (!role) {
+    throw new BadRequestException('Role not found');
+  }
+
   const payload = {
     userId: user._id,
     email: user.email,
@@ -197,7 +200,7 @@ async login(loginDto: LoginDto) {
     user: {
       id: user._id,
       email: user.email,
-      roleId: user.roleId,
+      role: role.name,
     },
   };
 }

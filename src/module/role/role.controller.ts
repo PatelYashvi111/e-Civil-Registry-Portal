@@ -1,6 +1,7 @@
-import { Controller, Get, Param, Post ,Body} from '@nestjs/common';
+import { Controller, Get, Param, Post ,Body, Query} from '@nestjs/common';
 import { RoleService } from './role.service';
 import { RoleEnum } from 'src/common/enums/role.enums';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('role')
 export class RoleController {
@@ -15,8 +16,8 @@ export class RoleController {
    }
 
    @Get('all')
-   async findAll() {
-    return this.roleService.findAll();
+   async findAll(@Query() paginationDto: PaginationDto) {
+    return this.roleService.findAll(paginationDto);
    }
 
    @Get(':name')
