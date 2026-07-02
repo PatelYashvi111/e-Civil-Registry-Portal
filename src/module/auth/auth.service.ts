@@ -157,7 +157,7 @@ import { JwtService } from '@nestjs/jwt';
   });
 
   return {
-    message: 'Registered successfully',
+    message: 'Rgistered Successfully',
     userId: user._id,
   };
 }
