@@ -10,6 +10,8 @@ import { ServiceEnum } from "src/common/enums/service.enums";
 import { JwtPayload } from "src/common/interface/jwt-payload.interface";
 import { RoleEnum } from "src/common/enums/role.enums";
 import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
+import { EmailService } from "../email/email.service";
+import { AadharRepository } from "../aadhar/aadhar.repository";
 
 @Injectable()
 export class ApplicationService { 
@@ -20,6 +22,8 @@ export class ApplicationService {
         private readonly officeDepartmentRepository: OfficeDepartmentRepository,
         private readonly slotRepository: SlotRepository,
         private readonly counterService: CounterService,
+        private readonly emailService: EmailService,
+        private readonly aadharRepository: AadharRepository
     ) {}
 
     async createApplication( createApplicationDto: CreateApplicationDto, user: JwtPayload ) {
@@ -27,6 +31,12 @@ export class ApplicationService {
 
         if(!users) {
             throw new NotFoundException('User not found');
+        }
+        
+        const aadhar = await this.aadharRepository.findById(users.aadharId.toString());
+
+        if(!aadhar) {
+            throw new NotFoundException('Aadhar not found');
         }
 
         const clerk = await this.userRepository.findById( createApplicationDto.clerkId );
@@ -82,7 +92,15 @@ export class ApplicationService {
 
         const application = {...createApplicationDto,userId: user.userId, applicationNumber};
         
-        const createdApplication = await this.applicationRepository.createApplication( application );
+        const createdApplication =
+         await this.applicationRepository.createApplication( application );
+
+         await this.emailService.sendApplicationCreatedEmail(
+            users.email,
+            aadhar.firstName,
+            createdApplication.applicationNumber,
+            createdApplication.serviceType,
+         )
 
         return createdApplication;
 
@@ -114,6 +132,29 @@ export class ApplicationService {
         return application;
     }
 
+    // async approveApplication( id: string, user: JwtPayload ) {
+    //     if(user.role !== RoleEnum.CLERK) {
+    //         throw new ForbiddenException('Access Denied');
+    //     }
+
+    //     const application = await this.applicationRepository.findById( id );
+
+    //     if(!application) {
+    //         throw new NotFoundException('Application Not found');
+    //     }
+
+    //     if(application.status !== StatusEnum.PENDING) {
+    //         throw new BadRequestException('Application is already approved or rejected');
+    //     }
+
+    //     const updatedApplication = await this.applicationRepository.approveApplication( id );
+
+    //     const applicant = await this.userRepository.findById( application.userId.toString());
+        
+    //     if(!applicant) {
+    //         throw new NotFoundException('Applicant Not Found');
+    //     }
+    // }
     async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto, user: JwtPayload ) {
         const application = await this.applicationRepository.findById( id );
 

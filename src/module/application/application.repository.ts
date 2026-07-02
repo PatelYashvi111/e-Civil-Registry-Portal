@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { Application, ApplicationDocument } from "./schema/application.schema";
 import { CreateApplicationDto } from "./dto/create-application.dto";
 import { UpdateApplicationDto } from "./dto/update-application.dto";
+import { StatusEnum } from "src/common/enums/status.enums";
 
 @Injectable()
 export class ApplicationRepository {
@@ -17,7 +18,8 @@ export class ApplicationRepository {
         return await this.applicationModel.create(createApplicationDto);
     }
 
-    async findAll(skip: number, limit: number) {
+    async findAll(skip: number, limit: number)
+     {
         return await this.applicationModel.find().skip(skip).limit(limit).sort({ createdAt: -1 });
     }
 
@@ -33,6 +35,14 @@ export class ApplicationRepository {
         return await this.applicationModel.findOne({ applicationNumber });
     }
 
+    // async approveApplication( id: string ) {
+    //     return await this.applicationModel.findByIdAndUpdate( id, { status: StatusEnum.APPROVE }, { new: true } );
+    // }
+
+    // async rejectApplication( id: string ) {
+    //     return await this.applicationModel.findByIdAndUpdate( id, { status: StatusEnum.REJECTED }, { new: true } );
+    // }
+    
     async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto ) {
         return await this.applicationModel.findByIdAndUpdate( id, updateApplicationDto, { new: true } );
     }
@@ -40,4 +50,5 @@ export class ApplicationRepository {
     async deleteApplication( id: string ) {
         return await this.applicationModel.findByIdAndDelete( id );
     }
+
 }

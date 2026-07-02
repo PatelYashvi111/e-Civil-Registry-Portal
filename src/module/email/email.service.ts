@@ -95,4 +95,86 @@ export class EmailService {
       `,
     });
   }
+
+    async sendApplicationCreatedEmail( to: string, name:string, applicationNumber: string, serviceType: string ) {
+      await this.transporter.sendMail({
+            from: `"E-Civil Registry Portal" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: 'Application Submitted Successfully',
+    html: `
+      <h2>Hello ${name},</h2>
+
+      <p>Your application has been submitted successfully.</p>
+
+      <p><strong>Application Number:</strong> ${applicationNumber}</p>
+
+      <p><strong>Service Type:</strong> ${serviceType}</p>
+
+      <p>Status: <strong>PENDING</strong></p>
+
+      <p>We will notify you once your application has been reviewed.</p>
+    `,
+
+      })
+  }
+
+  async sendOtpEmail(
+  to: string,
+  name: string,
+  otp: string,
+) {
+  await this.transporter.sendMail({
+    from: `"E-Civil Registry Portal" <${process.env.EMAIL_USER}>`,
+    to,
+    subject: 'OTP Verification Code',
+    html: `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="UTF-8">
+      </head>
+      <body style="font-family: Arial, sans-serif; background:#f4f6f9; padding:20px;">
+
+        <div style="max-width:600px; margin:auto; background:#fff; border-radius:8px; padding:30px;">
+
+          <h2 style="color:#2563eb;">
+            E-Civil Registry Portal
+          </h2>
+
+          <h3>Hello ${name},</h3>
+
+          <p>Your One-Time Password (OTP) is:</p>
+
+          <div style="
+              font-size:32px;
+              font-weight:bold;
+              letter-spacing:6px;
+              color:#2563eb;
+              text-align:center;
+              margin:30px 0;
+          ">
+            ${otp}
+          </div>
+
+          <p>
+            This OTP is valid for <strong>5 minutes</strong>.
+          </p>
+
+          <p>
+            Please do not share this OTP with anyone.
+          </p>
+
+          <hr>
+
+          <p style="font-size:12px;color:#777;">
+            This is an automated email from E-Civil Registry Portal.
+          </p>
+
+        </div>
+
+      </body>
+      </html>
+    `,
+  });
 }
+  }
