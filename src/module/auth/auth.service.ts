@@ -4,11 +4,9 @@ import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
 import { Aadhar, AadharDocument } from '../aadhar/schema/aadhar.schema';
 import { Role, RoleDocument } from '../role/schema/role.schema';
-import { OtpEnum } from '../../common/enums/otp.enums';
 import { RequestAadharDto } from './dto/request.aadhar.dto';
 import { VerifyAadharDto } from './dto/verify.aadhar.dto';
 import { User, UserDocument } from '../user/schema/user.schema';
-import { Otp, OtpDocument } from '../otp/schema/otp.schema';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { ForgotPasswordDto } from './dto/forgot.password.dto';
@@ -16,6 +14,7 @@ import { VerifyForgotPasswordDto } from './dto/verify.forgot.password.dto';
 import { ResetPasswordDto } from './dto/reset.password.dto';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { JwtService } from '@nestjs/jwt';
+import { OtpService } from '../otp/otp.service';
 
 @Injectable()
 export class AuthService {
@@ -25,9 +24,6 @@ export class AuthService {
   @InjectModel(User.name)
   private readonly userModel: Model<UserDocument>,
 
-  @InjectModel(Otp.name)
-  private readonly otpModel: Model<OtpDocument>,
-
   @InjectModel(Aadhar.name)
   private readonly aadharModel: Model<AadharDocument>,
 
@@ -35,6 +31,8 @@ export class AuthService {
   private readonly roleModel: Model<RoleDocument>,
 
   private readonly jwtService: JwtService,
+
+  private readonly otpService: OtpService,
 
  ) {}
 
@@ -47,18 +45,7 @@ export class AuthService {
       throw new BadRequestException('Aadhar number not found');
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-
-    await this.otpModel.create({
-      
-      aadharId: aadhar._id,
-      otpNumber: otp,
-      serviceType: OtpEnum.AADHAR_VERIFICATION_OTP,
-      expiredAt: new Date(Date.now() + 5 * 60 * 1000),
-
-    }); 
-   
-    console.log("OTP:", otp);
+    await this.otpService.generateAadharVerificationOtp(aadhar._id.toString());
 
     const verificationToken = this.jwtService.sign(
    {
@@ -83,27 +70,7 @@ export class AuthService {
       throw new BadRequestException('Aadhar number not found');
     }
 
-    const otpRecord = await this.otpModel.findOne({
-      aadharId: aadhar._id,
-      serviceType: OtpEnum.AADHAR_VERIFICATION_OTP,
-    });
-
-    if(!otpRecord) {
-      throw new BadRequestException('OTP not found');
-    }
-
-    const currentTime = new Date();
-
-    if(currentTime > otpRecord.expiredAt) {
-      throw new BadRequestException('OTP expired');
-    }
-    
-    if(otpRecord.otpNumber !== otp) {
-      throw new BadRequestException('Invalid OTP');
-    }
-
-     await this.otpModel.deleteOne({ _id: otpRecord._id });
-
+    await this.otpService.verifyAadharVerificationOtp(aadhar._id.toString(), otp);
     return{
        message: 'Aadhar verification successful'
     }
@@ -208,18 +175,9 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User Not Found');
     }
 
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    await this.otpService.generateForgotPasswordOtp(user._id.toString());
 
-    await this.otpModel.create({
-    userId: user._id,
-    otpNumber: otp,
-    serviceType: OtpEnum.FORGOT_PASSWORD_OTP,
-    expiredAt: new Date(Date.now() + 5 * 60 * 1000),
-  });
-
-  console.log('Reset OTP:', otp);
-
-  return { message: 'OTP sent successfully' };
+    return { message: 'OTP sent successfully' };
 
   }
   
@@ -232,21 +190,10 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User not found');
     }
 
-    const otpRecord = await this.otpModel.findOne({ userId: user._id, serviceType: OtpEnum.FORGOT_PASSWORD_OTP})
-
-    if(!otpRecord) {
-      throw new BadRequestException('OTP not found');
-    } 
-
-    const currentTime = new Date();
-
-    if (currentTime > otpRecord.expiredAt) {
-       throw new BadRequestException('OTP expired');
-    }
-
-    if(otpRecord.otpNumber !== otp) {
-      throw new BadRequestException('Invalid OTP');
-    }
+    await this.otpService.verifyForgotPasswordOtp(
+    user._id.toString(),
+    otp,
+  );
 
     return { message: 'OTP verified successfully' }
 
@@ -261,22 +208,11 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User Not Found');
     }
 
-    const otpRecord = await this.otpModel.findOne({ userId: user._id, serviceType: OtpEnum.FORGOT_PASSWORD_OTP });
-
-    if(!otpRecord) {
-      throw new BadRequestException('OTP Not Found');
-    }
-
-    const currentTime = new Date();
-
-    if(currentTime > otpRecord.expiredAt) {
-      throw new BadRequestException('OTP expired');
-    }
-
-    if(otpRecord.otpNumber !== otp) {
-      throw new BadRequestException('Invalid OTP');
-    }
-
+      await this.otpService.verifyForgotPasswordOtp(
+    user._id.toString(),
+    otp,
+  )
+  
     if (password !== confirmPassword) {
        throw new BadRequestException( 'Password and Confirm Password do not match' );
     }
