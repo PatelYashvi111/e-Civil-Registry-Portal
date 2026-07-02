@@ -9,7 +9,8 @@ import { OfficeDepartmentModule } from "../officeDepartment/officeDepartment.mod
 import { CounterModule } from "../counter/counter.module";
 import { UserModule } from "../user/user.module";
 import { SlotModule } from "../slot/slot.module";
-import { EmailService } from "../email/email.service";
+import { EmailModule } from "../email/email.module";
+import { AadharModule } from "../aadhar/aadhar.module";
 
 @Module({
     imports: [
@@ -24,7 +25,8 @@ import { EmailService } from "../email/email.service";
         RoleModule,
         OfficeDepartmentModule,
         CounterModule,
-        EmailService,
+        EmailModule,
+        AadharModule,
     ],
 
     controllers: [ApplicationController],

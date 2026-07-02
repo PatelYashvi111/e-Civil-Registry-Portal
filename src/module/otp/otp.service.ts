@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException} from "@nestjs/commo
 import { OtpRepository } from "./otp.repository";
 import { Otp, OtpDocument } from "./schema/otp.schema";
 import { OtpEnum } from "../../common/enums/otp.enums";
+import { QueryFilter } from "mongoose";
 
 @Injectable()
 export class OtpService {
@@ -30,5 +31,51 @@ export class OtpService {
 
         return{ otpNumber, otpRecord };
 
-}
+    }
+
+        async verifyOtp(
+            feild: 'userId' | 'aadharId',
+            id: string,
+            serviceType: OtpEnum
+        ) {
+            const otpRecord = await this.otpRepository.findOne({
+                [feild]: id,
+                serviceType,
+            });
+
+            if(!otpRecord) {
+                throw new NotFoundException('OTP not found');
+            }
+
+            if(new Date() > otpRecord.expiredAt) {
+                throw new BadRequestException('OTP has expired');
+            }
+
+            if(otpRecord.otpNumber !== otpRecord.otpNumber) {
+                throw new BadRequestException('Invalid OTP');
+            }
+
+            await this.otpRepository.deleteOtp(otpRecord._id.toString());
+
+            return otpRecord;
+
+     }
+
+     async refreshOtp(
+        feild: 'userId' | 'aadharId',
+        id: string,
+        serviceType: OtpEnum
+     ) {
+        const oldOtpRecord = await this.otpRepository.findOne({
+            [feild]: id,
+            serviceType,
+        }); 
+        
+        if(oldOtpRecord) {
+            await this.otpRepository.deleteOtp(oldOtpRecord._id.toString());
+        }
+
+        return await this.createOtp(feild, id, serviceType);
+     }
+
 }
