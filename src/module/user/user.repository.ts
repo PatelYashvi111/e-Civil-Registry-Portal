@@ -36,8 +36,16 @@ export class UserRepository {
         return this.userModel.findById( id );
     }
 
-    async findAll(){
-        return this.userModel.find();
+    async findAll(skip: number, limit: number, page: number) {
+        const data = await this.userModel.find().skip(skip).limit(limit).sort({ createdAt: -1 });
+        const total = await this.userModel.countDocuments();
+        return {
+        data,
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+       };
     }
 
     async countClerksByOfficeDepartment(

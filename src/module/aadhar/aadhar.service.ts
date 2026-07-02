@@ -3,6 +3,7 @@ import { CreateAadharDto } from "./dto/create-aadhar.dto";
 import { UpdateAadharDto } from "./dto/update-aadhar.dto";
 import { AadharRepository } from "./aadhar.repository";
 import { CloudinaryService } from "../../common/cloudinary/cloudinary.service";
+import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
 
 @Injectable()
 export class AadharService {
@@ -30,8 +31,12 @@ export class AadharService {
         return this.aadharRepository.createAadhar( data );
     }
 
-    async findAll() {
-        return await this.aadharRepository.findAll();
+    async findAll(paginationDto: PaginationDto) {
+        const { page = 1, limit = 10 } = paginationDto;
+
+        const skip = (page - 1) * limit;
+
+        return await this.aadharRepository.findAll(skip,limit,page);
     }
 
     async findById( id: string ) {
