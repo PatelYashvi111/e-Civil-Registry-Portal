@@ -27,6 +27,7 @@ export class OtpService {
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
+    console.log(`Generated OTP for Aadhar verification: ${otp}`);
 
   }
 
@@ -52,6 +53,8 @@ export class OtpService {
     }
 
     await this.otpRepository.deleteOtp(otpRecord._id.toString());
+
+    console.log(`Verified OTP for Aadhar verification: ${otp}`);
   }
 
   async generateForgotPasswordOtp(userId: string): Promise<void> {
@@ -73,6 +76,7 @@ export class OtpService {
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
+    console.log(`Generated OTP for forgot password: ${otp}`);
   }
 
   async verifyForgotPasswordOtp(
@@ -97,5 +101,7 @@ export class OtpService {
     }
 
     await this.otpRepository.deleteOtp(otpRecord._id.toString());
+
+    console.log(`Verified OTP for forgot password: ${otp}`);
   }
 }

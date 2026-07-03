@@ -114,7 +114,7 @@ export class AuthService {
     throw new BadRequestException('User role not found');
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
   const user = await this.userModel.create({
     roleId: userRole._id,
