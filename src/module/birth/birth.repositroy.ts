@@ -21,8 +21,8 @@ export class BirthRepository {
         return await this.BirthModel.find();
     }
 
-    async findDuplication( babyName: string, birthDate: Date, fatherAadharId: string, motherAadharId: string ) {
-        return await this.BirthModel.findOne({ babyName, birthDate, fatherAadharId, motherAadharId })
+    async findDuplication( babyName: string, birthDateAndTime: Date, fatherAadharId: string, motherAadharId: string ) {
+        return await this.BirthModel.findOne({ babyName, birthDateAndTime, fatherAadharId, motherAadharId })
     }
 
     async findById( id: string ) {

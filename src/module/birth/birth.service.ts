@@ -23,7 +23,7 @@ export class BirthService {
     }) {
       const existingBirth = await this.birthRepository.findDuplication(
             createBirthDto.babyName, 
-            new Date(createBirthDto.birthDate),  
+            new Date(createBirthDto.birthDateAndTime),  
             createBirthDto.fatherAadharId, 
             createBirthDto.motherAadharId,
         )
@@ -112,7 +112,7 @@ export class BirthService {
     async update( id: string, updateBirthDto: UpdateBirthDto ) {
        const existingBirth = await this.birthRepository.findDuplication(
             updateBirthDto.babyName as string, 
-            new Date(updateBirthDto.birthDate as string),
+            new Date(updateBirthDto.birthDateAndTime as string),
             updateBirthDto.fatherAadharId as string, 
             updateBirthDto.motherAadharId as string,
         )

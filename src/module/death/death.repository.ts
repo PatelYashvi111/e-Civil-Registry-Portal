@@ -21,8 +21,8 @@ export class DeathRepository {
         return await this.DeathModel.find();
     }
 
-    async findDuplication(deacasedAadharId: string, dateOfDeath: Date, timeOfDeath: string) {
-        return await this.DeathModel.findOne({deacasedAadharId, dateOfDeath, timeOfDeath})
+    async findDuplication(deacasedAadharId: string, dateAndTimeOfDeath: Date ) {
+        return await this.DeathModel.findOne({deacasedAadharId, dateAndTimeOfDeath })
     }
         
     async findById( id: string ) {

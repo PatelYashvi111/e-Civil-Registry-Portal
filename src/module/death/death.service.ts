@@ -26,8 +26,7 @@ export class DeathService {
     }) {
        const existingDeath = await this.deathRepository.findDuplication(
             createDeathDto.deceasedAadharId,
-            new Date(createDeathDto.dateOfDeath),   
-            createDeathDto.timeOfDeath,
+            new Date(createDeathDto.dateAndTimeOfDeath),   
         )
 
         if(existingDeath) {
@@ -126,8 +125,7 @@ export class DeathService {
     async update( id: string, updateDeathDto: UpdateDeathDto ) {
        const existingDeath = await this.deathRepository.findDuplication(
             updateDeathDto.deceasedAadharId as string,
-            new Date(updateDeathDto.dateOfDeath as string),   
-            updateDeathDto.timeOfDeath as string,
+            new Date(updateDeathDto.dateAndTimeOfDeath as string),   
         )
 
         if(existingDeath) {

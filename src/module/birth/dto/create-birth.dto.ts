@@ -9,11 +9,7 @@ export class CreateBirthDto {
 
     @IsDateString()
     @IsNotEmpty()
-    birthDate!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    birthTime!: string;
+    birthDateAndTime!: string;
 
     @IsNotEmpty()
     @IsMongoId()

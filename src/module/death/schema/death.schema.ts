@@ -34,13 +34,7 @@ export class Death {
         required: true,
         type: Date,
     })
-    dateOfDeath!: Date;
-
-    @Prop({
-        required: true,
-        type: String,
-    })
-    timeOfDeath!: string;
+    dateAndTimeOfDeath!: Date;
 
     @Prop({
         required: true,
