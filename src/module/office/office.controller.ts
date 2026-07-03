@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, Query } from '@nestjs/common';
 import { OfficeService } from './office.service';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
+import { PaginationDto } from '../../common/dto/pagination.dto';
 
 @Controller('office')
 export class OfficeController {
@@ -16,8 +17,8 @@ export class OfficeController {
   }
 
   @Get('all')
-  async findAll() {
-    return this.officeService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.officeService.findAll(paginationDto);
   }
 
   @Get(':id')

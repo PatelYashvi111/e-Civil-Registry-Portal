@@ -14,7 +14,6 @@ import { OfficeDepartmentModule } from './module/officeDepartment/officeDepartme
 import { OfficeModule } from './module/office/office.module';
 import { DepartmentModule } from './module/department/department.module';
 
-
 @Module({
   imports: [   
     ConfigModule.forRoot({
