@@ -59,7 +59,9 @@ export class UserRepository {
     }
 
     async updateUser( id: string, updateUserDto: UpdateUserDto ){
-        return this.userModel.findByIdAndUpdate( id, updateUserDto, { new: true } );
+         console.log("ID:", id);
+    console.log("DTO:", updateUserDto);
+        return this.userModel.findByIdAndUpdate( id, updateUserDto, { returnDocument: 'after' } );
     }
 
     async deleteUser( id: string ){

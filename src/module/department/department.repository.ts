@@ -30,7 +30,7 @@ export class DepartmentRepository {
   }
 
   async update(id: string, updateDepartmentDto: UpdateDepartmentDto) {
-    return await this.model.findByIdAndUpdate(id, updateDepartmentDto, { new: true });
+    return await this.model.findByIdAndUpdate(id, updateDepartmentDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {

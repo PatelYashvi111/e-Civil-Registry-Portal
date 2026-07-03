@@ -44,7 +44,7 @@ export class OfficeDepartmentRepository {
   }
 
   async update(id: string, updateOfficeDepartmentDto: UpdateOfficeDepartmentDto) {
-    return await this.model.findByIdAndUpdate( id, updateOfficeDepartmentDto, { new: true });
+    return await this.model.findByIdAndUpdate( id, updateOfficeDepartmentDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {
