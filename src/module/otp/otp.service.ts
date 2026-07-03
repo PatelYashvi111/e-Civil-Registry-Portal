@@ -1,7 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { OtpRepository } from './otp.repository';
 import { OtpEnum } from '../../common/enums/otp.enums';
-import { Otp } from './schema/otp.schema';
 
 @Injectable()
 export class OtpService {
@@ -9,9 +8,7 @@ export class OtpService {
     private readonly otpRepository: OtpRepository,
   ) {}
 
-  // Generate Aadhaar Verification OTP
   async generateAadharVerificationOtp(aadharId: string): Promise<void> {
-    // Delete old OTP if exists
     const existingOtp = await this.otpRepository.findOne({
       aadharId,
       serviceType: OtpEnum.AADHAR_VERIFICATION,
@@ -30,13 +27,9 @@ export class OtpService {
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    console.log('Aadhaar OTP:', otp);
 
-    // Later replace with:
-    // await this.emailService.sendOtp(...);
   }
 
-  // Verify Aadhaar Verification OTP
   async verifyAadharVerificationOtp(
     aadharId: string,
     otp: string,
@@ -61,9 +54,7 @@ export class OtpService {
     await this.otpRepository.deleteOtp(otpRecord._id.toString());
   }
 
-  // Generate Forgot Password OTP
   async generateForgotPasswordOtp(userId: string): Promise<void> {
-    // Delete old OTP if exists
     const existingOtp = await this.otpRepository.findOne({
       userId,
       serviceType: OtpEnum.FORGOT_PASSWORD,
@@ -82,13 +73,8 @@ export class OtpService {
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    console.log('Forgot Password OTP:', otp);
-
-    // Later replace with:
-    // await this.emailService.sendOtp(...);
   }
 
-  // Verify Forgot Password OTP
   async verifyForgotPasswordOtp(
     userId: string,
     otp: string,

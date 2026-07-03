@@ -34,4 +34,9 @@ export class OtpRepository {
         return await this.otpModel.findByIdAndDelete(id);
     }
 
+    async deleteMany(filter: QueryFilter<OtpDocument>) {
+        return await this.otpModel.deleteMany(filter);
+    }
+
+
 }

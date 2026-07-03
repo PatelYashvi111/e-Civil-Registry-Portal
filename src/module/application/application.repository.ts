@@ -35,14 +35,6 @@ export class ApplicationRepository {
         return await this.applicationModel.findOne({ applicationNumber });
     }
 
-    // async approveApplication( id: string ) {
-    //     return await this.applicationModel.findByIdAndUpdate( id, { status: StatusEnum.APPROVE }, { new: true } );
-    // }
-
-    // async rejectApplication( id: string ) {
-    //     return await this.applicationModel.findByIdAndUpdate( id, { status: StatusEnum.REJECTED }, { new: true } );
-    // }
-    
     async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto ) {
         return await this.applicationModel.findByIdAndUpdate( id, updateApplicationDto, { new: true } );
     }

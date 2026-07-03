@@ -132,29 +132,6 @@ export class ApplicationService {
         return application;
     }
 
-    // async approveApplication( id: string, user: JwtPayload ) {
-    //     if(user.role !== RoleEnum.CLERK) {
-    //         throw new ForbiddenException('Access Denied');
-    //     }
-
-    //     const application = await this.applicationRepository.findById( id );
-
-    //     if(!application) {
-    //         throw new NotFoundException('Application Not found');
-    //     }
-
-    //     if(application.status !== StatusEnum.PENDING) {
-    //         throw new BadRequestException('Application is already approved or rejected');
-    //     }
-
-    //     const updatedApplication = await this.applicationRepository.approveApplication( id );
-
-    //     const applicant = await this.userRepository.findById( application.userId.toString());
-        
-    //     if(!applicant) {
-    //         throw new NotFoundException('Applicant Not Found');
-    //     }
-    // }
     async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto, user: JwtPayload ) {
         const application = await this.applicationRepository.findById( id );
 
@@ -180,3 +157,4 @@ export class ApplicationService {
         return await this.applicationRepository.deleteApplication( id );
     }
 }
+
