@@ -16,18 +16,23 @@ export class OfficeDepartmentRepository {
     return await this.model.create(createOfficeDepartmentDto);
   }
 
-  async findAll() {
-    return await this.model
-      .find()
-      .populate('officeId')
-      .populate('departmentId');
+  async findAll(skip: number, limit: number, page: number) {
+    const data = await this.model.find().skip(skip).limit(limit).sort({createdAt: -1}).populate('officeId').populate('departmentId');
+    const total = await this.model.countDocuments();
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    }
   }
 
   async findById(id: string) {
     return await this.model.findById(id);
   }
   
-   async findMapping( officeId: string, departmentId: string ) {
+  async findMapping( officeId: string, departmentId: string ) {
     return await this.model.findOne({ officeId, departmentId });
   }
 
@@ -44,7 +49,7 @@ export class OfficeDepartmentRepository {
   }
 
   async update(id: string, updateOfficeDepartmentDto: UpdateOfficeDepartmentDto) {
-    return await this.model.findByIdAndUpdate( id, updateOfficeDepartmentDto, { new: true });
+    return await this.model.findByIdAndUpdate( id, updateOfficeDepartmentDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {

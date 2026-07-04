@@ -4,7 +4,7 @@ import { Model } from 'mongoose';
 import { Office } from '../office/schema/office.schema';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class OfficeRepository {
@@ -23,7 +23,7 @@ export class OfficeRepository {
     return await this.model.find()
       .populate({path: 'districtId',populate: {path: 'stateId'}})
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit                                                                                  ); 
   }
 
   async findByName(name: string) {
@@ -35,7 +35,7 @@ export class OfficeRepository {
   }
 
   async update(id: string, updateOfficeDto: UpdateOfficeDto) {
-    return await this.model.findByIdAndUpdate(id, updateOfficeDto, { new: true });
+    return await this.model.findByIdAndUpdate(id, updateOfficeDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {

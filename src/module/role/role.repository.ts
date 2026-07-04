@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Role, RoleDocument } from './schema/role.schema';
 import { RoleEnum } from 'src/common/enums/role.enums';
+import { CreateRoleDto } from './dto/create-role.dto';
 
 @Injectable()
 export class RoleRepository {
@@ -12,12 +13,20 @@ export class RoleRepository {
     private roleModel: Model<RoleDocument> 
   ) {}
 
-  async createRole(data: any) {
-    return await this.roleModel.create(data);
+  async createRole(createRoleDto: CreateRoleDto) {
+    return await this.roleModel.create(createRoleDto);
   }
 
-  async findAll() {
-    return await this.roleModel.find();
+  async findAll(skip: number, limit: number, page: number) {
+    const data =await this.roleModel.find().skip(skip).limit(limit);
+    const total = await this.roleModel.countDocuments();
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      };
   }
 
   async findByName(name: RoleEnum) {

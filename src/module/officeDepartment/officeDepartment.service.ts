@@ -4,6 +4,7 @@ import { OfficeDepartmentRepository } from './officeDepartment.repository';
 import { OfficeRepository } from '../office/office.repository';
 import { DepartmentRepository } from '../department/department.repository';
 import { UpdateOfficeDepartmentDto } from './dto/update-officeDepartment.dto';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class OfficeDepartmentService {
@@ -39,8 +40,12 @@ export class OfficeDepartmentService {
     return await this.officeDepartmentRepository.create(createOfficeDepartmentDto);
   }
 
-  async findAll() {
-    return await this.officeDepartmentRepository.findAll();
+  async findAll(paginationDto: PaginationDto) {
+    const { page=1, limit=10 } = paginationDto;
+
+    const skip = (page-1) * limit;
+
+    return await this.officeDepartmentRepository.findAll(skip, limit, page);
   }
 
   async findOne(id: string) {

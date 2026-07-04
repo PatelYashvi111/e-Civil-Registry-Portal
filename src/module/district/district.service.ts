@@ -2,13 +2,14 @@ import { Injectable, BadRequestException , NotFoundException} from '@nestjs/comm
 import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
 import { DistrictRepository } from './district.repository';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class DistrictService {
   
     constructor(
      private readonly districtRepository: DistrictRepository, 
-  ) {}
+    ) {}
 
   async create(createDistrictDto: CreateDistrictDto) {
   const name = createDistrictDto.name.trim().toLowerCase();
@@ -21,8 +22,12 @@ export class DistrictService {
 
   return await this.districtRepository.create({...createDistrictDto,name });
 }
-  async findAll() {
-    return await this.districtRepository.findAll();  
+  async findAll(paginationDto: PaginationDto) {
+    const { page=1, limit=10 } = paginationDto;
+
+    const skip = (page-1) * limit;
+
+      return await this.districtRepository.findAll(skip, limit, page);  
   }
 
   async findOne(id: string) {

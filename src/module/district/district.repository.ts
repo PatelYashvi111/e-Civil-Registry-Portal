@@ -17,8 +17,16 @@ export class DistrictRepository {
     return await this.model.create(createDistrictDto);
   }
 
-  async findAll() {
-    return await this.model.find().populate('stateId');
+  async findAll(skip: number, limit: number, page: number) {
+    const data = await this.model.find().skip(skip).limit(limit).sort({ createdAt: -1 }).populate('stateId');
+    const total = await this.model.countDocuments();
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findByName(name: string) {
@@ -30,7 +38,7 @@ export class DistrictRepository {
   }
 
   async update(id: string, updateDistrictDto: UpdateDistrictDto) {
-    return await this.model.findByIdAndUpdate(id, updateDistrictDto, { new: true });
+    return await this.model.findByIdAndUpdate(id, updateDistrictDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {

@@ -2,7 +2,7 @@ import { Controller, Post, Get, Patch, Delete, Body, Param, Query } from '@nestj
 import { OfficeService } from './office.service';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
-import { PaginationDto } from '../../common/dto/pagination.dto';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Controller('office')
 export class OfficeController {

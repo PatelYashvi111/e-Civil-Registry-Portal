@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
 import { StateRepository } from './state.repository';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class StateService {
@@ -20,8 +21,12 @@ export class StateService {
     return await this.stateRepository.create(createStateDto);
   }
 
-  async findAll() {
-      return await this.stateRepository.findAll();
+  async findAll(paginationDto: PaginationDto) {
+      const {page=1, limit=10} = paginationDto;
+
+      const skip = (page-1) * limit;
+
+      return await this.stateRepository.findAll(skip, limit, page);
   }
 
   async findById(id: string) {

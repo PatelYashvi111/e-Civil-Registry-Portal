@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString ,IsEnum, IsDateString, IsMongoId, Length } from 'class-validator';
-import { UserStatusEnum } from '../../../common/enums/user.status.enums';
+import { StatusEnum } from '../../../common/enums/status.enums';
 
 export class CreateUserDto {
 
@@ -31,8 +31,8 @@ export class CreateUserDto {
   password!: string;
 
   @IsOptional()
-  @IsEnum(UserStatusEnum)
-  status?: UserStatusEnum;
+  @IsEnum(StatusEnum)
+  status?: StatusEnum;
 
   @IsOptional()
   @IsDateString()

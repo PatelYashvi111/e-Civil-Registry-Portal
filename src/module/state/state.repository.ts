@@ -13,8 +13,16 @@ export class StateRepository {
     return await this.model.create(createStateDto);
   }
 
-  async findAll() {
-    return await this.model.find();
+  async findAll(skip: number, limit: number, page: number) {
+    const data = await this.model.find().skip(skip).limit(limit).sort({ createdAt: -1 });
+    const total = await this.model.countDocuments();
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
 
   async findByName(name: string) {
@@ -26,7 +34,7 @@ export class StateRepository {
   }
 
   async update(id: string, updateStateDto: UpdateStateDto) {
-    return await this.model.findByIdAndUpdate(id, updateStateDto, { new: true });
+    return await this.model.findByIdAndUpdate(id, updateStateDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {

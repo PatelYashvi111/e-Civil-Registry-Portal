@@ -1,11 +1,12 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsMongoId, IsNotEmpty } from 'class-validator';
 
 export class CreateOfficeDepartmentDto {
-    @IsString()
+
     @IsNotEmpty()
+    @IsMongoId()
     officeId!: string;
     
-    @IsString()
     @IsNotEmpty()
+    @IsMongoId()
     departmentId!: string;
   }

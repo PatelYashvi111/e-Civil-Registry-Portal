@@ -2,7 +2,6 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
-import { Module } from '@nestjs/common';
 import { Aadhar, AadharDocument } from '../aadhar/schema/aadhar.schema';
 import { Role, RoleDocument } from '../role/schema/role.schema';
 import { OtpEnum } from '../../common/enums/otp.enums';
@@ -18,8 +17,9 @@ import { ResetPasswordDto } from './dto/reset.password.dto';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { JwtService } from '@nestjs/jwt';
 
+
 @Injectable()
-export class AuthService {
+ export class AuthService {
 
   constructor(
 
@@ -153,7 +153,6 @@ export class AuthService {
   const user = await this.userModel.create({
     roleId: userRole._id,
     aadharId: aadhar._id,
-    email: aadhar.email,
     password: hashedPassword,
   });
 
@@ -179,10 +178,16 @@ async login(loginDto: LoginDto) {
     throw new BadRequestException('Invalid password');
   }
 
+  const role = await this.roleModel.findById(user.roleId);
+
+  if (!role) {
+    throw new BadRequestException('Role not found');
+  }
+
   const payload = {
     userId: user._id,
     email: user.email,
-    roleId: user.roleId,
+    role: role.name,
   };
 
   const accessToken = this.jwtService.sign(payload, {
@@ -195,7 +200,7 @@ async login(loginDto: LoginDto) {
     user: {
       id: user._id,
       email: user.email,
-      roleId: user.roleId,
+      role: role.name,
     },
   };
 }
@@ -251,7 +256,7 @@ async login(loginDto: LoginDto) {
 
     return { message: 'OTP verified successfully' }
 
-  }
+   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { email, otp, password, confirmPassword } = resetPasswordDto;
@@ -262,7 +267,7 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User Not Found');
     }
 
-    const otpRecord = await this.otpModel.findOne({ userId: user._id, serviceType: OtpEnum.FORGOT_PASSWORD_OTP });
+   const otpRecord = await this.otpModel.findOne({ userId: user._id, serviceType: OtpEnum.FORGOT_PASSWORD_OTP });
 
     if(!otpRecord) {
       throw new BadRequestException('OTP Not Found');
@@ -290,4 +295,4 @@ async login(loginDto: LoginDto) {
 
   }
 
-}
+ }

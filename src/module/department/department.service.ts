@@ -2,6 +2,7 @@ import { Injectable, BadRequestException,NotFoundException } from '@nestjs/commo
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
 import { DepartmentRepository } from './department.repository';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class DepartmentService {
@@ -19,8 +20,12 @@ export class DepartmentService {
    return await this.departmentRepository.createDepartment(createDepartmentDto);
   }
 
-  async findAll() {
-    return await this.departmentRepository.findAll();
+  async findAll(paginationDto: PaginationDto) {
+    const { page=1, limit=10 } = paginationDto;
+
+    const skip = (page-1) * limit;
+
+    return await this.departmentRepository.findAll(skip, limit, page);
   }
 
   async findOne(id: string) {

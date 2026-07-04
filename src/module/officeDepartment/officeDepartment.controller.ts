@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param} from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, Query} from '@nestjs/common';
 import { OfficeDepartmentService } from './officeDepartment.service';
 import { CreateOfficeDepartmentDto } from './dto/create-officeDepartment.dto';
 import { UpdateOfficeDepartmentDto } from './dto/update-officeDepartment.dto';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Controller('office-department')
 export class OfficeDepartmentController {
@@ -16,8 +17,8 @@ export class OfficeDepartmentController {
   }
 
   @Get('all')
-  async findAll() {
-    return this.officeDepartmentService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.officeDepartmentService.findAll(paginationDto);
   }
 
   @Get(':id')

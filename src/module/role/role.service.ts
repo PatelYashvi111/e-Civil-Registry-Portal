@@ -1,7 +1,8 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { RoleRepository } from './role.repository';
 import { RoleEnum } from 'src/common/enums/role.enums';
-import { RoleDto } from './dto/role.dto';
+import { CreateRoleDto } from './dto/create-role.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class RoleService {
@@ -10,7 +11,7 @@ export class RoleService {
     private readonly roleRepository: RoleRepository,
   ) {}
 
-  async createRole( data: RoleDto) {
+  async createRole( data: CreateRoleDto) {
     const existingRole = await this.roleRepository.findByName(data.name);
 
     if ( existingRole ) { 
@@ -20,8 +21,12 @@ export class RoleService {
     return this.roleRepository.createRole( data );
   }
 
-  async findAll() {
-    return this.roleRepository.findAll();
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, limit = 10 } = paginationDto;
+
+    const skip = (page - 1) * limit;
+
+    return this.roleRepository.findAll(skip, limit, page);
   }
 
   async findByName(name: RoleEnum) {
