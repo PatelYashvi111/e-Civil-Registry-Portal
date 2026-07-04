@@ -2,7 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { OfficeRepository } from './office.repository';
-import { PaginationDto } from '../..';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class OfficeService {
@@ -22,7 +22,11 @@ export class OfficeService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    return await this.officeRepository.findAll(paginationDto);
+    const { page=1, limit=10 } = paginationDto;
+
+    const skip = (page-1) * limit;
+
+    return await this.officeRepository.findAll(skip, limit, page);
   }
 
   async findOne(id: string) {

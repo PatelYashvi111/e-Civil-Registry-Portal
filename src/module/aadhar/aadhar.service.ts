@@ -13,20 +13,13 @@ export class AadharService {
         private readonly cloudinaryService: CloudinaryService,
     ){}
 
-<<<<<<< HEAD
-    async createAadhar( data: CreateAadharDto ) {
-=======
     async createAadhar( data: CreateAadharDto, file: Express.Multer.File ) {
->>>>>>> feat/user
         const existingAadhar = await this.aadharRepository.findByAadharNumber( data.aadharNumber );
 
         if( existingAadhar ) {
             throw new BadRequestException('Aadhar already exists');
         }
 
-<<<<<<< HEAD
-        return this.aadharRepository.createAadhar(data);
-=======
         if(!file) {
             throw new BadRequestException('Photo is required');
         }
@@ -36,7 +29,6 @@ export class AadharService {
         data.photo = uploadedFile.url;
 
         return this.aadharRepository.createAadhar( data );
->>>>>>> feat/user
     }
 
     async findAll(paginationDto: PaginationDto) {

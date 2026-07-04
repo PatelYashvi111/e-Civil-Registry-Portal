@@ -1,8 +1,9 @@
-import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles, Query } from '@nestjs/common';
 import { CreateDeathDto } from './dto/create-death.dto';
 import { UpdateDeathDto } from './dto/update-death.dto';
 import { DeathService } from './death.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Controller('death')
 export class DeathController {
