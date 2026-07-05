@@ -4,6 +4,7 @@ import { UpdateDeathDto } from "./dto/update-death.dto";
 import { DeathRepository } from "./death.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
+import { PaginationDto } from "src/common/paginatio/dto/pagination.dto";
 
 @Injectable()
 export class DeathService {
@@ -114,8 +115,10 @@ export class DeathService {
         return await this.deathRepository.create( finalData );
     }
 
-    async findAll() {
-        return await this.deathRepository.findAll();
+    async findAll(paginationDto: PaginationDto) {
+        const { page=1 , limit=10 } = paginationDto;
+        const skip = (page - 1) * limit;
+        return await this.deathRepository.findAll(skip, limit, page);
     }
 
     async findById( id: string ) {

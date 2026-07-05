@@ -3,6 +3,7 @@ import { CreateDeathDto } from './dto/create-death.dto';
 import { UpdateDeathDto } from './dto/update-death.dto';
 import { DeathService } from './death.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PaginationDto } from 'src/common/paginatio/dto/pagination.dto';
 
 @Controller('death')
 export class DeathController {
@@ -28,8 +29,8 @@ export class DeathController {
     }
 
     @Get('all')
-    async findAll(){
-        return this.deathService.findAll();
+    async findAll(paginationDto: PaginationDto){
+        return this.deathService.findAll(paginationDto);
     }
 
     @Get(':id')

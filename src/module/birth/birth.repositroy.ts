@@ -17,8 +17,17 @@ export class BirthRepository {
         return await this.BirthModel.create(createBirthDto);
     }
 
-    async findAll() {
-        return await this.BirthModel.find();
+    async findAll(skip: number, limit: number, page: number) {
+        const data = await this.BirthModel.find().skip(skip).limit(limit)
+        .populate('fatherAadharId').populate('motherAadharId').populate({path: 'districtId',populate: {path: 'stateId'}});
+        const total = await this.BirthModel.countDocuments();
+        return{
+            data,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit)
+        }
     }
 
     async findDuplication( babyName: string, birthDateAndTime: Date, fatherAadharId: string, motherAadharId: string ) {

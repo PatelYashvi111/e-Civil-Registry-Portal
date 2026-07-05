@@ -17,8 +17,16 @@ export class DeathRepository {
         return await this.DeathModel.create( createDeathDto );
     }
 
-    async findAll() {
-        return await this.DeathModel.find();
+    async findAll(skip: number, limit: number, page: number) {
+        const data = await this.DeathModel.find().skip(skip).limit(limit).populate('deceasedAadharId').populate('spouseAadharId');
+        const total = await this.DeathModel.countDocuments()
+        return {
+            data,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit)
+        }
     }
 
     async findDuplication(deacasedAadharId: string, dateAndTimeOfDeath: Date ) {

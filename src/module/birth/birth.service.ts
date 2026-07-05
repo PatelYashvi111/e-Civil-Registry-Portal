@@ -4,6 +4,7 @@ import { UpdateBirthDto } from "./dto/update-birth.dto";
 import { BirthRepository } from "./birth.repositroy";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
+import { PaginationDto } from "src/common/paginatio/dto/pagination.dto";
 
 @Injectable()
 export class BirthService {
@@ -101,8 +102,10 @@ export class BirthService {
         return await this.birthRepository.create( finalData );
     }
 
-    async findAll() {
-        return await this.birthRepository.findAll();
+    async findAll(paginationDto: PaginationDto) {
+        const { page=1 , limit=10 } = paginationDto;
+        const skip = (page - 1) * limit;
+        return await this.birthRepository.findAll(skip, limit, page);
     }
 
     async findById( id: string ) {

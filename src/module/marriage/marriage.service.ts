@@ -4,6 +4,7 @@ import { UpdateMarriageDto } from "./dto/update-marriage.dto";
 import { MarriageRepository } from "./marriage.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "../../common/cloudinary/cloudinary.service";
+import { PaginationDto } from "src/common/paginatio/dto/pagination.dto";
 
 @Injectable()
 export class MarriageService {
@@ -153,8 +154,10 @@ export class MarriageService {
         return await this.marriageRepository.create( finalData );
     }
 
-    async findAll() {
-        return await this.marriageRepository.findAll();
+    async findAll(paginationDto: PaginationDto) {
+        const { page=1, limit=10} = paginationDto;
+        const skip = (page-1) *limit;
+        return await this.marriageRepository.findAll(skip,limit,page);
     }
 
     async findById( id: string ) {
