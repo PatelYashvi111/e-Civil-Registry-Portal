@@ -45,7 +45,7 @@ export class AuthService {
       throw new BadRequestException('Aadhar number not found');
     }
 
-    await this.otpService.generateAadharVerificationOtp(aadhar._id.toString());
+    await this.otpService.generateAadharVerificationOtp(aadhar._id.toString(),aadhar.email,`${aadhar.firstName} ${aadhar.lastName}}`);
 
     const verificationToken = this.jwtService.sign(
    {
@@ -123,6 +123,7 @@ export class AuthService {
     password: hashedPassword,
   });
 
+  console.log('Saved Password:', user.password);
   return {
     message: 'Registered successfully',
     userId: user._id,

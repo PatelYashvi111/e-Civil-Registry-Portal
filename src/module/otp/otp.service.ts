@@ -1,14 +1,16 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { OtpRepository } from './otp.repository';
 import { OtpEnum } from '../../common/enums/otp.enums';
+import { EmailService } from 'src/module/email/email.service';
 
 @Injectable()
 export class OtpService {
   constructor(
     private readonly otpRepository: OtpRepository,
+    private readonly emailService: EmailService,
   ) {}
 
-  async generateAadharVerificationOtp(aadharId: string): Promise<void> {
+  async generateAadharVerificationOtp(aadharId: string,email: string,name: string): Promise<void> {
     const existingOtp = await this.otpRepository.findOne({
       aadharId,
       serviceType: OtpEnum.AADHAR_VERIFICATION,
@@ -27,8 +29,7 @@ export class OtpService {
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    console.log(`Generated OTP for Aadhar verification: ${otp}`);
-
+    await this.emailService.sendOtpEmail(email,name,otp);
   }
 
   async verifyAadharVerificationOtp(
