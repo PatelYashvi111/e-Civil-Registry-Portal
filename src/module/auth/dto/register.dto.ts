@@ -1,9 +1,6 @@
 import { IsNotEmpty, IsString, Length } from 'class-validator';
 
 export class RegisterDto {
-  @IsNotEmpty()
-  @IsString()
-  aadharNumber!: string;
 
   @IsNotEmpty()
   @IsString()
