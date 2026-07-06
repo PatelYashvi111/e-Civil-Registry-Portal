@@ -42,3 +42,5 @@ export class Otp {
     expiredAt!: Date;
 
 }
+
+export const OtpSchema = SchemaFactory.createForClass(Otp);

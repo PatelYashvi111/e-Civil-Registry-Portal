@@ -7,9 +7,10 @@ export type OfficeDocument = HydratedDocument<Office>;
     timestamps: true
  })
 
-export class Office {
+export class Office { 
     @Prop({
         required: true,
+        type: String,
     })
     name!: string;
 

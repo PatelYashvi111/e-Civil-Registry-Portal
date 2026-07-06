@@ -16,8 +16,9 @@ import { RoleEnum } from 'src/common/enums/role.enums';
 import { JwtService } from '@nestjs/jwt';
 import { OtpService } from '../otp/otp.service';
 
+
 @Injectable()
-export class AuthService {
+ export class AuthService {
 
   constructor(
 
@@ -45,7 +46,7 @@ export class AuthService {
       throw new BadRequestException('Aadhar number not found');
     }
 
-    await this.otpService.generateAadharVerificationOtp(aadhar._id.toString());
+    await this.otpService.generateAadharVerificationOtp(aadhar._id.toString(),aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
 
     const verificationToken = this.jwtService.sign(
    {
@@ -197,7 +198,7 @@ async login(loginDto: LoginDto) {
 
     return { message: 'OTP verified successfully' }
 
-  }
+   }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { email, otp, password, confirmPassword } = resetPasswordDto;
@@ -225,4 +226,4 @@ async login(loginDto: LoginDto) {
 
   }
 
-}
+ }

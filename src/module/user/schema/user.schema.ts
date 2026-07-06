@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { UserStatusEnum } from '../../../common/enums/user.status.enums';
+import { StatusEnum } from '../../../common/enums/status.enums';
 
 export type UserDocument = HydratedDocument<User>;
 
@@ -33,18 +33,18 @@ export class User {
   officeDepartmentId!: Types.ObjectId | null;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: 'Employee',
-    default: null
+    type: String,
+    unique: true,
+    default: null,
   })
-  employeeId?: Types.ObjectId | null;
+  employeeId?: string | null;
 
   @Prop({ 
     required: true, 
     unique: true,
     lowercase: true,
     trim: true,
-    type: String
+    type: String,
   })
   email!: string;
 
@@ -58,11 +58,11 @@ export class User {
   @Prop({
     required: true,
     type: String,
-    enum: UserStatusEnum,
-    default: UserStatusEnum.PENDING,
+    enum: StatusEnum,
+    default: StatusEnum.PENDING,
     trim: true
   })
-  status!: UserStatusEnum;
+  status!: StatusEnum;
 
   @Prop({
     type: Date,

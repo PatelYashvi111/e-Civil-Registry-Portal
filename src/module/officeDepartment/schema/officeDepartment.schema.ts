@@ -26,3 +26,6 @@ export class OfficeDepartment {
 }
 
 export const OfficeDepartmentSchema = SchemaFactory.createForClass(OfficeDepartment);
+
+OfficeDepartmentSchema.index({ officeId: 1, departmentId: 1 }, { unique: true });
+

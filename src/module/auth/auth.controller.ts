@@ -1,4 +1,4 @@
-import { Post, Body, Controller, Param } from '@nestjs/common';
+import { Post, Body, Controller } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RequestAadharDto } from './dto/request.aadhar.dto';
 import { VerifyAadharDto } from './dto/verify.aadhar.dto';

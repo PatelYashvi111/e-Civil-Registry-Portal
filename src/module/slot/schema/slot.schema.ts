@@ -18,35 +18,41 @@ export class Slot {
 
     @Prop({
         required: true,
+        type: Date,
     })
     slotDate!: Date;
 
     @Prop({
         required: true,
         trim: true,
+        type: String,
     })
     startTime!: string;
 
     @Prop({
         required: true,
         trim: true,
+        type: String,
     })
     endTime!: string;
     
     @Prop({
         required: true,
+        type: Number,
         min: 1,
     })
     maxCapacity!: number;
 
     @Prop({
         default: 0,
+        type: Number,
         min: 0,
     })
     bookedCount!: number;
 
     @Prop({
         default: true,
+        type: Boolean,
     })
     isAvailable!: boolean;
 

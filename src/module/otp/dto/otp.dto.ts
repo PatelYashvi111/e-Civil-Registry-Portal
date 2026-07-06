@@ -1,24 +1,26 @@
-import { IsNotEmpty, IsString, IsOptional, IsEnum } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsEnum, IsMongoId, IsDateString } from 'class-validator';
 import { OtpEnum } from '../../../common/enums/otp.enums';
 
 export class OtpDto {
 
     @IsOptional()
-    @IsString()
+    @IsMongoId()
     userId?: string;
 
     @IsOptional()
-    @IsString()
+    @IsMongoId()
     aadharId?: string;
 
     @IsNotEmpty()
     @IsString()
     otpNumber!: string;
 
+    @IsNotEmpty()
     @IsEnum(OtpEnum)
     serviceType!: OtpEnum;
 
-    @IsString()
+    @IsNotEmpty()
+    @IsDateString()
     expiredAt!: string;
 
 }
