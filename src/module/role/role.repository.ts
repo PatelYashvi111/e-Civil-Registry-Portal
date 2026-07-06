@@ -17,8 +17,16 @@ export class RoleRepository {
     return await this.roleModel.create(createRoleDto);
   }
 
-  async findAll() {
-    return await this.roleModel.find();
+  async findAll(skip: number, limit: number, page: number) {
+    const data =await this.roleModel.find().skip(skip).limit(limit);
+    const total = await this.roleModel.countDocuments();
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+      };
   }
 
   async findByName(name: RoleEnum) {

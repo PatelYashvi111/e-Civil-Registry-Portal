@@ -1,8 +1,9 @@
-import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles, Query } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Controller('user')
 export class UserController {
@@ -16,27 +17,21 @@ export class UserController {
     @UseInterceptors(
     FileFieldsInterceptor([
     { name: 'aadharCard', maxCount: 1 },
-    { name: 'signature', maxCount: 1 },
-    { name: 'govEmployeeIdCard', maxCount: 1 },
     ]))
     async createUser(
     @Body() createUserDto: CreateUserDto,
     @UploadedFiles() files: {
         aadharCard?: Express.Multer.File[];
-        signature?: Express.Multer.File[];
-        govEmployeeIdCard?: Express.Multer.File[];
     },
     ) {
     return this.userService.createUser(createUserDto,{
         aadharCard: files?.aadharCard,
-        signature: files?.signature,
-        govEmployeeIdCard: files?.govEmployeeIdCard
     });
     }
 
     @Get('all')
-    async findAll(){
-        return this.userService.findAll();
+    async findAll(@Query() paginationDto: PaginationDto) {
+        return this.userService.findAll(paginationDto);
     }
 
     @Get(':id')

@@ -16,9 +16,8 @@ import { RoleEnum } from 'src/common/enums/role.enums';
 import { JwtService } from '@nestjs/jwt';
 import { OtpService } from '../otp/otp.service';
 
-
 @Injectable()
- export class AuthService {
+export class AuthService {
 
   constructor(
 
@@ -115,7 +114,7 @@ import { OtpService } from '../otp/otp.service';
     throw new BadRequestException('User role not found');
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
   const user = await this.userModel.create({
     roleId: userRole._id,
@@ -124,6 +123,7 @@ import { OtpService } from '../otp/otp.service';
     password: hashedPassword,
   });
 
+  console.log('Saved Password:', user.password);
   return {
     message: 'Registered successfully',
     userId: user._id,
@@ -198,7 +198,7 @@ async login(loginDto: LoginDto) {
 
     return { message: 'OTP verified successfully' }
 
-   }
+  }
 
   async resetPassword(resetPasswordDto: ResetPasswordDto) {
     const { email, otp, password, confirmPassword } = resetPasswordDto;
@@ -226,4 +226,4 @@ async login(loginDto: LoginDto) {
 
   }
 
- }
+}

@@ -1,4 +1,4 @@
 export enum OtpEnum {
-  AADHAR_VERIFICATION_OTP = 'aadhar_verification_otp',
-  FORGOT_PASSWORD_OTP = 'forgot_password_otp',
+  AADHAR_VERIFICATION = 'aadhar_verification',
+  FORGOT_PASSWORD = 'forgot_password',
 }

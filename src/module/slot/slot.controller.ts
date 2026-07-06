@@ -21,17 +21,12 @@ export class SlotController {
     return this.slotService.findAll();
   }
 
-  @Get(':id')
-  async findById( @Param('id') id: string ) {
-    return this.slotService.findById(id);
-  }
-
   @Get('available-dates/:officeDepartmentId')
   async getAvailableDates( @Param('officeDepartmentId') officeDepartmentId: string ) {
     return this.slotService.getAvailableDates( officeDepartmentId );
   }
 
-  @Post('available-slots')
+  @Get('available-slots')
   async getAvailableSlots( @Body() body: { officeDepartmentId: string, slotDate: string },
   ) {
     return this.slotService.getAvailableSlots(
@@ -43,6 +38,11 @@ export class SlotController {
   @Post('book/:slotId')
   async bookSlot( @Param('slotId') slotId: string ) {
     return this.slotService.bookSlot(slotId);
+  }
+
+  @Get(':id')
+  async findById( @Param('id') id: string ) {
+    return this.slotService.findById(id);
   }
 
   @Delete(':id')

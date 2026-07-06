@@ -1,10 +1,11 @@
-import { Controller, Get, Param, Post, Body, Patch, Delete, UploadedFile, UseInterceptors} from '@nestjs/common';
+import { Controller, Get, Param, Post, Body, Patch, Delete, UploadedFile, UseInterceptors, Query} from '@nestjs/common';
 import { CreateAadharDto } from './dto/create-aadhar.dto';
 import { UpdateAadharDto } from './dto/update-aadhar.dto';
 import { AadharService } from './aadhar.service';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { diskStorage } from 'multer';
 import { extname } from 'path';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('aadhar')
 export class AadharController {
@@ -25,8 +26,8 @@ export class AadharController {
   }
 
    @Get('all')
-   async findAll() {
-    return this.aadharService.findAll();
+   async findAll(@Query() paginationDto: PaginationDto) {
+    return this.aadharService.findAll(paginationDto);
    }
 
    @Get(':id')

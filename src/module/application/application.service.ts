@@ -1,4 +1,4 @@
-import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common";
+import { Injectable, BadRequestException, NotFoundException, ForbiddenException } from "@nestjs/common";
 import { CreateApplicationDto } from "./dto/create-application.dto";
 import { UpdateApplicationDto } from "./dto/update-application.dto";
 import { ApplicationRepository } from "./application.repository";
@@ -7,9 +7,14 @@ import { OfficeDepartmentRepository } from "../officeDepartment/officeDepartment
 import { SlotRepository } from "../slot/slot.repository";
 import { CounterService } from "../counter/counter.service";
 import { ServiceEnum } from "src/common/enums/service.enums";
+import { JwtPayload } from "src/common/interface/jwt-payload.interface";
+import { RoleEnum } from "src/common/enums/role.enums";
+import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
+import { EmailService } from "../email/email.service";
+import { AadharRepository } from "../aadhar/aadhar.repository";
 
 @Injectable()
-export class ApplicationService {
+export class ApplicationService { 
 
     constructor(
         private readonly applicationRepository: ApplicationRepository,
@@ -17,13 +22,21 @@ export class ApplicationService {
         private readonly officeDepartmentRepository: OfficeDepartmentRepository,
         private readonly slotRepository: SlotRepository,
         private readonly counterService: CounterService,
+        private readonly emailService: EmailService,
+        private readonly aadharRepository: AadharRepository
     ) {}
 
-    async createApplication( createApplicationDto: CreateApplicationDto ) {
-        const user = await this.userRepository.findById( createApplicationDto.userId );
+    async createApplication( createApplicationDto: CreateApplicationDto, user: JwtPayload ) {
+        const users = await this.userRepository.findById( createApplicationDto.userId );
 
-        if(!user) {
+        if(!users) {
             throw new NotFoundException('User not found');
+        }
+        
+        const aadhar = await this.aadharRepository.findById(users.aadharId.toString());
+
+        if(!aadhar) {
+            throw new NotFoundException('Aadhar not found');
         }
 
         const clerk = await this.userRepository.findById( createApplicationDto.clerkId );
@@ -77,39 +90,63 @@ export class ApplicationService {
             throw new BadRequestException('Application Number Already Exists');
         }
 
-        const application = {...createApplicationDto, applicationNumber};
+        const application = {...createApplicationDto,userId: user.userId, applicationNumber};
         
-        const createdApplication = await this.applicationRepository.createApplication( application );
+        const createdApplication =
+         await this.applicationRepository.createApplication( application );
+
+         await this.emailService.sendApplicationCreatedEmail(
+            users.email,
+            aadhar.firstName,
+            createdApplication.applicationNumber,
+            createdApplication.serviceType,
+         )
 
         return createdApplication;
 
-    }                                                                                       
+    }   
 
-    async findAll() {
-        return await this.applicationRepository.findAll();  
+    async findAll(paginationDto: PaginationDto, user: JwtPayload) {
+        const { page=1, limit=10 } = paginationDto;
+
+        const skip = (page - 1) * limit;
+
+        if(user.role === RoleEnum.USER) {
+            return await this.applicationRepository.findByUserId(user.userId,skip,limit);
+        }
+
+        return await this.applicationRepository.findAll(skip,limit);  
     }
     
-    async findByApplicationNumber( applicationNumber: string ) {
+    async findByApplicationNumber( applicationNumber: string, user: JwtPayload ) {
         const application = await this.applicationRepository.findByApplicationNumber(applicationNumber);
 
         if(!application) {
             throw new NotFoundException('Application Not found');
         }
         
-        return await this.applicationRepository.findByApplicationNumber(applicationNumber);
+        if(user.role === RoleEnum.USER && application.userId.toString() !== user.userId) {
+            throw new ForbiddenException('Access Denied');
+        }
+
+        return application;
     }
 
-    async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto ) {
+    async updateApplication( id: string, updateApplicationDto: UpdateApplicationDto, user: JwtPayload ) {
         const application = await this.applicationRepository.findById( id );
 
         if(!application) {
             throw new NotFoundException('Application Not found');
         }
+
+        if(user.role === RoleEnum.USER && application.userId.toString() !== user.userId) {
+            throw new ForbiddenException('Access Denied');
+        }
         
          return await this.applicationRepository.updateApplication( id, updateApplicationDto );
 
     }
-
+    
     async deleteApplication( id: string ) {
         const application = await this.applicationRepository.findById( id );
 
@@ -120,3 +157,4 @@ export class ApplicationService {
         return await this.applicationRepository.deleteApplication( id );
     }
 }
+
