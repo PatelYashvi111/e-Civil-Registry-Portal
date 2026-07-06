@@ -1,8 +1,9 @@
-import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles, Query } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserService } from './user.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Controller('user')
 export class UserController {
@@ -35,8 +36,8 @@ export class UserController {
     }
 
     @Get('all')
-    async findAll(){
-        return this.userService.findAll();
+    async findAll(@Query() paginationDto: PaginationDto) {
+        return this.userService.findAll(paginationDto);
     }
 
     @Get(':id')

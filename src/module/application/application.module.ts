@@ -9,6 +9,8 @@ import { OfficeDepartmentModule } from "../officeDepartment/officeDepartment.mod
 import { CounterModule } from "../counter/counter.module";
 import { UserModule } from "../user/user.module";
 import { SlotModule } from "../slot/slot.module";
+import { EmailModule } from "../email/email.module";
+import { AadharModule } from "../aadhar/aadhar.module";
 
 @Module({
     imports: [
@@ -23,6 +25,8 @@ import { SlotModule } from "../slot/slot.module";
         RoleModule,
         OfficeDepartmentModule,
         CounterModule,
+        EmailModule,
+        AadharModule,
     ],
 
     controllers: [ApplicationController],

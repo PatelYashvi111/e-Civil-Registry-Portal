@@ -1,7 +1,8 @@
-import { IsNotEmpty, IsString, IsOptional, IsEnum, IsMongoId, IsDateString } from 'class-validator';
+import { IsNotEmpty, IsString, IsOptional, IsEnum, IsMongoId, IsDate } from 'class-validator';
+import { Type } from 'class-transformer';
 import { OtpEnum } from '../../../common/enums/otp.enums';
 
-export class OtpDto {
+export class CreateOtpDto {
 
     @IsOptional()
     @IsMongoId()
@@ -20,7 +21,8 @@ export class OtpDto {
     serviceType!: OtpEnum;
 
     @IsNotEmpty()
-    @IsDateString()
-    expiredAt!: string;
+    @IsDate()
+    @Type(() => Date)
+    expiredAt!: Date;
 
 }
