@@ -152,10 +152,6 @@ export class ClerkService {
     password: hashedPassword,
   });
 
-  await this.otpService.markInvitationAsUsed(
-    verificationToken,
-  );
-
   return {
     message: 'Password set successfully',
   };
