@@ -120,6 +120,12 @@ export class UserService{
     }
 
   async updateUser( id: string, updateUserDto: UpdateUserDto ){
+        const user= await this.userRepository.findById( id );
+
+        if(!user) {
+            throw new NotFoundException('User not found');
+        }
+
         return this.userRepository.updateUser( id, updateUserDto );
         
     }

@@ -28,14 +28,13 @@ export class OtpService {
       serviceType: OtpEnum.AADHAR_VERIFICATION,
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
-
+   
     await this.emailService.sendOtpEmail(email,name,otp);
+        console.log(`Generate OTP for Aadhar generation: ${otp}`);
+
   }
 
-  async verifyAadharVerificationOtp(
-    aadharId: string,
-    otp: string,
-  ): Promise<void> {
+  async verifyAadharVerificationOtp( aadharId: string, otp: string, email: string, name: string ): Promise<void> {
     const otpRecord = await this.otpRepository.findOne({
       aadharId,
       serviceType: OtpEnum.AADHAR_VERIFICATION,
@@ -54,11 +53,12 @@ export class OtpService {
     }
 
     await this.otpRepository.deleteOtp(otpRecord._id.toString());
-
+        await this.emailService.sendOtpEmail(email,name,otp);
+   
     console.log(`Verified OTP for Aadhar verification: ${otp}`);
   }
 
-  async generateForgotPasswordOtp(userId: string): Promise<void> {
+  async generateForgotPasswordOtp(userId: string, email: string, name: string): Promise<void> {
     const existingOtp = await this.otpRepository.findOne({
       userId,
       serviceType: OtpEnum.FORGOT_PASSWORD,
@@ -77,13 +77,11 @@ export class OtpService {
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
+    await this.emailService.sendOtpEmail(email,name,otp);
     console.log(`Generated OTP for forgot password: ${otp}`);
   }
 
-  async verifyForgotPasswordOtp(
-    userId: string,
-    otp: string,
-  ): Promise<void> {
+  async verifyForgotPasswordOtp( userId: string, otp: string, email: string, name: string ): Promise<void> {
     const otpRecord = await this.otpRepository.findOne({
       userId,
       serviceType: OtpEnum.FORGOT_PASSWORD,
@@ -102,7 +100,7 @@ export class OtpService {
     }
 
     await this.otpRepository.deleteOtp(otpRecord._id.toString());
-
+    await this.emailService.sendOtpEmail(email,name,otp)
     console.log(`Verified OTP for forgot password: ${otp}`);
   }
 }
