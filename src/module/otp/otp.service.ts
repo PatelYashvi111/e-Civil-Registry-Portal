@@ -2,12 +2,15 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { OtpRepository } from './otp.repository';
 import { OtpEnum } from '../../common/enums/otp.enums';
 import { EmailService } from 'src/module/email/email.service';
+import { JwtService } from '@nestjs/jwt';
+import { setHeapSnapshotNearHeapLimit } from 'v8';
 
 @Injectable()
 export class OtpService {
   constructor(
     private readonly otpRepository: OtpRepository,
     private readonly emailService: EmailService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async generateAadharVerificationOtp(aadharId: string,email: string,name: string): Promise<void> {
@@ -103,4 +106,33 @@ export class OtpService {
     await this.emailService.sendOtpEmail(email,name,otp)
     console.log(`Verified OTP for forgot password: ${otp}`);
   }
+
+  async generateInvitationToken(userId: string): Promise<string> {
+  return this.jwtService.sign(
+    {
+      userId,
+      purpose: 'clerk_invitation',
+    },
+    {
+      expiresIn: '24h',
+    },
+  );
+}
+
+async verifyInvitationToken(token: string): Promise<any> {
+  try {
+    const payload = this.jwtService.verify(token);
+
+    if (payload.purpose !== 'clerk_invitation') {
+      throw new BadRequestException('Invalid token purpose');
+    }
+
+    return payload;
+  } catch {
+    throw new BadRequestException(
+      'Invalid or expired verification token',
+    );
+  }
+
+}
 }

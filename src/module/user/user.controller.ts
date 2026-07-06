@@ -17,11 +17,6 @@ export class UserController {
     @UseInterceptors(
     FileFieldsInterceptor([
     { name: 'aadharCard', maxCount: 1 },
-<<<<<<< HEAD
-    { name: 'signature'                                                                                                                                                                                                 , maxCount: 1 },
-    { name: 'govEmployeeIdCard', maxCount: 1 },
-=======
->>>>>>> feat/auth
     ]))
     async createUser(
     @Body() createUserDto: CreateUserDto,
