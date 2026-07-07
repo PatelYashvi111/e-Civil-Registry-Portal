@@ -9,6 +9,7 @@ import { AadharService } from '../aadhar/aadhar.service';
 import { CounterService } from '../counter/counter.service';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class UserService{
@@ -110,8 +111,12 @@ export class UserService{
 
     }
 
-  async findAll(){
-        return this.userRepository.findAll();
+  async findAll(paginationDto: PaginationDto) {
+        const { page=1, limit=10 } = paginationDto;
+
+        const skip = (page - 1) * limit;
+
+        return this.userRepository.findAll(skip, limit, page);
     }
 
   async updateUser( id: string, updateUserDto: UpdateUserDto ){

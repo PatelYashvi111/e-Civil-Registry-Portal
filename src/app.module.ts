@@ -18,6 +18,8 @@ import { StateModule } from './module/state/state.module';
 import { DistrictModule } from './module/district/district.module';
 import { SlotModule } from './module/slot/slot.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ApplicationModule } from './module/application/application.module';
+import { OtpModule } from './module/otp/otp.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     StateModule,
     DistrictModule,
     SlotModule,
+    ApplicationModule,
+    OtpModule,
   ],
 
   controllers: [AppController],

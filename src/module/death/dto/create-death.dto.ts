@@ -7,6 +7,10 @@ export class CreateDeathDto {
     @IsMongoId()
     deceasedAadharId!: string;
 
+    @IsNotEmpty()
+    @IsMongoId()
+    deathDistrictId!: string;
+
     @IsString()
     @IsNotEmpty()
     placeOfDeath!: string;
