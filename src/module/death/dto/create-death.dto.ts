@@ -17,11 +17,7 @@ export class CreateDeathDto {
 
     @IsDateString()
     @IsNotEmpty()
-    dateOfDeath!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    timeOfDeath!: string;
+    dateAndTimeOfDeath!: string;
 
     @IsString()
     @IsNotEmpty()
