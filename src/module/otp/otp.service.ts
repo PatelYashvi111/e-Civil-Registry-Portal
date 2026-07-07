@@ -3,7 +3,6 @@ import { OtpRepository } from './otp.repository';
 import { OtpEnum } from '../../common/enums/otp.enums';
 import { EmailService } from 'src/module/email/email.service';
 import { JwtService } from '@nestjs/jwt';
-import { setHeapSnapshotNearHeapLimit } from 'v8';
 
 @Injectable()
 export class OtpService {
@@ -32,7 +31,7 @@ export class OtpService {
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
    
-    await this.emailService.sendOtpEmail(email,name,otp);
+    await this.emailService.sendOtpEmail(email,name,otp,'Generate OTP');
         console.log(`Generate OTP for Aadhar generation: ${otp}`);
 
   }
@@ -56,7 +55,7 @@ export class OtpService {
     }
 
     await this.otpRepository.deleteOtp(otpRecord._id.toString());
-        await this.emailService.sendOtpEmail(email,name,otp);
+        await this.emailService.sendOtpEmail(email,name,otp,'Verify Generate OTP');
    
     console.log(`Verified OTP for Aadhar verification: ${otp}`);
   }
@@ -80,7 +79,7 @@ export class OtpService {
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
 
-    await this.emailService.sendOtpEmail(email,name,otp);
+    await this.emailService.sendOtpEmail(email,name,otp,'Generate Forgot Password OTP');
     console.log(`Generated OTP for forgot password: ${otp}`);
   }
 
@@ -103,7 +102,7 @@ export class OtpService {
     }
 
     await this.otpRepository.deleteOtp(otpRecord._id.toString());
-    await this.emailService.sendOtpEmail(email,name,otp)
+    await this.emailService.sendOtpEmail(email,name,otp,'Forgot Password OTP')
     console.log(`Verified OTP for forgot password: ${otp}`);
   }
 

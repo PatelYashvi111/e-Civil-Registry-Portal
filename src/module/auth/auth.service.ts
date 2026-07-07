@@ -78,7 +78,7 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-  const { password, verificationToken } = registerDto;
+  const { email,password, verificationToken } = registerDto;
 
   let payload;
 
@@ -114,14 +114,21 @@ export class AuthService {
     throw new BadRequestException('User role not found');
   }
 
+  const existingEmail = await this.userModel.findOne({
+  email: email.toLowerCase(),
+});
+
+if (existingEmail) {
+  throw new BadRequestException('Email already exists');
+}
   const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
   const user = await this.userModel.create({
-    roleId: userRole._id,
-    aadharId: aadhar._id,
-    email: aadhar.email,
-    password: hashedPassword,
-  });
+  roleId: userRole._id,
+  aadharId: aadhar._id,
+  email: email.toLowerCase(),
+  password: hashedPassword,
+});
 
   console.log('Saved Password:', user.password);
   return {

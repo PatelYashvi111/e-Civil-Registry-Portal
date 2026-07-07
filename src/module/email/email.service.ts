@@ -122,11 +122,12 @@ export class EmailService {
   to: string,
   name: string,
   otp: string,
+  subject: string,
 ) {
   await this.transporter.sendMail({
     from: `"E-Civil Registry Portal" <${process.env.EMAIL_USER}>`,
     to,
-    subject: 'OTP Verification Code',
+    subject,
     html: `
       <!DOCTYPE html>
       <html>

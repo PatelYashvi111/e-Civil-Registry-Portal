@@ -101,7 +101,7 @@ export class ClerkService {
     }
 
     const verificationToken =
-      await this.otpService.generateInvitationToken(clerk._id);
+      await this.otpService.generateInvitationToken(clerk._id.toString());
 
     await this.emailService.sendClerkInvitationEmail(
       clerk.email,
@@ -151,10 +151,6 @@ export class ClerkService {
   await this.userRepository.updateUser(clerk._id.toString(), {
     password: hashedPassword,
   });
-
-  await this.otpService.markInvitationAsUsed(
-    verificationToken,
-  );
 
   return {
     message: 'Password set successfully',
