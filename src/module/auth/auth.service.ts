@@ -57,6 +57,7 @@ export class AuthService {
   return {
     message: 'Aadhar verification successful',
     verificationToken,
+    aadharDetails: aadhar,
   };
 }
 

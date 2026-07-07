@@ -25,11 +25,13 @@ export class ClerkRepository {
 
     const savedClerk = await createdClerk.save();
 
-    return savedClerk.populate([
-      { path: 'roleId' },
-      { path: 'aadharId' },
-      { path: 'officeDepartmentId' },
-    ]);
+    const clerk = await this.userModel
+      .findById(savedClerk._id)
+      .populate('roleId')
+      .populate('aadharId')
+      .populate('officeDepartmentId');
+
+    return clerk;
   }
 
   async findAllClerks(
