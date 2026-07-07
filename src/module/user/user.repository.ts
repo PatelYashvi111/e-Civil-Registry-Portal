@@ -48,24 +48,6 @@ export class UserRepository {
        };
     }
 
-<<<<<<< HEAD
-    async countClerksByOfficeDepartment(
-        officeDepartmentId: string,
-        clerkRoleId: string,
-    ) {
-        return this.userModel.countDocuments({
-<<<<<<< HEAD
-            officeDepartmentId: new Types.ObjectId(officeDepartmentId),
-            roleId: clerkRoleId,
-=======
-            officeDepartmentId: toObjectId(officeDepartmentId),
-            roleId: toObjectId(clerkRoleId),
->>>>>>> staging
-    });
-    }
-
-=======
->>>>>>> feat/application
     async updateUser( id: string, updateUserDto: UpdateUserDto ){
          console.log("ID:", id);
     console.log("DTO:", updateUserDto);
