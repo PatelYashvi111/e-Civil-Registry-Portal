@@ -1,15 +1,6 @@
-import {
-  IsEmail,
-  IsMongoId,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class CreateClerkDto {
-  @IsNotEmpty()
-  @IsMongoId()
-  roleId!: string;
 
   @IsNotEmpty()
   @IsMongoId()
@@ -23,19 +14,19 @@ export class CreateClerkDto {
   @IsEmail()
   email!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  employeeId?: string;
+  employeeId!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  aadharCard?: string;
+  aadharCard!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  signature?: string;
+  signature!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  govEmployeeIdCard?: string;
+  govEmployeeIdCard!: string;
 }

@@ -14,8 +14,7 @@ export class SeedService {
     @InjectModel(District.name) private districtModel: Model<District>,
     @InjectModel(Office.name) private officeModel: Model<Office>,
     @InjectModel(Department.name) private departmentModel: Model<Department>,
-    @InjectModel(OfficeDepartment.name)
-    private officeDepartmentModel: Model<OfficeDepartment>,
+    @InjectModel(OfficeDepartment.name) private officeDepartmentModel: Model<OfficeDepartment>,
   ) {}
 
   async seed() {
