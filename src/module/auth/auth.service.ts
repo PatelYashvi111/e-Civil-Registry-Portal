@@ -153,10 +153,16 @@ async login(loginDto: LoginDto) {
     throw new BadRequestException('Invalid password');
   }
 
+  const role = await this.roleModel.findById(user.roleId);
+
+  if (!role) {
+    throw new BadRequestException('Role not found');
+  }
+  
   const payload = {
     userId: user._id,
     email: user.email,
-    roleId: user.roleId,
+    role: role.name,
   };
 
   const accessToken = this.jwtService.sign(payload, {
@@ -169,7 +175,7 @@ async login(loginDto: LoginDto) {
     user: {
       id: user._id,
       email: user.email,
-      roleId: user.roleId,
+      role: role.name,
     },
   };
 }
