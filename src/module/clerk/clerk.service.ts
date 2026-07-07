@@ -8,7 +8,6 @@ import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { EmailService } from '../email/email.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { SendClerkInvitationDto } from '../clerk/dto/send-clerk.invitation';
-import { ClerkSetPasswordDto } from './dto/clerk-set-password.dto';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { OtpService } from '../otp/otp.service';
 
@@ -100,6 +99,7 @@ const govEmployeeIdCard = govIdUpload.url;
 
   return clerk;
 }
+
   async sendInvitation(dto: SendClerkInvitationDto) {
     const clerk = await this.userRepository.findById(dto.clerkId);
 
@@ -120,47 +120,4 @@ const govEmployeeIdCard = govIdUpload.url;
     };
   }
  
-  async setPassword(clerkSetPasswordDto: ClerkSetPasswordDto) {
-  const { verificationToken, password, confirmPassword } = clerkSetPasswordDto;
-
-  if (password !== confirmPassword) {
-    throw new BadRequestException(
-      'Password and Confirm Password do not match',
-    );
-  }
-
-  const token = await this.otpService.verifyInvitationToken(
-    verificationToken,
-  );
-
-  if (!token) {
-    throw new BadRequestException(
-      'Invalid or expired verification token',
-    );
-  }
-
-  const clerk = await this.userRepository.findById(
-    token.userId.toString(),
-  );
-
-  if (!clerk) {
-    throw new NotFoundException('Clerk not found');
-  }
-
-  if (clerk.password) {
-    throw new BadRequestException(
-      'Password has already been set',
-    );
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  await this.userRepository.updateUser(clerk._id.toString(), {
-    password: hashedPassword,
-  });
-
-  return {
-    message: 'Password set successfully',
-  };
-}
 }

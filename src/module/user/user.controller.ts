@@ -10,28 +10,21 @@ export class UserController {
 
     constructor(
         private readonly userService: UserService
-    ){}
-    
+    ){}    
 
     @Post('create')
     @UseInterceptors(
     FileFieldsInterceptor([
     { name: 'aadharCard', maxCount: 1 },
-    { name: 'signature'                                                                                                                                                                                                 , maxCount: 1 },
-    { name: 'govEmployeeIdCard', maxCount: 1 },
     ]))
     async createUser(
     @Body() createUserDto: CreateUserDto,
     @UploadedFiles() files: {
         aadharCard?: Express.Multer.File[];
-        signature?: Express.Multer.File[];
-        govEmployeeIdCard?: Express.Multer.File[];
     },
     ) {
     return this.userService.createUser(createUserDto,{
         aadharCard: files?.aadharCard,
-        signature: files?.signature,
-        govEmployeeIdCard: files?.govEmployeeIdCard
     });
     }
 

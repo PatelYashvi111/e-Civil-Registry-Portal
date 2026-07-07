@@ -3,7 +3,6 @@ import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ClerkService } from './clerk.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { SendClerkInvitationDto } from './dto/send-clerk.invitation';
-import { ClerkSetPasswordDto } from './dto/clerk-set-password.dto';
 
 @Controller('clerk')
 export class ClerkController {
@@ -39,9 +38,4 @@ export class ClerkController {
     return this.clerkService.sendInvitation(sendClerkInvitationDto);
   }
 
-  @Post('set-password')
-  async setPassword( @Body() clerkSetPasswordDto: ClerkSetPasswordDto ) {
-    return this.clerkService.setPassword(clerkSetPasswordDto);
-  }
-  
 }
