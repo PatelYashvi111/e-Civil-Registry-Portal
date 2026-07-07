@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, BadRequestException, NotFoundException } from '@nestjs/common';
 import { Types } from 'mongoose';
 import { HolidayRepository } from './holiday.repository';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
@@ -11,11 +11,15 @@ export class HolidayService {
   ) {}
 
   async createHoliday(createHolidayDto: CreateHolidayDto) {
-    await this.holidayRepository.createHoliday(createHolidayDto);
+    
+    const existingHoliday = await this.holidayRepository.findByHolidayDate( createHolidayDto.holidayDate );
 
-    return {
-      message: 'Holiday created successfully.',
-    };
+    if(existingHoliday) {
+    throw new BadRequestException('Holiday is already exists.');
+    }
+
+   return await this.holidayRepository.createHoliday(createHolidayDto);
+
   }
 
   async findAll() {

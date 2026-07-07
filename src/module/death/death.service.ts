@@ -4,11 +4,8 @@ import { UpdateDeathDto } from "./dto/update-death.dto";
 import { DeathRepository } from "./death.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
-<<<<<<< HEAD
 import { CounterService } from "../counter/counter.service";
-=======
 import { PaginationDto } from "src/common/paginatio/dto/pagination.dto";
->>>>>>> feat/service
 
 @Injectable()
 export class DeathService {
