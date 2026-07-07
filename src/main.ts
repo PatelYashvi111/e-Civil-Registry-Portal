@@ -1,5 +1,7 @@
 import * as dotenv from 'dotenv';
-dotenv.config({ path: 'env.local' });
+dotenv.config({ path: '.env.local' });
+
+console.log('JWT_SECRET:', process.env.JWT_SECRET as string);
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';

@@ -20,6 +20,8 @@ import { SlotModule } from './module/slot/slot.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { ApplicationModule } from './module/application/application.module';
 import { OtpModule } from './module/otp/otp.module';
+import { ClerkModule } from './module/clerk/clerk.module';
+import { DatabaseModule } from './database/seeds/seed.module';
 
 @Module({
   imports: [
@@ -32,6 +34,8 @@ import { OtpModule } from './module/otp/otp.module';
     ScheduleModule.forRoot(),
 
     MongooseModule.forRoot(process.env.MONGO_URI as string),
+
+    DatabaseModule,
 
     UserModule,
     EmailModule,
@@ -49,6 +53,7 @@ import { OtpModule } from './module/otp/otp.module';
     SlotModule,
     ApplicationModule,
     OtpModule,
+    ClerkModule,
   ],
 
   controllers: [AppController],

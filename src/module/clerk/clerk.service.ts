@@ -4,12 +4,10 @@ import { ClerkRepository } from './clerk.repository';
 import { UserRepository } from '../user/user.repository';
 import { RoleService } from '../role/role.service';
 import { AadharService } from '../aadhar/aadhar.service';
-import { CounterService } from '../counter/counter.service';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { EmailService } from '../email/email.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { SendClerkInvitationDto } from '../clerk/dto/send-clerk.invitation';
-import { ClerkSetPasswordDto } from './dto/clerk-set-password.dto';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { OtpService } from '../otp/otp.service';
 
@@ -20,78 +18,77 @@ export class ClerkService {
     private readonly userRepository: UserRepository,
     private readonly roleService: RoleService,
     private readonly aadharService: AadharService,
-    private readonly counterService: CounterService,
     private readonly cloudinaryService: CloudinaryService,
     private readonly emailService: EmailService,
     private readonly otpService: OtpService,
   ) {}
 
   async createClerk(
-    createClerkDto: CreateClerkDto,
-    files: {
-      aadharCard?: Express.Multer.File[];
-      signature?: Express.Multer.File[];
-      govEmployeeIdCard?: Express.Multer.File[];
-    },
-  ) {
-    const email = createClerkDto.email.toLowerCase();
+  createClerkDto: CreateClerkDto,
+  files: {
+    aadharCard?: Express.Multer.File[];
+    signature?: Express.Multer.File[];
+    govEmployeeIdCard?: Express.Multer.File[];
+  },
+) {
+  const email = createClerkDto.email.toLowerCase();
 
-    const existingUser = await this.userRepository.findByEmail(email);
+  const existingUser = await this.userRepository.findByEmail(email);
 
-    if (existingUser) {
-      throw new BadRequestException('Email already exists');
-    }
+  if (existingUser) {
+    throw new BadRequestException('Email already exists');
+  }
 
-    await this.aadharService.findById(createClerkDto.aadharId);
+  const existingEmployee = await this.clerkRepository.findByEmployeeId(
+    createClerkDto.employeeId,
+  );
 
-    const clerkRole = await this.roleService.findByName(RoleEnum.CLERK);
+  if (existingEmployee) {
+    throw new BadRequestException('Employee ID already exists');
+  }
 
-    if (!clerkRole) {
-      throw new BadRequestException('Clerk role not found');
-    }
+  const aadhar = await this.aadharService.findById(createClerkDto.aadharId);
 
-    const employeeId = await this.counterService.generateEmployeeId();
+  if (!aadhar) {
+    throw new NotFoundException('Aadhar not found');
+  }
 
-    let aadharCard: string | undefined;
-    let signature: string | undefined;
-    let govEmployeeIdCard: string | undefined;
+  const clerkRole = await this.roleService.findByName(RoleEnum.CLERK);
 
-    if (files.aadharCard?.length) {
-      const uploaded = await this.cloudinaryService.uploadFile(
-        files.aadharCard[0],
-        'clerk/aadhar-card',
-      );
-      aadharCard = uploaded.url;
-    }
+  if (!clerkRole) {
+    throw new BadRequestException('Clerk role not found');
+  }
 
-    if (files.signature?.length) {
-      const uploaded = await this.cloudinaryService.uploadFile(
-        files.signature[0],
-        'clerk/signature',
-      );
-      signature = uploaded.url;
-    }
+  if (!files.aadharCard?.length || !files.signature?.length || !files.govEmployeeIdCard?.length) {
+    throw new BadRequestException('All documents are required');
+  }
 
-    if (files.govEmployeeIdCard?.length) {
-      const uploaded = await this.cloudinaryService.uploadFile(
-        files.govEmployeeIdCard[0],
-        'clerk/gov-id-card',
-      );
-      govEmployeeIdCard = uploaded.url;
-    }
+  const aadharUpload = await this.cloudinaryService.uploadFile(
+    files.aadharCard[0],
+    'clerk/aadhar-card',
+  );
 
-    const clerk = await this.clerkRepository.createClerk({
+  const signatureUpload = await this.cloudinaryService.uploadFile(
+    files.signature[0],
+    'clerk/signature',
+  );
+
+  const govIdUpload = await this.cloudinaryService.uploadFile(
+    files.govEmployeeIdCard[0],
+    'clerk/gov-id-card',
+  );
+
+  return this.clerkRepository.createClerk(
+    {
       ...createClerkDto,
       email,
-      roleId: clerkRole._id.toString(),
-      employeeId,
-      aadharCard,
-      signature,
-      govEmployeeIdCard,
-    });
-
-    return clerk;
-  }
+      aadharCard: aadharUpload.url,
+      signature: signatureUpload.url,
+      govEmployeeIdCard: govIdUpload.url,
+    },
+    clerkRole._id.toString(),
+  );
+}
 
   async sendInvitation(dto: SendClerkInvitationDto) {
     const clerk = await this.userRepository.findById(dto.clerkId);
@@ -113,47 +110,4 @@ export class ClerkService {
     };
   }
  
-  async setPassword(clerkSetPasswordDto: ClerkSetPasswordDto) {
-  const { verificationToken, password, confirmPassword } = clerkSetPasswordDto;
-
-  if (password !== confirmPassword) {
-    throw new BadRequestException(
-      'Password and Confirm Password do not match',
-    );
-  }
-
-  const token = await this.otpService.verifyInvitationToken(
-    verificationToken,
-  );
-
-  if (!token) {
-    throw new BadRequestException(
-      'Invalid or expired verification token',
-    );
-  }
-
-  const clerk = await this.userRepository.findById(
-    token.userId.toString(),
-  );
-
-  if (!clerk) {
-    throw new NotFoundException('Clerk not found');
-  }
-
-  if (clerk.password) {
-    throw new BadRequestException(
-      'Password has already been set',
-    );
-  }
-
-  const hashedPassword = await bcrypt.hash(password, 10);
-
-  await this.userRepository.updateUser(clerk._id.toString(), {
-    password: hashedPassword,
-  });
-
-  return {
-    message: 'Password set successfully',
-  };
-}
 }

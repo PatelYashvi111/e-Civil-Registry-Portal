@@ -12,20 +12,45 @@ export class ClerkRepository {
     private readonly userModel: Model<UserDocument>,
   ) {}
 
-  async createClerk(createClerkDto: CreateClerkDto) {
+  async createClerk(
+    createClerkDto: CreateClerkDto,
+    roleId: string,
+  ) {
     const createdClerk = new this.userModel({
       ...createClerkDto,
-      roleId: toObjectId(createClerkDto.roleId),
+      roleId: toObjectId(roleId),
       aadharId: toObjectId(createClerkDto.aadharId),
       officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
     });
 
-    return createdClerk.save();
+    const savedClerk = await createdClerk.save();
+
+    return savedClerk.populate([
+      { path: 'roleId' },
+      { path: 'aadharId' },
+      { path: 'officeDepartmentId' },
+    ]);
   }
 
-  async findAllClerks( clerkRoleId: string, skip: number, limit: number, page: number ) {
-    const filter = { roleId: toObjectId(clerkRoleId) };
-    const data = await this.userModel.find(filter).skip(skip).limit(limit).sort({ createdAt: -1 });
+  async findAllClerks(
+    clerkRoleId: string,
+    skip: number,
+    limit: number,
+    page: number,
+  ) {
+    const filter = {
+      roleId: toObjectId(clerkRoleId),
+    };
+
+    const data = await this.userModel
+      .find(filter)
+      .populate('roleId')
+      .populate('aadharId')
+      .populate('officeDepartmentId')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
     const total = await this.userModel.countDocuments(filter);
 
     return {
@@ -46,5 +71,7 @@ export class ClerkRepository {
         roleId: toObjectId(clerkRoleId),
 });
     }
-
+  async findByEmployeeId(employeeId: string) {
+    return this.userModel.findOne({ employeeId });
+  }
 }

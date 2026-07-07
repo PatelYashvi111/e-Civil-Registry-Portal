@@ -1,15 +1,6 @@
-import {
-  IsEmail,
-  IsMongoId,
-  IsNotEmpty,
-  IsOptional,
-  IsString,
-} from 'class-validator';
+import { IsEmail, IsMongoId, IsNotEmpty, IsString, Length} from 'class-validator';
 
 export class CreateClerkDto {
-  @IsNotEmpty()
-  @IsMongoId()
-  roleId!: string;
 
   @IsNotEmpty()
   @IsMongoId()
@@ -23,19 +14,26 @@ export class CreateClerkDto {
   @IsEmail()
   email!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  employeeId?: string;
+  @Length(8, 20, {
+    message: 'Password must be between 8 and 20 characters long',
+  })
+    password!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  aadharCard?: string;
+  employeeId!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  signature?: string;
+  aadharCard!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  govEmployeeIdCard?: string;
+  signature!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  govEmployeeIdCard!: string;
 }
