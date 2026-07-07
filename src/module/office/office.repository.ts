@@ -31,7 +31,7 @@ export class OfficeRepository {
   }
 
   async update(id: string, updateOfficeDto: UpdateOfficeDto) {
-    return await this.model.findByIdAndUpdate(id, updateOfficeDto, { new: true });
+    return await this.model.findByIdAndUpdate(id, updateOfficeDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {

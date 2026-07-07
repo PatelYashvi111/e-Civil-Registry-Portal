@@ -1,19 +1,25 @@
-import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  Length,
+  Matches,
+} from 'class-validator';
 
-export class RegisterDto {
+export class ClerkSetPasswordDto {
 
   @IsNotEmpty()
   @IsString()
   verificationToken!: string;
 
   @IsNotEmpty()
-  @IsEmail()
-  email!: string;
-  
-  @IsNotEmpty()
   @IsString()
   @Length(8, 20, {
     message: 'Password must be between 8 and 20 characters long',
   })
   password!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @Length(8, 20)
+  confirmPassword!: string;
 }

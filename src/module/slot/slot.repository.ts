@@ -52,7 +52,7 @@ export class SlotRepository {
     }
 
     async update(id: string, updateSlotDto: UpdateSlotDto) {
-        return await this.slotModel.findByIdAndUpdate(id, updateSlotDto, { new: true });
+        return await this.slotModel.findByIdAndUpdate(id, updateSlotDto, { returnDocument: 'after' });
     }
 
     async delete(id: string) {

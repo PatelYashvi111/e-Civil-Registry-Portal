@@ -30,7 +30,7 @@ export class DistrictRepository {
   }
 
   async update(id: string, updateDistrictDto: UpdateDistrictDto) {
-    return await this.model.findByIdAndUpdate(id, updateDistrictDto, { new: true });
+    return await this.model.findByIdAndUpdate(id, updateDistrictDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {

@@ -45,7 +45,7 @@ export class AuthService {
       throw new BadRequestException('Aadhar number not found');
     }
 
-    await this.otpService.generateAadharVerificationOtp(aadhar._id.toString());
+    await this.otpService.generateAadharVerificationOtp(aadhar._id.toString(),aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
 
     const verificationToken = this.jwtService.sign(
    {
@@ -70,7 +70,7 @@ export class AuthService {
       throw new BadRequestException('Aadhar number not found');
     }
 
-    await this.otpService.verifyAadharVerificationOtp(aadhar._id.toString(), otp);
+    await this.otpService.verifyAadharVerificationOtp(aadhar._id.toString(), otp, aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
     return{
        message: 'Aadhar verification successful'
     }
@@ -78,7 +78,7 @@ export class AuthService {
   }
 
   async register(registerDto: RegisterDto) {
-  const { password, verificationToken } = registerDto;
+  const { email,password, verificationToken } = registerDto;
 
   let payload;
 
@@ -114,15 +114,23 @@ export class AuthService {
     throw new BadRequestException('User role not found');
   }
 
-  const hashedPassword = await bcrypt.hash(password, 10);
+  const existingEmail = await this.userModel.findOne({
+  email: email.toLowerCase(),
+});
+
+if (existingEmail) {
+  throw new BadRequestException('Email already exists');
+}
+  const hashedPassword = await bcrypt.hash(registerDto.password, 10);
 
   const user = await this.userModel.create({
-    roleId: userRole._id,
-    aadharId: aadhar._id,
-    email: aadhar.email,
-    password: hashedPassword,
-  });
+  roleId: userRole._id,
+  aadharId: aadhar._id,
+  email: email.toLowerCase(),
+  password: hashedPassword,
+});
 
+  console.log('Saved Password:', user.password);
   return {
     message: 'Registered successfully',
     userId: user._id,
@@ -175,7 +183,13 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User Not Found');
     }
 
-    await this.otpService.generateForgotPasswordOtp(user._id.toString());
+    const aadhar = await this.aadharModel.findById(user.aadharId);
+
+    if(!aadhar) {
+      throw new BadRequestException('Aadhar Not Found');
+    }
+
+    await this.otpService.generateForgotPasswordOtp(user._id.toString(), aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
 
     return { message: 'OTP sent successfully' };
 
@@ -190,10 +204,13 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User not found');
     }
 
-    await this.otpService.verifyForgotPasswordOtp(
-    user._id.toString(),
-    otp,
-  );
+    const aadhar = await this.aadharModel.findById(user.aadharId);
+
+    if(!aadhar) {
+      throw new BadRequestException('Aadhar not found');
+    }
+
+    await this.otpService.verifyForgotPasswordOtp( user._id.toString(), otp, aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
 
     return { message: 'OTP verified successfully' }
 
@@ -208,10 +225,13 @@ async login(loginDto: LoginDto) {
       throw new BadRequestException('User Not Found');
     }
 
-      await this.otpService.verifyForgotPasswordOtp(
-    user._id.toString(),
-    otp,
-  )
+    const aadhar = await this.aadharModel.findById(user.aadharId);
+
+    if(!aadhar) {
+      throw new BadRequestException('Aadhar Not Found');
+    }
+
+    await this.otpService.verifyForgotPasswordOtp( user._id.toString(), otp, aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`)
   
     if (password !== confirmPassword) {
        throw new BadRequestException( 'Password and Confirm Password do not match' );
