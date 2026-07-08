@@ -26,7 +26,7 @@ export class StateRepository {
   }
 
   async update(id: string, updateStateDto: UpdateStateDto) {
-    return await this.model.findByIdAndUpdate(id, updateStateDto, { new: true });
+    return await this.model.findByIdAndUpdate(id, updateStateDto, { returnDocument: 'after' });
   }
 
   async delete(id: string) {

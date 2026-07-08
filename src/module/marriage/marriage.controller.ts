@@ -1,8 +1,9 @@
-import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles, Query } from '@nestjs/common';
 import { CreateMarriageDto } from './dto/create-marriage.dto';
 import { UpdateMarriageDto } from './dto/update-marriage.dto';
 import { MarriageService } from './marriage.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PaginationDto } from 'src/common/paginatio/dto/pagination.dto';
 
 @Controller('marriage')
 export class MarriageController {
@@ -23,16 +24,35 @@ export class MarriageController {
         { name: 'bridePhoto', maxCount: 1 },
         { name: 'groomPhoto', maxCount: 1 },
         { name: 'invitationCard', maxCount: 1 },
-        
     ])
     )
-    async create( @Body()  createMarriageDto: CreateMarriageDto, @UploadedFiles() files: any){
-        return this.marriageService.create( createMarriageDto, files);
+    async create( @Body()  createMarriageDto: CreateMarriageDto, @UploadedFiles() files: {
+        brideAadharCard?: Express.Multer.File[];
+        groomAadharCard?: Express.Multer.File[];
+        witnessAadharCard?: Express.Multer.File[];
+        brahmanAadharCard?: Express.Multer.File[];
+        brideRationCard?: Express.Multer.File[];
+        groomRationCard?: Express.Multer.File[];
+        bridePhoto?: Express.Multer.File[];
+        groomPhoto?: Express.Multer.File[];
+        invitationCard?: Express.Multer.File[];
+    }){
+        return this.marriageService.create( createMarriageDto, {
+            brideAadharCard: files?.brideAadharCard,
+            groomAadharCard: files?.groomAadharCard,
+            witnessAadharCard: files?.witnessAadharCard,
+            brahmanAadharCard: files?.brahmanAadharCard,
+            brideRationCard: files?.brideAadharCard,
+            groomRationCard: files?.groomAadharCard,
+            bridePhoto: files?.bridePhoto,
+            groomPhoto: files?.groomPhoto,
+            invitationCard: files?.invitationCard,
+        });
     }
 
     @Get('all')
-    async findAll(){
-        return this.marriageService.findAll();
+    async findAll(@Query() paginationDto: PaginationDto){
+        return this.marriageService.findAll(paginationDto);
     }
 
     @Get(':id')

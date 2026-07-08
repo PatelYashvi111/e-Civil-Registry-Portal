@@ -38,7 +38,7 @@ export class AadharRepository {
         }
 
         async updateAadhar(id: string, data: UpdateAadharDto) {
-            return await this.aadharModel.findByIdAndUpdate(id, data, { new: true });
+            return await this.aadharModel.findByIdAndUpdate(id, data, { returnDocument: 'after' });
         }
 
         async deleteAadhar(id: string) {

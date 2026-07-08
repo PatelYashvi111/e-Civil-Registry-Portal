@@ -5,6 +5,7 @@ import { UserRepository } from '../user/user.repository';
 import { RoleRepository } from '../role/role.repository';
 import { OfficeDepartmentRepository } from '../officeDepartment/officeDepartment.repository';
 import { RoleEnum } from 'src/common/enums/role.enums';
+import { ClerkRepository } from '../clerk/clerk.repository';
 
 @Injectable()
 export class SlotService {
@@ -13,6 +14,7 @@ export class SlotService {
     private readonly userRepository: UserRepository,
     private readonly roleRepository: RoleRepository,
     private readonly officeDepartmentRepository: OfficeDepartmentRepository,
+    private readonly clerkRepository: ClerkRepository,
   ) {}
 
   async generateSlots(officeDepartmentId: string, slotDate: string) {
@@ -32,7 +34,7 @@ export class SlotService {
     console.log("Clerk Role Id:", clerkRole.id);
 
     const clerkCount =
-      await this.userRepository.countClerksByOfficeDepartment(
+      await this.clerkRepository.countClerksByOfficeDepartment(
         officeDepartmentId.toString(),
         clerkRole._id.toString(),
       );

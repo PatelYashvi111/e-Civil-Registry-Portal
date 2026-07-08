@@ -25,12 +25,13 @@ export class UserService{
     
   async createUser(createUserDto: CreateUserDto, files: {
     aadharCard?: Express.Multer.File[];
-    signature?: Express.Multer.File[];
-    govEmployeeIdCard?: Express.Multer.File[];
   }) {
     const email = createUserDto.email.toLowerCase();
 
     const role =await this.roleService.findById(createUserDto.roleId);
+    if(role.name !== RoleEnum.USER ) {
+      throw new BadRequestException('Only USER is allowed');
+    }
 
     await this.aadharService.findById(createUserDto.aadharId);
 
@@ -40,19 +41,9 @@ export class UserService{
         throw new BadRequestException('Email already exists');
     }
 
-    let employeeId: string | undefined;
-
-    if( role.name === RoleEnum.CLERK || role.name === RoleEnum.ADMIN) {
-      createUserDto.employeeId = await this.counterService.generateEmployeeId();
-    }
-
     const aadharCardFile = files.aadharCard?.[0];
-    const signatureFile = files.signature?.[0];
-    const govEmployeeIdCardFile = files.govEmployeeIdCard?.[0];
 
     let aadharCard: string | undefined;
-    let signature: string | undefined;
-    let govEmployeeIdCard: string | undefined;
 
     if (aadharCardFile) {
       const uploaded = await this.cloudinaryService.uploadFile(
@@ -63,41 +54,15 @@ export class UserService{
       aadharCard = uploaded.url;
     }
 
-    if (signatureFile) {
-      const uploaded = await this.cloudinaryService.uploadFile(
-        signatureFile,
-        'user/signature',
-      );
-
-      signature = uploaded.url;
-    }
-
-    if (govEmployeeIdCardFile) {
-      const uploaded = await this.cloudinaryService.uploadFile(
-        govEmployeeIdCardFile,
-        'user/gov-employee-id-card',
-      );
-
-      govEmployeeIdCard = uploaded.url;
-    }
-
-
     const user = await this.userRepository.createUser({
       ...createUserDto,
       email,
-      employeeId,
       aadharCard,
-      signature,
-      govEmployeeIdCard,
     });
 
     await this.emailService.sendWelcomeEmail(user.email , 'User');
 
     return user;
-    }
-
-  async findByEmail( email: string ){
-        return this.userRepository.findByEmail( email );
     }
 
   async findById( id: string ){
@@ -120,6 +85,12 @@ export class UserService{
     }
 
   async updateUser( id: string, updateUserDto: UpdateUserDto ){
+        const user= await this.userRepository.findById( id );
+
+        if(!user) {
+            throw new NotFoundException('User not found');
+        }
+
         return this.userRepository.updateUser( id, updateUserDto );
         
     }
