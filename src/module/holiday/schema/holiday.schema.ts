@@ -47,3 +47,5 @@ export class Holiday {
     isNationalHoliday!: boolean;
 
 }
+
+export const HolidaySchema = SchemaFactory.createForClass(Holiday);

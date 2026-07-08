@@ -34,16 +34,8 @@ export class ClerkRepository {
     return clerk;
   }
 
-  async findAllClerks(
-    clerkRoleId: string,
-    skip: number,
-    limit: number,
-    page: number,
-  ) {
-    const filter = {
-      roleId: toObjectId(clerkRoleId),
-    };
-
+  async findAllClerks( clerkRoleId: string, skip: number, limit: number, page: number ) {
+    const filter = { roleId: toObjectId(clerkRoleId) };
     const data = await this.userModel
       .find(filter)
       .populate('roleId')
@@ -64,16 +56,18 @@ export class ClerkRepository {
     };
   }
 
-  async countClerksByOfficeDepartment(
-        officeDepartmentId: string,
-        clerkRoleId: string,
-    ) {
-        return this.userModel.countDocuments({
-        officeDepartmentId: toObjectId(officeDepartmentId),
-        roleId: toObjectId(clerkRoleId),
-});
-    }
   async findByEmployeeId(employeeId: string) {
     return this.userModel.findOne({ employeeId });
   }
+
+  async countClerksByOfficeDepartment(
+      officeDepartmentId: string,
+      clerkRoleId: string,
+  ) {
+      return this.userModel.countDocuments({
+      officeDepartmentId: toObjectId(officeDepartmentId),
+      roleId: toObjectId(clerkRoleId),
+    });
+  }
+
 }

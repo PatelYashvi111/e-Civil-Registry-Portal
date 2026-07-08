@@ -21,15 +21,15 @@ export class HolidayRepository {
     return await this.holidayModel.find(filter);
   }
 
-  async findById(id: string): Promise<HolidayDocument | null> {
+  async findById(id: string) {
     return await this.holidayModel.findById(id);
   }
   
-  async findOne( filter: QueryFilter<HolidayDocument> ): Promise<HolidayDocument | null> {
+  async findOne( filter: QueryFilter<HolidayDocument> ) {
     return await this.holidayModel.findOne(filter);
   }
   
-  async findByHolidayDate( holidayDate: Date ): Promise<HolidayDocument | null> {
+  async findByHolidayDate( holidayDate: Date ) {
     return await this.holidayModel.findOne({ holidayDate });
   }
 
@@ -42,18 +42,11 @@ export class HolidayRepository {
   }
 
 
-  async updateHoliday( id: string, updateHolidayDto: UpdateHolidayDto ): Promise<HolidayDocument | null> {
-    return await this.holidayModel.findByIdAndUpdate(
-      id,
-      updateHolidayDto,
-      {
-        new: true,
-        runValidators: true,
-      },
-    );
+  async updateHoliday( id: string, updateHolidayDto: UpdateHolidayDto ) {
+    return await this.holidayModel.findByIdAndUpdate( id, updateHolidayDto, { new: true, runValidators: true });
   }
 
-  async deleteHoliday(id: string): Promise<HolidayDocument | null> {
+  async deleteHoliday(id: string) {
     return await this.holidayModel.findByIdAndDelete(id);
   }
 

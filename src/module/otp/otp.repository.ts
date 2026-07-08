@@ -19,7 +19,7 @@ export class OtpRepository {
     }
 
     async findOne(filter: QueryFilter<OtpDocument>) {
-        return await this.otpModel.findOne(filter);
+        return await this.otpModel.findOne(filter).sort({ createdAt: -1 });
     }
 
     async findById(id: string) {

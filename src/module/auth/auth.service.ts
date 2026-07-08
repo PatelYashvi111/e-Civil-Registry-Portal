@@ -73,7 +73,8 @@ export class AuthService {
 
     await this.otpService.verifyAadharVerificationOtp(aadhar._id.toString(), otp, aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
     return{
-       message: 'Aadhar verification successful'
+       message: 'Aadhar verification successful',
+       aadharDetails: aadhar,
     }
     
   }

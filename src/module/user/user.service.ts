@@ -29,6 +29,9 @@ export class UserService{
     const email = createUserDto.email.toLowerCase();
 
     const role =await this.roleService.findById(createUserDto.roleId);
+    if(role.name !== RoleEnum.USER ) {
+      throw new BadRequestException('Only USER is allowed');
+    }
 
     await this.aadharService.findById(createUserDto.aadharId);
 

@@ -37,3 +37,4 @@ export class CreateClerkDto {
   @IsString()
   govEmployeeIdCard!: string;
 }
+

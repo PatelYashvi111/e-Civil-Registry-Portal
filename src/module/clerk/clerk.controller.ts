@@ -1,8 +1,9 @@
-import { Body, Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, Get, Patch, Delete, Param, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ClerkService } from './clerk.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
-import { SendClerkInvitationDto } from './dto/send-clerk.invitation';
+import { UpdateClerkDto } from './dto/update-clerk.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('clerk')
 export class ClerkController {
@@ -32,10 +33,9 @@ export class ClerkController {
     });
   }
 
-  @Post('send-invitation')
-  async sendInvitation(
-    @Body() sendClerkInvitationDto: SendClerkInvitationDto ) {
-    return this.clerkService.sendInvitation(sendClerkInvitationDto);
+  @Get('all')
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.clerkService.findAll(paginationDto);
   }
 
 }

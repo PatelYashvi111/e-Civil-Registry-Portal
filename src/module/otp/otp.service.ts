@@ -24,12 +24,15 @@ export class OtpService {
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
 
-    await this.otpRepository.createOtp({
+    const createdOtp = await this.otpRepository.createOtp({
       aadharId,
       otpNumber: otp,
       serviceType: OtpEnum.AADHAR_VERIFICATION,
       expiredAt: new Date(Date.now() + 5 * 60 * 1000),
     });
+
+    console.log('Created OTP:', createdOtp.otpNumber);
+console.log('Created ExpiredAt:', createdOtp.expiredAt);
    
     await this.emailService.sendOtpEmail(email,name,otp,'Generate OTP');
         console.log(`Generate OTP for Aadhar generation: ${otp}`);
@@ -45,6 +48,10 @@ export class OtpService {
     if (!otpRecord) {
       throw new BadRequestException('OTP not found');
     }
+
+    console.log('Current Time :', new Date().toISOString());
+  console.log('OTP ExpiredAt:', otpRecord.expiredAt);
+  console.log('OTP ExpiredAt ISO:', otpRecord.expiredAt.toISOString());
 
     if (new Date() > otpRecord.expiredAt) {
       throw new BadRequestException('OTP expired');

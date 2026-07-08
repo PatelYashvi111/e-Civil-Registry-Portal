@@ -11,14 +11,26 @@ export class HolidayService {
   ) {}
 
   async createHoliday(createHolidayDto: CreateHolidayDto) {
-    
-    const existingHoliday = await this.holidayRepository.findByHolidayDate( createHolidayDto.holidayDate );
+  const { holidayDate } = createHolidayDto;
 
-    if(existingHoliday) {
-    throw new BadRequestException('Holiday is already exists.');
+  const existingHoliday = await this.holidayRepository.findOne({holidayDate, officeId: new Types.ObjectId(createHolidayDto.officeId) })
+
+  if(existingHoliday) {
+      throw new BadRequestException('Holiday already exists');
+  }
+
+  if(holidayDate.getFullYear() !== createHolidayDto.year) {
+    throw new BadRequestException('year does not match holiday date');
+  }
+
+  if(createHolidayDto.isNationalHoliday) {
+    const existingNationalHoliday = await this.holidayRepository.findOne({holidayDate, isNationalHoliday: true});
+
+    if(existingNationalHoliday) {
+      throw new BadRequestException('National holiday already exists');
     }
-
-   return await this.holidayRepository.createHoliday(createHolidayDto);
+  }
+   return await this.holidayRepository.createHoliday({...createHolidayDto, holidayDate});
 
   }
 
@@ -27,7 +39,13 @@ export class HolidayService {
   }
 
   async findById(id: string) {
-    return await this.holidayRepository.findById(id);
+    const holiday = await this.holidayRepository.findById(id);
+
+    if (!holiday) {
+      throw new NotFoundException('Holiday not found');
+    }
+
+    return holiday;
   }
 
   async findByYear(year: number) {
@@ -40,22 +58,24 @@ export class HolidayService {
     );
   }
 
-  async updateHoliday(
-    id: string,
-    updateHolidayDto: UpdateHolidayDto,
-  ) {
-    await this.holidayRepository.updateHoliday(id, updateHolidayDto);
+  async updateHoliday( id: string, updateHolidayDto: UpdateHolidayDto ) {
+    const holiday = await this.holidayRepository.findById(id);
 
-    return {
-      message: 'Holiday updated successfully.',
-    };
+    if(!holiday) {
+      throw new NotFoundException('Holiday not found');
+    }
+
+    return await this.holidayRepository.updateHoliday(id,updateHolidayDto);
   }
 
   async deleteHoliday(id: string) {
-    await this.holidayRepository.deleteHoliday(id);
+    const holiday = await this.holidayRepository.findById(id);
 
-    return {
-      message: 'Holiday deleted successfully.',
-    };
+    if(!holiday) {
+      throw new NotFoundException('Holiday not found');
+    }
+
+    return await this.holidayRepository.deleteHoliday(id);
+
   }
 }
