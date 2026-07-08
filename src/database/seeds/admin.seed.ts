@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import { User } from '../../module/user/schema/user.schema';
 import { Role } from '../../module/role/schema/role.schema';
+import { RoleEnum } from '../../common/enums/role.enums';
+import { StatusEnum } from 'src/common/enums/status.enums';
 
 @Injectable()
 export class AdminSeed {
@@ -19,7 +21,7 @@ export class AdminSeed {
 
   async seed(): Promise<void> {
     const adminRole = await this.roleModel.findOne({
-      name: 'ADMIN',
+      name: RoleEnum.ADMIN,
     });
 
     if (!adminRole) {
@@ -41,13 +43,11 @@ export class AdminSeed {
     );
 
     await this.userModel.create({
-      name: process.env.DEFAULT_ADMIN_NAME,
       email: process.env.DEFAULT_ADMIN_EMAIL,
-      phone: process.env.DEFAULT_ADMIN_PHONE,
       password: hashedPassword,
-      role: adminRole._id,
-      isRegistered: true,
-      isActive: true,
+      roleId: adminRole._id,
+      aadharId: adminAadhar._id,
+      status: StatusEnum.ACTIVE,
     });
 
     this.logger.log('Default admin created successfully.');

@@ -32,10 +32,4 @@ export class ClerkController {
     });
   }
 
-  @Post('send-invitation')
-  async sendInvitation(
-    @Body() sendClerkInvitationDto: SendClerkInvitationDto ) {
-    return this.clerkService.sendInvitation(sendClerkInvitationDto);
-  }
-
 }

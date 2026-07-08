@@ -5,11 +5,8 @@ import { UserRepository } from '../user/user.repository';
 import { RoleService } from '../role/role.service';
 import { AadharService } from '../aadhar/aadhar.service';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
-import { EmailService } from '../email/email.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
-import { SendClerkInvitationDto } from '../clerk/dto/send-clerk.invitation';
 import { RoleEnum } from 'src/common/enums/role.enums';
-import { OtpService } from '../otp/otp.service';
 
 @Injectable()
 export class ClerkService {
@@ -19,8 +16,6 @@ export class ClerkService {
     private readonly roleService: RoleService,
     private readonly aadharService: AadharService,
     private readonly cloudinaryService: CloudinaryService,
-    private readonly emailService: EmailService,
-    private readonly otpService: OtpService,
   ) {}
 async createClerk(
   createClerkDto: CreateClerkDto,
@@ -46,7 +41,7 @@ async createClerk(
     throw new BadRequestException('Employee ID already exists');
   }
 
-  const aadhar = await this.aadharService.findById(createClerkDto.aadharId);
+  const aadhar = await this.aadharService.findById(createClerkDto.aadharNumber);
 
   if (!aadhar) {
     throw new NotFoundException('Aadhar not found');
@@ -100,24 +95,5 @@ const govEmployeeIdCard = govIdUpload.url;
   return clerk;
 }
 
-  async sendInvitation(dto: SendClerkInvitationDto) {
-    const clerk = await this.userRepository.findById(dto.clerkId);
 
-    if (!clerk) {
-      throw new NotFoundException('Clerk not found');
-    }
-
-    const verificationToken =
-      await this.otpService.generateInvitationToken(clerk._id);
-
-    await this.emailService.sendClerkInvitationEmail(
-      clerk.email,
-      verificationToken,
-    );
-
-    return {
-      message: 'Invitation sent successfully',
-    };
-  }
- 
 }

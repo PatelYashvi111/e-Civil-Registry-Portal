@@ -19,7 +19,7 @@ export class ClerkRepository {
     const createdClerk = new this.userModel({
       ...createClerkDto,
       roleId: toObjectId(roleId),
-      aadharId: toObjectId(createClerkDto.aadharId),
+      aadharId: toObjectId(createClerkDto.aadharNumber),
       officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
     });
 

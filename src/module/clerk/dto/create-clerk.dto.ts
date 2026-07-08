@@ -3,8 +3,8 @@ import { IsEmail, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 export class CreateClerkDto {
 
   @IsNotEmpty()
-  @IsMongoId()
-  aadharId!: string;
+  @IsString()
+  aadharNumber!: string;
 
   @IsNotEmpty()
   @IsMongoId()
