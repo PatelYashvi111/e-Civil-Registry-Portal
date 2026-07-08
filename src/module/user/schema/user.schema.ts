@@ -49,7 +49,7 @@ export class User {
   email!: string;
 
   @Prop({ 
-    required: false,
+    required: true,
     type: String,
     trim: true,
  })
