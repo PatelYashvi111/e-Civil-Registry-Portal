@@ -14,12 +14,12 @@ export class ClerkRepository {
 
   async createClerk(
     createClerkDto: CreateClerkDto,
-    roleId: string,
+    role: string,
   ) {
     const createdClerk = new this.userModel({
       ...createClerkDto,
-      roleId: toObjectId(roleId),
-      aadharId: toObjectId(createClerkDto.aadharId),
+      role,
+      aadharNumber: createClerkDto.aadharNumber,
       officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
     });
 

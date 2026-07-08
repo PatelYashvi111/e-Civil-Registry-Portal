@@ -17,7 +17,6 @@ export class ClerkService {
     private readonly roleService: RoleService,
     private readonly aadharService: AadharService,
     private readonly cloudinaryService: CloudinaryService,
-
   ) {}
 
   async createClerk(
@@ -44,7 +43,7 @@ export class ClerkService {
     throw new BadRequestException('Employee ID already exists');
   }
 
-  const aadhar = await this.aadharService.findById(createClerkDto.aadharId);
+  const aadhar = await this.aadharService.findByAadharNumber(createClerkDto.aadharNumber);
 
   if (!aadhar) {
     throw new NotFoundException('Aadhar not found');
@@ -94,5 +93,6 @@ export class ClerkService {
     return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), skip, limit, page);
   }
 
- 
+   
+
 }
