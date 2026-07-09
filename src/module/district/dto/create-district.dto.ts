@@ -1,4 +1,4 @@
- import { IsNotEmpty,  IsString, MaxLength } from 'class-validator';
+ import { IsNotEmpty,  IsString, MaxLength, IsMongoId } from 'class-validator';
 
 export class CreateDistrictDto {
 
@@ -7,8 +7,8 @@ export class CreateDistrictDto {
   @MaxLength(15)
   name!: string;
 
-  @IsString()
   @IsNotEmpty()
+  @IsMongoId()
   stateId!: string;
   
 }

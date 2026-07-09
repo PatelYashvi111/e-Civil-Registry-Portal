@@ -2,6 +2,7 @@ import { Module } from "@nestjs/common";
 import { InjectModel, MongooseModule } from "@nestjs/mongoose";
 import { Injectable } from "@nestjs/common";
 import { User, UserSchema } from "src/module/user/schema/user.schema";
+import { Clerk, ClerkSchema } from "./schema/clerk.schema";
 import { ClerkRepository } from "./clerk.repository";
 import { ClerkService } from "./clerk.service";
 import { ClerkController } from "./clerk.controller";
@@ -16,7 +17,8 @@ import { OtpModule } from "../otp/otp.module"
 @Module({
     imports: [
         MongooseModule.forFeature([
-            { name: User.name, schema: UserSchema }
+            { name: User.name, schema: UserSchema },
+            { name: Clerk.name, schema: ClerkSchema }
         ]),
         UserModule,
         RoleModule,

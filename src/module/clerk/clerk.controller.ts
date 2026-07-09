@@ -53,4 +53,4 @@ export class ClerkController {
     return this.clerkService.deleteClerk(id);
   }
 
-}
+}   
