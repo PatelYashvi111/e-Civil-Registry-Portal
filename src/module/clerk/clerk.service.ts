@@ -6,7 +6,9 @@ import { RoleService } from '../role/role.service';
 import { AadharService } from '../aadhar/aadhar.service';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
+import { CreateUserDto } from '../user/dto/create-user.dto';
 import { RoleEnum } from 'src/common/enums/role.enums';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class ClerkService {
@@ -17,7 +19,8 @@ export class ClerkService {
     private readonly aadharService: AadharService,
     private readonly cloudinaryService: CloudinaryService,
   ) {}
-async createClerk(
+
+  async createClerk(
   createClerkDto: CreateClerkDto,
   files: {
     aadharCard?: Express.Multer.File[];
@@ -52,48 +55,96 @@ async createClerk(
   if (!clerkRole) {
     throw new BadRequestException('Clerk role not found');
   }
-if (!files.aadharCard?.length) {
-  throw new BadRequestException('Aadhar Card is required');
-}
 
-if (!files.signature?.length) {
-  throw new BadRequestException('Signature is required');
-}
+  if (!files.aadharCard?.length || !files.signature?.length || !files.govEmployeeIdCard?.length) {
+    throw new BadRequestException('All documents are required');
+  }
 
-if (!files.govEmployeeIdCard?.length) {
-  throw new BadRequestException('Government Employee ID Card is required');
-}
-const aadharUpload = await this.cloudinaryService.uploadFile(
-  files.aadharCard[0],
-  'clerk/aadhar-card',
-);
+  const aadharUpload = await this.cloudinaryService.uploadFile(
+    files.aadharCard[0],
+    'clerk/aadhar-card',
+  );
 
-const signatureUpload = await this.cloudinaryService.uploadFile(
-  files.signature[0],
-  'clerk/signature',
-);
+  const signatureUpload = await this.cloudinaryService.uploadFile(
+    files.signature[0],
+    'clerk/signature',
+  );
 
-const govIdUpload = await this.cloudinaryService.uploadFile(
-  files.govEmployeeIdCard[0],
-  'clerk/gov-id-card',
-);
+  const govIdUpload = await this.cloudinaryService.uploadFile(
+    files.govEmployeeIdCard[0],
+    'clerk/gov-id-card',
+  );
 
-const aadharCard = aadharUpload.url;
-const signature = signatureUpload.url;
-const govEmployeeIdCard = govIdUpload.url;
-  const clerk = await this.clerkRepository.createClerk(
+  return this.clerkRepository.createClerk(
     {
       ...createClerkDto,
       email,
-      aadharCard,
-      signature,
-      govEmployeeIdCard,
+      aadharCard: aadharUpload.url,
+      signature: signatureUpload.url,
+      govEmployeeIdCard: govIdUpload.url,
     },
     clerkRole._id.toString(),
   );
-
-  return clerk;
 }
 
+   async findAll(paginationDto: PaginationDto) {
+    const {page=1, limit=10} = paginationDto;
+    const skip = (page - 1) * limit;
+    const clerkRole = await this.roleService.findByName(RoleEnum.CLERK);
+    return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), skip, limit, page);
+  }
+ 
+  async findById(id: string) {
+    const clerk = await this.clerkRepository.findById(id);
 
+    if (!clerk) {
+      throw new NotFoundException('Clerk not found');
+    }
+
+    return clerk;
+  
+  }
+
+  async updateClerk(id: string, updateClerkDto: CreateClerkDto) {
+    const clerk = await this.clerkRepository.update(id, updateClerkDto)
+    
+    if(!clerk) {
+      throw new BadRequestException('Clerk not found');
+    }
+
+    if(updateClerkDto.officeDepartmentId) {
+    const officeDepartment = await this.clerkRepository.findByOfficeDepartmentId(updateClerkDto.officeDepartmentId);
+
+    if(!officeDepartment) {
+      throw new BadRequestException('Office Department not found');
+    }
+  }
+
+   if(updateClerkDto.districtId) {
+   const district = await this.clerkRepository.findBydistrictId(updateClerkDto.districtId);
+
+    if(!district) {
+      throw new BadRequestException('District not found');
+    }
+  } 
+
+   if(updateClerkDto.password) {
+    updateClerkDto.password = await bcrypt.hash(updateClerkDto.password, 10); 
+   }
+    
+   if(updateClerkDto.status) {
+     clerk.status = updateClerkDto.status;
+   }
+  } 
+
+  async deleteClerk(id: string) {
+    const clerk = await this.clerkRepository.delete(id)
+
+    if(!clerk) {
+      throw new BadRequestException('Clerk not found');
+    }
+
+    return clerk;
+  
+    }
 }

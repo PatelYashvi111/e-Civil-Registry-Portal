@@ -6,6 +6,8 @@ import { District } from '../../module/district/schema/district.schema';
 import { Office } from '../../module/office/schema/office.schema';
 import { Department } from '../../module/department/schema/department.schema';
 import { OfficeDepartment } from '../../module/officeDepartment/schema/officeDepartment.schema';
+import { toObjectId } from 'src/common/utils/objectId.utils';
+import { AdminSeed } from './admin.seed';
 
 @Injectable()
 export class SeedService {
@@ -15,6 +17,7 @@ export class SeedService {
     @InjectModel(Office.name) private officeModel: Model<Office>,
     @InjectModel(Department.name) private departmentModel: Model<Department>,
     @InjectModel(OfficeDepartment.name) private officeDepartmentModel: Model<OfficeDepartment>,
+    private readonly adminSeed: AdminSeed,
   ) {}
 
   async seed() {
@@ -89,6 +92,9 @@ export class SeedService {
         departmentId: dept._id,
       });
     }
+
+
+    await this.adminSeed.seed();
 
     return {
       message: 'Seed completed successfully',

@@ -19,28 +19,31 @@ export class ClerkRepository {
     const createdClerk = new this.userModel({
       ...createClerkDto,
       roleId: toObjectId(roleId),
-      aadharId: toObjectId(createClerkDto.aadharNumber),
+      aadharNumber: toObjectId(createClerkDto.aadharNumber),
       officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
+      districtId: toObjectId(createClerkDto.districtId),
     });
 
-    return createdClerk.save();
+    const savedClerk = await createdClerk.save();
+
+    const clerk = await this.userModel
+      .findById(savedClerk._id)
+      .populate('roleId')
+      .populate('aadharId')
+      .populate('officeDepartmentId')
+      .populate('districtId');
+
+    return clerk;
   }
 
-  async findAllClerks(
-    clerkRoleId: string,
-    skip: number,
-    limit: number,
-    page: number,
-  ) {
-    const filter = {
-      roleId: toObjectId(clerkRoleId),
-    };
-
+  async findAllClerks( clerkRoleId: string, skip: number, limit: number, page: number ) {
+    const filter = { roleId: toObjectId(clerkRoleId) };
     const data = await this.userModel
       .find(filter)
       .populate('roleId')
       .populate('aadharId')
       .populate('officeDepartmentId')
+      .populate('districtId')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
@@ -56,7 +59,48 @@ export class ClerkRepository {
     };
   }
 
+  async findById(id: string) {
+    return this.userModel.findById(id);
+  }
+
+  async findByEmail(email: string) {
+    return this.userModel.findOne({ email });
+  }
+
+  async findByAadharNumber(aadharNumber: string) {
+    return this.userModel.findOne({ aadharNumber });
+  }
+
+  async findByOfficeDepartmentId(officeDepartmentId: string) {
+    return this.userModel.find({ officeDepartmentId });
+  }
+
+  async findBydistrictId(districtId: string) {
+    return this.userModel.find({ districtId });
+  }
+
+  async update(id: string, updateClerkDto: CreateClerkDto) {
+    return this.userModel.findByIdAndUpdate(id, updateClerkDto, {
+      returnDocument: 'after',
+    });
+  }
+  
+  async delete(id: string) {
+    return this.userModel.findByIdAndDelete(id);
+  }
+
   async findByEmployeeId(employeeId: string) {
     return this.userModel.findOne({ employeeId });
   }
+
+  async countClerksByOfficeDepartment(
+      officeDepartmentId: string,
+      clerkRoleId: string,
+  ) {
+      return this.userModel.countDocuments({
+      officeDepartmentId: toObjectId(officeDepartmentId),
+      roleId: toObjectId(clerkRoleId),
+    });
+  }
+
 }

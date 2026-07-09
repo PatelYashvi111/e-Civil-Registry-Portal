@@ -18,6 +18,10 @@ import { StateModule } from './module/state/state.module';
 import { DistrictModule } from './module/district/district.module';
 import { SlotModule } from './module/slot/slot.module';
 import { ScheduleModule } from '@nestjs/schedule';
+import { ApplicationModule } from './module/application/application.module';
+import { OtpModule } from './module/otp/otp.module';
+import { ClerkModule } from './module/clerk/clerk.module';
+import { DatabaseModule } from './database/seeds/seed.module';
 
 @Module({
   imports: [
@@ -30,6 +34,8 @@ import { ScheduleModule } from '@nestjs/schedule';
     ScheduleModule.forRoot(),
 
     MongooseModule.forRoot(process.env.MONGO_URI as string),
+
+    DatabaseModule,
 
     UserModule,
     EmailModule,
@@ -45,6 +51,9 @@ import { ScheduleModule } from '@nestjs/schedule';
     StateModule,
     DistrictModule,
     SlotModule,
+    ApplicationModule,
+    OtpModule,
+    ClerkModule,
   ],
 
   controllers: [AppController],

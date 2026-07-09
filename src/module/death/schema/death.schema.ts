@@ -18,6 +18,13 @@ export class Death {
     deceasedAadharId!: Types.ObjectId;
 
     @Prop({
+         required: true,
+         type: Types.ObjectId,
+         ref: 'District',
+    })
+    deathDistrictId!: Types.ObjectId;
+    
+    @Prop({
         required: true,
         type: Types.ObjectId,
         ref: 'Aadhar'
@@ -34,13 +41,7 @@ export class Death {
         required: true,
         type: Date,
     })
-    dateOfDeath!: Date;
-
-    @Prop({
-        required: true,
-        type: String,
-    })
-    timeOfDeath!: string;
+    dateAndTimeOfDeath!: Date;
 
     @Prop({
         required: true,

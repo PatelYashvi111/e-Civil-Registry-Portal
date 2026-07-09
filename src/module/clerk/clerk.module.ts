@@ -11,6 +11,7 @@ import { AadharModule } from "src/module/aadhar/aadhar.module";
 import { CounterModule } from "src/module/counter/counter.module";
 import { CloudinaryModule } from "src/common/cloudinary/cloudinary.module";
 import { EmailModule } from "src/module/email/email.module";
+import { OtpModule } from "../otp/otp.module"
 
 @Module({
     imports: [
@@ -23,6 +24,7 @@ import { EmailModule } from "src/module/email/email.module";
         CounterModule,
         CloudinaryModule,
         EmailModule,
+        OtpModule,
     ],
 
     controllers: [ClerkController],

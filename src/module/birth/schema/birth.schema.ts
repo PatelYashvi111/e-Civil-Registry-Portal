@@ -19,13 +19,7 @@ export class Birth {
         required: true,
         type: Date
     })
-    birthDate!:Date;
-
-    @Prop({
-        required: true,
-        type: String,
-    })
-    birthTime!: string;
+    birthDateAndTime!:Date;
 
     @Prop({
         required: true,

@@ -1,8 +1,9 @@
-import { Body, Controller, Post, UploadedFiles, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Post, Get, Patch, Delete, Param, Query, UploadedFiles, UseInterceptors } from '@nestjs/common';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { ClerkService } from './clerk.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
-import { SendClerkInvitationDto } from './dto/send-clerk.invitation';
+import { UpdateClerkDto } from './dto/update-clerk.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('clerk')
 export class ClerkController {
@@ -25,11 +26,31 @@ export class ClerkController {
       govEmployeeIdCard?: Express.Multer.File[];
     },
   ) {
-    return this.clerkService.createClerk(createClerkDto, {
+    return this.clerkService.createClerk(createClerkDto , {
       aadharCard: files?.aadharCard,
       signature: files?.signature,
       govEmployeeIdCard: files?.govEmployeeIdCard,
     });
+  }
+
+  @Get('all')
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.clerkService.findAll(paginationDto);
+  }
+
+  @Get(':id')
+  async findById( @Param('id') id: string ) {
+    return this.clerkService.findById(id);
+  }
+
+  @Patch(':id')
+  async updateClerk( @Param('id') id: string, @Body() updateClerkDto: UpdateClerkDto ) {
+    return this.clerkService.updateClerk(id, updateClerkDto);
+  }
+
+  @Delete(':id')
+  async deleteClerk( @Param('id') id: string ) {
+    return this.clerkService.deleteClerk(id);
   }
 
 }

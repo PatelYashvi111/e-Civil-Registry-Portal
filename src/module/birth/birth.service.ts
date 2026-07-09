@@ -5,6 +5,7 @@ import { BirthRepository } from "./birth.repositroy";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
 import { CounterService } from "../counter/counter.service";
+import { PaginationDto } from "src/common/paginatio/dto/pagination.dto";
 
 @Injectable()
 export class BirthService {
@@ -25,7 +26,7 @@ export class BirthService {
     }) {
       const existingBirth = await this.birthRepository.findDuplication(
             createBirthDto.babyName, 
-            new Date(createBirthDto.birthDate),  
+            new Date(createBirthDto.birthDateAndTime),  
             createBirthDto.fatherAadharId, 
             createBirthDto.motherAadharId,
         )
@@ -109,8 +110,10 @@ export class BirthService {
 
     }
 
-    async findAll() {
-        return await this.birthRepository.findAll();
+    async findAll(paginationDto: PaginationDto) {
+        const { page=1 , limit=10 } = paginationDto;
+        const skip = (page - 1) * limit;
+        return await this.birthRepository.findAll(skip, limit, page);
     }
 
     async findById( id: string ) {
@@ -120,7 +123,7 @@ export class BirthService {
     async update( id: string, updateBirthDto: UpdateBirthDto ) {
        const existingBirth = await this.birthRepository.findDuplication(
             updateBirthDto.babyName as string, 
-            new Date(updateBirthDto.birthDate as string),
+            new Date(updateBirthDto.birthDateAndTime as string),
             updateBirthDto.fatherAadharId as string, 
             updateBirthDto.motherAadharId as string,
         )

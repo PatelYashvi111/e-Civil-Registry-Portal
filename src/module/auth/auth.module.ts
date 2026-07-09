@@ -10,6 +10,7 @@ import { RoleModule } from '../role/role.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Otp, OtpSchema} from '../otp/schema/otp.schema';
 import { OtpModule } from '../otp/otp.module';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -18,10 +19,17 @@ import { OtpModule } from '../otp/otp.module';
     RoleModule,
     OtpModule,
     PassportModule,
-    JwtModule.register({
-      secret: process.env.JWT_SECRET as string,
-      signOptions: { expiresIn: '7d' },
-    }),
+    ConfigModule,
+    JwtModule.registerAsync({
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) => ({
+    secret: configService.get<string>('JWT_SECRET'),
+    signOptions: {
+      expiresIn: '7d',
+    },
+  }),
+}),
   ],
 
   controllers: [AuthController],

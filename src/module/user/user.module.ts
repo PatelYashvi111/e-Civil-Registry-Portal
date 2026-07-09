@@ -10,7 +10,6 @@ import { AadharModule } from '../aadhar/aadhar.module';
 import { CounterModule } from '../counter/counter.module';
 import { CloudinaryModule } from 'src/common/cloudinary/cloudinary.module';
 
-
 @Module({
   imports: [
     MongooseModule.forFeature([

@@ -25,12 +25,13 @@ export class UserService{
     
   async createUser(createUserDto: CreateUserDto, files: {
     aadharCard?: Express.Multer.File[];
-    signature?: Express.Multer.File[];
-    govEmployeeIdCard?: Express.Multer.File[];
   }) {
     const email = createUserDto.email.toLowerCase();
 
     const role =await this.roleService.findById(createUserDto.roleId);
+    if(role.name !== RoleEnum.USER ) {
+      throw new BadRequestException('Only USER is allowed');
+    }
 
     await this.aadharService.findById(createUserDto.aadharId);
 
@@ -53,8 +54,6 @@ export class UserService{
       aadharCard = uploaded.url;
     }
 
-    
-
     const user = await this.userRepository.createUser({
       ...createUserDto,
       email,
@@ -64,10 +63,6 @@ export class UserService{
     await this.emailService.sendWelcomeEmail(user.email , 'User');
 
     return user;
-    }
-
-  async findByEmail( email: string ){
-        return this.userRepository.findByEmail( email );
     }
 
   async findById( id: string ){

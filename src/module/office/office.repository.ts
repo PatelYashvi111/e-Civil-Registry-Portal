@@ -18,7 +18,8 @@ export class OfficeRepository {
   }
 
   async findAll() {
-    return await this.model.find().populate('districtId');
+    return await this.model.find().populate({path: 'districtId',populate: {path: 'stateId'}});
+    //return await this.model.find().populate('districtId');
   }
 
   async findByName(name: string) {
