@@ -26,7 +26,7 @@ export class ClerkController {
       govEmployeeIdCard?: Express.Multer.File[];
     },
   ) {
-    return this.clerkService.createClerk(createClerkDto, {
+    return this.clerkService.createClerk(createClerkDto , {
       aadharCard: files?.aadharCard,
       signature: files?.signature,
       govEmployeeIdCard: files?.govEmployeeIdCard,
@@ -36,6 +36,21 @@ export class ClerkController {
   @Get('all')
   async findAll(@Query() paginationDto: PaginationDto) {
     return this.clerkService.findAll(paginationDto);
+  }
+
+  @Get(':id')
+  async findById( @Param('id') id: string ) {
+    return this.clerkService.findById(id);
+  }
+
+  @Patch(':id')
+  async updateClerk( @Param('id') id: string, @Body() updateClerkDto: UpdateClerkDto ) {
+    return this.clerkService.updateClerk(id, updateClerkDto);
+  }
+
+  @Delete(':id')
+  async deleteClerk( @Param('id') id: string ) {
+    return this.clerkService.deleteClerk(id);
   }
 
 }

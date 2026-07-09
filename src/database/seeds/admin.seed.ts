@@ -61,7 +61,7 @@ export class AdminSeed {
       password: hashedPassword,
       roleId: adminRole._id,   
       aadharId: adminAadhar._id,
-     status: StatusEnum.ACTIVE,
+      status: StatusEnum.ACTIVE,
     });
 
     this.logger.log('Default admin created successfully.');
