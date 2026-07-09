@@ -11,27 +11,36 @@ export class HolidayService {
   ) {}
 
   async createHoliday(createHolidayDto: CreateHolidayDto) {
-  const { holidayDate } = createHolidayDto;
+    const { holidayDate } = createHolidayDto;
 
-  const existingHoliday = await this.holidayRepository.findOne({holidayDate, officeId: new Types.ObjectId(createHolidayDto.officeId) })
+    const existingHoliday = await this.holidayRepository.findOne({
+      holidayDate,
+      officeId: new Types.ObjectId(createHolidayDto.officeId),
+    });
 
-  if(existingHoliday) {
+    if (existingHoliday) {
       throw new BadRequestException('Holiday already exists');
-  }
-
-  if(holidayDate.getFullYear() !== createHolidayDto.year) {
-    throw new BadRequestException('year does not match holiday date');
-  }
-
-  if(createHolidayDto.isNationalHoliday) {
-    const existingNationalHoliday = await this.holidayRepository.findOne({holidayDate, isNationalHoliday: true});
-
-    if(existingNationalHoliday) {
-      throw new BadRequestException('National holiday already exists');
     }
-  }
-   return await this.holidayRepository.createHoliday({...createHolidayDto, holidayDate});
 
+    if (holidayDate.getFullYear() !== createHolidayDto.year) {
+      throw new BadRequestException('Year does not match holiday date');
+    }
+
+    if (createHolidayDto.isNationalHoliday) {
+      const existingNationalHoliday =
+        await this.holidayRepository.findOne({
+          holidayDate,
+          isNationalHoliday: true,
+        });
+
+      if (existingNationalHoliday) {
+        throw new BadRequestException(
+          'National holiday already exists',
+        );
+      }
+    }
+
+    return await this.holidayRepository.createHoliday(createHolidayDto);
   }
 
   async findAll() {
@@ -61,21 +70,56 @@ export class HolidayService {
   async updateHoliday( id: string, updateHolidayDto: UpdateHolidayDto ) {
     const holiday = await this.holidayRepository.findById(id);
 
-    if(!holiday) {
+    if (!holiday) {
       throw new NotFoundException('Holiday not found');
     }
 
-    return await this.holidayRepository.updateHoliday(id,updateHolidayDto);
+    if (
+      updateHolidayDto.holidayDate &&
+      updateHolidayDto.year &&
+      updateHolidayDto.holidayDate.getFullYear() !== updateHolidayDto.year
+    ) {
+      throw new BadRequestException( 'Year does not match holiday date' );
+    }
+
+    if ( updateHolidayDto.holidayDate || updateHolidayDto.officeId ) {
+      const existingHoliday = await this.holidayRepository.findOne({
+          holidayDate:
+          updateHolidayDto.holidayDate ??
+          holiday.holidayDate,
+          officeId: new Types.ObjectId(
+          updateHolidayDto.officeId ?? holiday.officeId,
+          ),
+        });
+
+      if ( existingHoliday && existingHoliday._id.toString() !== id ) {
+        throw new BadRequestException( 'Holiday already exists' );
+      }
+    }
+
+    if (updateHolidayDto.isNationalHoliday) {
+      const existingNationalHoliday = await this.holidayRepository.findOne({
+          holidayDate:
+          updateHolidayDto.holidayDate ??
+          holiday.holidayDate,
+          isNationalHoliday: true,
+        });
+
+      if ( existingNationalHoliday && existingNationalHoliday._id.toString() !== id ) {
+        throw new BadRequestException( 'National holiday already exists' );
+      }
+    }
+
+    return await this.holidayRepository.updateHoliday( id, updateHolidayDto );
   }
 
   async deleteHoliday(id: string) {
     const holiday = await this.holidayRepository.findById(id);
 
-    if(!holiday) {
+    if (!holiday) {
       throw new NotFoundException('Holiday not found');
     }
 
     return await this.holidayRepository.deleteHoliday(id);
-
   }
 }

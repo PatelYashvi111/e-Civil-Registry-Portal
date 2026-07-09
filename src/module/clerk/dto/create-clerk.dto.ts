@@ -1,4 +1,5 @@
-import { IsEmail, IsMongoId, IsNotEmpty, IsString, Length} from 'class-validator';
+import { IsEmail, IsMongoId, IsNotEmpty, IsString, Length, IsOptional, IsEnum } from 'class-validator';
+import { StatusEnum } from '../../../common/enums/status.enums';
 
 export class CreateClerkDto {
 
@@ -9,6 +10,11 @@ export class CreateClerkDto {
   @IsNotEmpty()
   @IsMongoId()
   officeDepartmentId!: string;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  districtId!: string;
+
 
   @IsNotEmpty()
   @IsEmail()
@@ -24,6 +30,10 @@ export class CreateClerkDto {
   @IsNotEmpty()
   @IsString()
   employeeId!: string;
+
+  @IsOptional()
+  @IsEnum(StatusEnum)
+  status?: StatusEnum;
 
   @IsNotEmpty()
   @IsString()

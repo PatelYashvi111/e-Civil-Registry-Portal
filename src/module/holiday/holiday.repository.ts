@@ -12,12 +12,12 @@ export class HolidayRepository {
     private readonly holidayModel: Model<HolidayDocument>,
   ) {}
 
-  async createHoliday( createHolidayDto: CreateHolidayDto ): Promise<HolidayDocument> {
+  async createHoliday( createHolidayDto: CreateHolidayDto ) {
     const holiday = new this.holidayModel(createHolidayDto);
     return await holiday.save();
   }
 
-  async findAll( filter: QueryFilter<HolidayDocument> = {} ): Promise<HolidayDocument[]> {
+  async findAll( filter: QueryFilter<HolidayDocument> = {} ) {
     return await this.holidayModel.find(filter);
   }
 
@@ -40,7 +40,6 @@ export class HolidayRepository {
   async findByOffice( officeId: Types.ObjectId ): Promise<HolidayDocument[]> {
     return await this.holidayModel.find({ officeId });
   }
-
 
   async updateHoliday( id: string, updateHolidayDto: UpdateHolidayDto ) {
     return await this.holidayModel.findByIdAndUpdate( id, updateHolidayDto, { new: true, runValidators: true });

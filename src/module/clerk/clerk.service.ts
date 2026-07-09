@@ -6,6 +6,7 @@ import { RoleService } from '../role/role.service';
 import { AadharService } from '../aadhar/aadhar.service';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
+import { UpdateClerkDto } from './dto/update-clerk.dto';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
@@ -78,6 +79,7 @@ export class ClerkService {
     {
       ...createClerkDto,
       email,
+      password: await bcrypt.hash(createClerkDto.password, 10),
       aadharCard: aadharUpload.url,
       signature: signatureUpload.url,
       govEmployeeIdCard: govIdUpload.url,
@@ -92,7 +94,58 @@ export class ClerkService {
     const clerkRole = await this.roleService.findByName(RoleEnum.CLERK);
     return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), skip, limit, page);
   }
+ 
+  async findById(id: string) {
+    const clerk = await this.clerkRepository.findById(id);
 
-   
+    if (!clerk) {
+      throw new NotFoundException('Clerk not found');
+    }
 
+    return clerk;
+  
+  }
+
+  async updateClerk( id: string, updateClerkDto: UpdateClerkDto ) {
+    const existingClerk = await this.clerkRepository.findById(id);
+
+    if (!existingClerk) {
+      throw new NotFoundException('Clerk not found');
+    }
+
+    if (updateClerkDto.officeDepartmentId) {
+      const officeDepartment = await this.clerkRepository.findByOfficeDepartmentId( updateClerkDto.officeDepartmentId );
+
+      if (!officeDepartment.length) {
+        throw new BadRequestException('Office Department not found');
+      }
+    }
+
+    if (updateClerkDto.districtId) {
+      const district = await this.clerkRepository.findBydistrictId( updateClerkDto.districtId );
+
+      if (!district.length) {
+        throw new BadRequestException('District not found');
+      }
+    }
+
+    if (updateClerkDto.password) {
+      updateClerkDto.password = await bcrypt.hash( updateClerkDto.password, 10 );
+    }
+
+    const updatedClerk = await this.clerkRepository.update( id, updateClerkDto );
+
+    return updatedClerk;
+  }
+
+  async deleteClerk(id: string) {
+    const clerk = await this.clerkRepository.delete(id)
+
+    if(!clerk) {
+      throw new BadRequestException('Clerk not found');
+    }
+
+    return clerk;
+  
+    }
 }
