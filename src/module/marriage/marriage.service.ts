@@ -5,7 +5,7 @@ import { MarriageRepository } from "./marriage.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "../../common/cloudinary/cloudinary.service";
 import { CounterService } from "../counter/counter.service";
-import { PaginationDto } from "src/common/paginatio/dto/pagination.dto";
+import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
 
 @Injectable()
 export class MarriageService {

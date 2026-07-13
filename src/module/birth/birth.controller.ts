@@ -3,7 +3,7 @@ import { CreateBirthDto } from './dto/create-birth.dto';
 import { UpdateBirthDto } from './dto/update-birth.dto';
 import { BirthService } from './birth.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { PaginationDto } from 'src/common/paginatio/dto/pagination.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('birth')
 export class BirthController {

@@ -6,6 +6,7 @@ import { RoleService } from '../role/role.service';
 import { AadharService } from '../aadhar/aadhar.service';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
+import { UpdateClerkDto } from './dto/update-clerk.dto';
 import { CreateUserDto } from '../user/dto/create-user.dto';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
@@ -88,10 +89,10 @@ export class ClerkService {
 }
 
    async findAll(paginationDto: PaginationDto) {
-    const {page=1, limit=10} = paginationDto;
+    const {page=1, limit=10, search} = paginationDto;
     const skip = (page - 1) * limit;
     const clerkRole = await this.roleService.findByName(RoleEnum.CLERK);
-    return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), skip, limit, page);
+    return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), skip, limit, page, search);
   }
  
   async findById(id: string) {
@@ -105,7 +106,7 @@ export class ClerkService {
   
   }
 
-  async updateClerk(id: string, updateClerkDto: CreateClerkDto) {
+  async updateClerk(id: string, updateClerkDto: UpdateClerkDto) {
     const clerk = await this.clerkRepository.update(id, updateClerkDto)
     
     if(!clerk) {
