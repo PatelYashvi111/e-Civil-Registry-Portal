@@ -11,10 +11,7 @@ import { ClerkRepository } from '../clerk/clerk.repository';
 export class SlotService {
   constructor(
     private readonly slotRepository: SlotRepository,
-    private readonly userRepository: UserRepository,
-    private readonly roleRepository: RoleRepository,
     private readonly officeDepartmentRepository: OfficeDepartmentRepository,
-    private readonly clerkRepository: ClerkRepository,
   ) {}
 
   async generateSlots(officeDepartmentId: string, slotDate: string) {
@@ -24,28 +21,6 @@ export class SlotService {
       throw new NotFoundException('Office department not found');
     }
 
-    const clerkRole = await this.roleRepository.findByName(RoleEnum.CLERK);
-
-    if(!clerkRole) {
-      throw new NotFoundException('Clerk role not found');
-    }
-
-    console.log("OfficeDepartmentId:", officeDepartmentId);
-    console.log("Clerk Role Id:", clerkRole.id);
-
-    const clerkCount =
-      await this.clerkRepository.countClerksByOfficeDepartment(
-        officeDepartmentId.toString(),
-        clerkRole._id.toString(),
-      );
-
-    console.log('Clerk Count:', clerkCount);
-
-    if (!clerkCount || clerkCount === 0) {
-      throw new NotFoundException(
-        'No clerks found for this office department',
-      );
-    }
     const existingSlot =
       await this.slotRepository.findByOfficeDepartmentAndDate(
         officeDepartmentId,
@@ -78,7 +53,7 @@ export class SlotService {
       slotDate: new Date(slotDate),
       startTime,
       endTime,
-      maxCapacity: clerkCount,
+      maxCapacity: 1,
       bookedCount: 0,
       isAvailable: true,
     }));

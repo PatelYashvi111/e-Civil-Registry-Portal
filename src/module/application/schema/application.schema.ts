@@ -47,6 +47,7 @@ export class Application {
 
    @Prop({
     required: true,
+    refPath: 'serviceType',
     type: Types.ObjectId,
    })
    serviceId!: Types.ObjectId;

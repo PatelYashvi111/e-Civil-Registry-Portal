@@ -53,7 +53,6 @@ export class ClerkRepository {
       .find(filter)
       .populate('roleId')
       .populate('officeDepartmentId')
-      .populate('districtId')
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
