@@ -23,11 +23,11 @@ export class DistrictService {
   return await this.districtRepository.create({...createDistrictDto,name });
 }
   async findAll(paginationDto: PaginationDto) {
-    const { page=1, limit=10 } = paginationDto;
+    const { page=1, limit=10, search } = paginationDto;
 
     const skip = (page-1) * limit;
 
-      return await this.districtRepository.findAll(skip, limit, page);  
+      return await this.districtRepository.findAll(skip, limit, page, search);  
   }
 
   async findOne(id: string) {

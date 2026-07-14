@@ -17,17 +17,122 @@ export class OfficeRepository {
     return await this.model.create(createOfficeDto);
   }
 
-  async findAll(skip: number, limit: number, page: number) {
-    const data = await this.model.find().skip(skip).limit(limit).sort({ createdAt: -1 }).populate({path: 'districtId',populate: { path: 'stateId' }});
-    const total = await this.model.countDocuments();
-    return {
-      data,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+async findAll(
+  skip: number,
+  limit: number,
+  page: number,
+  search?: string,
+) {
+  const pipeline: any[] = [
+    {
+      $lookup: {
+        from: 'districts',
+        localField: 'districtId',
+        foreignField: '_id',
+        as: 'district',
+      },
+    },
+    {
+      $unwind: {
+        path: '$district',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+      $lookup: {
+        from: 'states',
+        localField: 'district.stateId',
+        foreignField: '_id',
+        as: 'state',
+      },
+    },
+    {
+      $unwind: {
+        path: '$state',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+  ];
+
+  // Search
+  if (search) {
+    pipeline.push({
+      $match: {
+        $or: [
+          {
+            name: {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            'district.name': {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            'state.name': {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+        ],
+      },
+    });
   }
+
+  // Count
+  const countPipeline = [...pipeline];
+
+  countPipeline.push({
+    $count: 'total',
+  });
+
+  const countResult = await this.model.aggregate(countPipeline);
+
+  const total = countResult.length ? countResult[0].total : 0;
+
+  // Sorting
+  pipeline.push({
+    $sort: {
+      createdAt: -1,
+    },
+  });
+
+  // Pagination
+  pipeline.push(
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+  );
+
+  // Output fields
+  pipeline.push({
+    $project: {
+      _id: 1,
+      name: 1,
+      createdAt: 1,
+      districtName: '$district.name',
+      stateName: '$state.name',
+    },
+  });
+
+  const data = await this.model.aggregate(pipeline);
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    search,
+    totalPages: Math.ceil(total / limit),
+  };
+}
 
   async findByName(name: string) {
     return await this.model.findOne({ name });
