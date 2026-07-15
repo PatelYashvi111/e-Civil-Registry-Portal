@@ -5,7 +5,6 @@ import { User, UserDocument } from '../user/schema/user.schema';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { UpdateClerkDto } from './dto/update-clerk.dto';
 import { toObjectId } from 'src/common/utils/objectId.utils';
-import { first } from 'rxjs';
 
 @Injectable()
 export class ClerkRepository {
@@ -23,7 +22,6 @@ export class ClerkRepository {
       roleId: toObjectId(roleId),
       aadharNumber: toObjectId(createClerkDto.aadharNumber),
       officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
-      districtId: toObjectId(createClerkDto.districtId),
     });
 
     const savedClerk = await createdClerk.save();
@@ -33,7 +31,6 @@ export class ClerkRepository {
       .populate('roleId')
       .populate('aadharId')
       .populate('officeDepartmentId')
-      .populate('districtId');
 
     return clerk;
   }
@@ -102,22 +99,6 @@ export class ClerkRepository {
         preserveNullAndEmptyArrays: true,
       },
     },
-
-    // District
-    {
-      $lookup: {
-        from: 'districts',
-        localField: 'office.districtId',
-        foreignField: '_id',
-        as: 'district',
-      },
-    },
-    {
-      $unwind: {
-        path: '$district',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
   ];
 
   // Search
@@ -157,12 +138,6 @@ export class ClerkRepository {
           },
           {
             'office.name': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'district.name': {
               $regex: search,
               $options: 'i',
             },
@@ -221,8 +196,6 @@ export class ClerkRepository {
       lastName: '$aadhar.lastName',
 
       officeName: '$office.name',
-
-      districtName: '$district.name',
     },
   });
 
