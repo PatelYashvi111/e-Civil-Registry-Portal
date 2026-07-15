@@ -17,7 +17,6 @@ export class DistrictRepository {
     return await this.model.create(createDistrictDto);
   }
 
-  
 async findAll(
   skip: number,
   limit: number,

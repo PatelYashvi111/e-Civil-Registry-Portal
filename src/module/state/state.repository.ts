@@ -13,17 +13,75 @@ export class StateRepository {
     return await this.model.create(createStateDto);
   }
 
-  async findAll(skip: number, limit: number, page: number) {
-    const data = await this.model.find().skip(skip).limit(limit).sort({ createdAt: -1 });
-    const total = await this.model.countDocuments();
-    return {
-      data,
-      total,
-      page,
-      limit,
-      totalPages: Math.ceil(total / limit),
-    };
+async findAll(
+  skip: number,
+  limit: number,
+  page: number,
+  search?: string,
+) {
+  const pipeline: any[] = [];
+
+  // Search
+  if (search) {
+    pipeline.push({
+      $match: {
+        name: {
+          $regex: search,
+          $options: 'i',
+        },
+      },
+    });
   }
+
+  // Count Pipeline
+  const countPipeline = [...pipeline];
+
+  countPipeline.push({
+    $count: 'total',
+  });
+
+  const countResult = await this.model.aggregate(countPipeline);
+
+  const total = countResult.length ? countResult[0].total : 0;
+
+  // Sorting
+  pipeline.push({
+    $sort: {
+      createdAt: -1,
+    },
+  });
+
+  // Pagination
+  pipeline.push(
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+  );
+
+  // Project
+  pipeline.push({
+    $project: {
+      _id: 1,
+      name: 1,
+      createdAt: 1,
+      updatedAt: 1,
+    },
+  });
+
+  const data = await this.model.aggregate(pipeline);
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    search,
+    totalPages: Math.ceil(total / limit),
+  };
+}
 
   async findByName(name: string) {
     return await this.model.findOne({ name });
