@@ -121,14 +121,6 @@ export class ClerkService {
       }
     }
 
-    if (updateClerkDto.districtId) {
-      const district = await this.clerkRepository.findBydistrictId( updateClerkDto.districtId );
-
-      if (!district.length) {
-        throw new BadRequestException('District not found');
-      }
-    }
-
     if (updateClerkDto.password) {
       updateClerkDto.password = await bcrypt.hash( updateClerkDto.password, 10 );
     }

@@ -25,7 +25,6 @@ export class ClerkRepository {
       roleId: toObjectId(roleId),
       aadharNumber: createClerkDto.aadharNumber,
       officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
-      districtId: toObjectId(createClerkDto.districtId),
     });
 
     const savedClerk = await createdClerk.save();
@@ -34,7 +33,6 @@ export class ClerkRepository {
       .findById(savedClerk._id)
       .populate('roleId')
       .populate('officeDepartmentId')
-      .populate('districtId');
 
     return clerk;
   }
@@ -73,7 +71,6 @@ export class ClerkRepository {
       .findById(id)
       .populate('roleId')
       .populate('officeDepartmentId')
-      .populate('districtId');
   }
 
   async findByEmail(email: string) {
