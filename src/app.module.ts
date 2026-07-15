@@ -22,7 +22,7 @@ import { ApplicationModule } from './module/application/application.module';
 import { OtpModule } from './module/otp/otp.module';
 import { ClerkModule } from './module/clerk/clerk.module';
 import { DatabaseModule } from './database/seeds/seed.module';
-import { DashboardModule } from './module/dashboard/dashboard.module';
+//import { DashboardModule } from './module/dashboard/dashboard.module';
 
 @Module({
   imports: [
@@ -55,7 +55,7 @@ import { DashboardModule } from './module/dashboard/dashboard.module';
     ApplicationModule,
     OtpModule,
     ClerkModule,
-    DashboardModule
+   // DashboardModule
   ],
 
   controllers: [AppController],
