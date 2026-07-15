@@ -1,7 +1,8 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query } from '@nestjs/common';
 import { HolidayService } from './holiday.service';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('holiday')
 export class HolidayController {
@@ -15,8 +16,8 @@ export class HolidayController {
   }
 
   @Get('all')
-  async findAll() {
-    return await this.holidayService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return await this.holidayService.findAll(paginationDto);
   }
 
   @Get(':id')

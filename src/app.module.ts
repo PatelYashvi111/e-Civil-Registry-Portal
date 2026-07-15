@@ -22,6 +22,7 @@ import { ApplicationModule } from './module/application/application.module';
 import { OtpModule } from './module/otp/otp.module';
 import { ClerkModule } from './module/clerk/clerk.module';
 import { DatabaseModule } from './database/seeds/seed.module';
+import { HolidayModule } from './module/holiday/holiday.module';
 //import { DashboardModule } from './module/dashboard/dashboard.module';
 
 @Module({
@@ -55,6 +56,7 @@ import { DatabaseModule } from './database/seeds/seed.module';
     ApplicationModule,
     OtpModule,
     ClerkModule,
+    HolidayModule,
    // DashboardModule
   ],
 
