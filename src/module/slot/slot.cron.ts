@@ -10,7 +10,7 @@ export class SlotCron {
     private readonly officeDepartmentRepository: OfficeDepartmentRepository,
   ) {}
 
-  @Cron('0 8 * * *')
+  @Cron('27 8 * * *')
   async generateSlotsDaily() {
     console.log('========== Cron Started ==========');
 

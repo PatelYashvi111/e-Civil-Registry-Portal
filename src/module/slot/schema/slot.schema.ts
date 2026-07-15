@@ -39,6 +39,7 @@ export class Slot {
     @Prop({
         required: true,
         type: Number,
+        min: 1,
     })
     maxCapacity!: number;
 
