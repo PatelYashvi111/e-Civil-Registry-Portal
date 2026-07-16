@@ -16,20 +16,21 @@ export class DistrictRepository {
   async create(createDistrictDto: CreateDistrictDto) {
     return await this.model.create(createDistrictDto);
   }
-
-async findAll(
+  
+  async findAll(
   skip: number,
   limit: number,
   page: number,
   search?: string,
 ) {
+
   const pipeline: any[] = [
     {
       $lookup: {
         from: 'states',
         localField: 'stateId',
         foreignField: '_id',
-        as: 'district',
+        as: 'state',
       },
     },
     {
@@ -38,7 +39,6 @@ async findAll(
         preserveNullAndEmptyArrays: true,
       },
     },
-
   ];
 
   // Search
@@ -65,7 +65,6 @@ async findAll(
 
   // Count
   const countPipeline = [...pipeline];
-
   countPipeline.push({
     $count: 'total',
   });
@@ -91,16 +90,19 @@ async findAll(
     },
   );
 
-  // Output fields
+  // Projection
   pipeline.push({
     $project: {
       _id: 1,
       name: 1,
       createdAt: 1,
-      districtName: '$district.name',
-      stateName: '$state.name',
+      stateId: {
+        _id: '$state._id',
+        name: '$state.name',
+      },
     },
   });
+
 
   const data = await this.model.aggregate(pipeline);
 
@@ -119,7 +121,7 @@ async findAll(
   }
   
   async findById(id: string) {
-    return await this.model.findById(id);
+    return await this.model.findById(id).populate('stateId');
   }
 
   async update(id: string, updateDistrictDto: UpdateDistrictDto) {

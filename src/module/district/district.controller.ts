@@ -2,7 +2,7 @@ import { Controller, Post, Get, Patch, Delete, Body, Param, Query} from '@nestjs
 import { DistrictService } from './district.service';
 import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
-import { PaginationDto } from 'src/common/enums/pagination/pagination.dto';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Controller('district')
 export class DistrictController {

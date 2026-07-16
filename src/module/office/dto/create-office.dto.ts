@@ -3,7 +3,7 @@ import { IsMongoId, IsNotEmpty, IsString, MaxLength } from 'class-validator';
 export class CreateOfficeDto {
     @IsString()
     @IsNotEmpty()
-    @MaxLength(15)
+    @MaxLength(25)
     name!: string;
     
     @IsNotEmpty()

@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { Office } from '../office/schema/office.schema';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
+import { toObjectId } from 'src/common/utils/objectId.utils';
 
 @Injectable()
 export class OfficeRepository {
@@ -13,9 +14,15 @@ export class OfficeRepository {
         private model: Model<Office>
     ) {}
 
-  async create(createOfficeDto: CreateOfficeDto) {
-    return await this.model.create(createOfficeDto);
-  }
+  async createOffice(createOfficeDto: CreateOfficeDto) {
+
+  const createdOffice = new this.model({
+    ...createOfficeDto,
+    districtId: toObjectId(createOfficeDto.districtId),
+  });
+
+  return createdOffice.save();
+}
 
 async findAll(
   skip: number,
@@ -117,8 +124,14 @@ async findAll(
       _id: 1,
       name: 1,
       createdAt: 1,
-      districtName: '$district.name',
-      stateName: '$state.name',
+      districtId: {
+        _id: '$district._id',
+        name: '$district.name',
+      },
+      stateId: {
+        _id: '$state._id',
+        name: '$state.name',
+      },
     },
   });
 

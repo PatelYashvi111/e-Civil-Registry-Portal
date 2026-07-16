@@ -18,7 +18,8 @@ export class OfficeService {
       throw new BadRequestException('Office already exists');
     }
 
-    return await this.officeRepository.create(createOfficeDto);
+      return await this.officeRepository.createOffice(createOfficeDto);
+
   }
 
   async findAll(paginationDto: PaginationDto) {
