@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/schema/user.schema';
-import { Clerk, ClerkDocument } from './schema/clerk.schema';
+import { Clerk, ClerkDocument } from './schema/clerk.scheama';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { UpdateClerkDto } from './dto/update-clerk.dto';
 import { toObjectId } from 'src/common/utils/objectId.utils';
@@ -23,8 +23,9 @@ export class ClerkRepository {
     const createdClerk = new this.userModel({
       ...createClerkDto,
       roleId: toObjectId(roleId),
-      aadharNumber: createClerkDto.aadharNumber,
-      officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
+      aadharId: toObjectId(createClerkDto.aadharId),
+      officeId: toObjectId(createClerkDto.officeId),
+      departmentId: toObjectId(createClerkDto.departmentId),
     });
 
     const savedClerk = await createdClerk.save();
@@ -32,12 +33,13 @@ export class ClerkRepository {
     const clerk = await this.userModel
       .findById(savedClerk._id)
       .populate('roleId')
-      .populate('officeDepartmentId')
+      .populate('aadharId')
+      .populate('officeId')
+      .populate('departmentId')
 
     return clerk;
   }
 
-  
   async findAllClerks(
   clerkRoleId: string,
   skip: number,
@@ -91,7 +93,7 @@ export class ClerkRepository {
     {
       $lookup: {
         from: 'offices',
-        localField: 'officeDepartment.officeId',
+        localField: 'officeId',
         foreignField: '_id',
         as: 'office',
       },
@@ -99,6 +101,22 @@ export class ClerkRepository {
     {
       $unwind: {
         path: '$office',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    // District
+    {
+      $lookup: {
+        from: 'districts',
+        localField: 'office.districtId',
+        foreignField: '_id',
+        as: 'district',
+      },
+    },
+    {
+      $unwind: {
+        path: '$district',
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -141,6 +159,12 @@ export class ClerkRepository {
           },
           {
             'office.name': {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            'district.name': {
               $regex: search,
               $options: 'i',
             },
@@ -199,6 +223,8 @@ export class ClerkRepository {
       lastName: '$aadhar.lastName',
 
       officeName: '$office.name',
+
+      districtName: '$district.name',
     },
   });
 
@@ -218,7 +244,9 @@ export class ClerkRepository {
     return this.userModel
       .findById(id)
       .populate('roleId')
-      .populate('officeDepartmentId')
+      .populate('aadharId')
+      .populate({path: 'officeId', populate : {path: 'districtId'}})
+      .populate('departmentId')
   }
 
   async findByEmail(email: string) {
@@ -229,17 +257,18 @@ export class ClerkRepository {
     return this.userModel.findOne({ aadharNumber });
   }
 
-  async findByOfficeDepartmentId(officeDepartmentId: string) {
+  async findByOfficeId(officeId: string) {
     return this.userModel.find({
-      officeDepartmentId: toObjectId(officeDepartmentId),
+      officeId: toObjectId(officeId),
     });
   }
 
-  async findBydistrictId(districtId: string) {
+  async findByDepartmentId(departmentId: string) {
     return this.userModel.find({
-      districtId: toObjectId(districtId),
+      departmentId: toObjectId(departmentId),
     });
   }
+
 
   async update(id: string, updateClerkDto: UpdateClerkDto) {
     return this.userModel.findByIdAndUpdate(id, updateClerkDto, {
