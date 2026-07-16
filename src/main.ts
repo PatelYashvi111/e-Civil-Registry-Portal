@@ -1,5 +1,10 @@
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
+<<<<<<< HEAD
+=======
+
+console.log('JWT_SECRET:', process.env.JWT_SECRET as string);
+>>>>>>> feat/user
 
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common'; // <-- Add this
@@ -8,6 +13,7 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+<<<<<<< HEAD
   // Add this
   app.useGlobalPipes(
     new ValidationPipe({
@@ -32,6 +38,16 @@ async function bootstrap() {
   await app.listen(process.env.PORT || 3000);
 
   console.log(`Server running on port ${process.env.PORT || 3000}`);
+=======
+  app.enableCors({
+    origin: true, 
+    credentials: true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+  });
+
+  await app.listen(process.env.PORT ?? 3000);
+>>>>>>> feat/user
 }
 
 bootstrap();

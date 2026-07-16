@@ -5,6 +5,7 @@ import { DeathRepository } from "./death.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
 import { CounterService } from "../counter/counter.service";
+import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
 
 @Injectable()
 export class DeathService {
@@ -28,8 +29,7 @@ export class DeathService {
     }) {
        const existingDeath = await this.deathRepository.findDuplication(
             createDeathDto.deceasedAadharId,
-            new Date(createDeathDto.dateOfDeath),   
-            createDeathDto.timeOfDeath,
+            new Date(createDeathDto.dateAndTimeOfDeath),   
         )
 
         if(existingDeath) {
@@ -121,8 +121,10 @@ export class DeathService {
 
     }
 
-    async findAll() {
-        return await this.deathRepository.findAll();
+    async findAll(paginationDto: PaginationDto) {
+        const { page=1 , limit=10 } = paginationDto;
+        const skip = (page - 1) * limit;
+        return await this.deathRepository.findAll(skip, limit, page);
     }
 
     async findById( id: string ) {
@@ -132,8 +134,7 @@ export class DeathService {
     async update( id: string, updateDeathDto: UpdateDeathDto ) {
        const existingDeath = await this.deathRepository.findDuplication(
             updateDeathDto.deceasedAadharId as string,
-            new Date(updateDeathDto.dateOfDeath as string),   
-            updateDeathDto.timeOfDeath as string,
+            new Date(updateDeathDto.dateAndTimeOfDeath as string),   
         )
 
         if(existingDeath) {

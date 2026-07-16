@@ -8,6 +8,7 @@ import { Slot, SlotSchema } from "./schema/slot.schema";
 import { UserModule } from "../user/user.module";
 import { RoleModule } from "../role/role.module";
 import { OfficeDepartmentModule } from "../officeDepartment/officeDepartment.module";
+import { ClerkModule } from "../clerk/clerk.module";
 
 @Module({
     imports: [
@@ -19,7 +20,8 @@ import { OfficeDepartmentModule } from "../officeDepartment/officeDepartment.mod
         ]),
         UserModule,
         RoleModule,
-        OfficeDepartmentModule
+        OfficeDepartmentModule,
+        ClerkModule,
     ],
 
     controllers: [SlotController],

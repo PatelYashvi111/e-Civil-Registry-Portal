@@ -17,8 +17,18 @@ export class MarriageRepository {
         return await this.MarriageModel.create( createMarriageDto );
     }
 
-    async findAll() {
-        return await this.MarriageModel.find();
+    async findAll(skip: number, limit: number, page: number) {
+        const data = await this.MarriageModel.find().skip(skip).limit(limit)
+        .populate('brideAadharId').populate('groomAadharId').populate('witnessAadharId').populate('brahmanAadharId')
+        .populate({path: 'marriageDistrict', populate: {path: 'stateId'}});
+        const total = await this.MarriageModel.countDocuments();
+        return {
+            data,
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit)
+        }
     }
 
     async findDuplication( 

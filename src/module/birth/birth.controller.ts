@@ -1,8 +1,9 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param, UseInterceptors, UploadedFiles } from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, UseInterceptors, UploadedFiles, Query } from '@nestjs/common';
 import { CreateBirthDto } from './dto/create-birth.dto';
 import { UpdateBirthDto } from './dto/update-birth.dto';
 import { BirthService } from './birth.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('birth')
 export class BirthController {
@@ -38,8 +39,8 @@ export class BirthController {
     }
 
     @Get('all')
-    async findAll() {
-        return await this.birthService.findAll();
+    async findAll(@Query() paginationDto: PaginationDto) {
+        return await this.birthService.findAll(paginationDto);
     }
 
     @Get(':id')

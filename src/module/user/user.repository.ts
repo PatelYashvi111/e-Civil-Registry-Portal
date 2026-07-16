@@ -35,28 +35,138 @@ export class UserRepository {
     async findById( id: string ){
         return this.userModel.findById( id );
     }
+async findAll(
+  userRoleId: string,
+  skip: number,
+  limit: number,
+  page: number,
+  search?: string,
+) {
 
-    async findAll(skip: number, limit: number, page: number) {
-        const data = await this.userModel.find().skip(skip).limit(limit).sort({ createdAt: -1 });
-        const total = await this.userModel.countDocuments();
-        return {
-        data,
-        total,
-        page,
-        limit,
-        totalPages: Math.ceil(total / limit),
-       };
-    }
+  const pipeline: any[] = [
+    {
+      $match: {
+        roleId: toObjectId(userRoleId),
+      },
+    },
 
-    async countClerksByOfficeDepartment(
-        officeDepartmentId: string,
-        clerkRoleId: string,
-    ) {
-        return this.userModel.countDocuments({
-            officeDepartmentId: toObjectId(officeDepartmentId),
-            roleId: toObjectId(clerkRoleId),
+    {
+      $lookup: {
+        from: 'aadhars',
+        localField: 'aadharId',
+        foreignField: '_id',
+        as: 'aadhar',
+      },
+    },
+
+    {
+      $unwind: {
+        path: '$aadhar',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+  ];
+
+  if (search) {
+    pipeline.push({
+      $match: {
+        $or: [
+          {
+              email: {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            'aadhar.firstName': {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            'aadhar.middleName': {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            'aadhar.lastName': {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            'aadhar.contact': {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            'aadhar.aadharNumber': {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+          {
+            status: {
+              $regex: search,
+              $options: 'i',
+            },
+          },
+        ],
+      },
     });
-    }
+  }
+
+  const countPipeline = [...pipeline];
+
+  countPipeline.push({
+    $count: 'total',
+  });
+
+  const countResult = await this.userModel.aggregate(countPipeline);
+
+  const total = countResult.length ? countResult[0].total : 0;
+
+  pipeline.push(
+    {
+      $sort: {
+        createdAt: -1,
+      },
+    },
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+    {
+      $project: {
+        _id: 1,
+        email: 1,
+        status: 1,
+        createdAt: 1,
+
+        firstName: '$aadhar.firstName',
+        middleName: '$aadhar.middleName',
+        lastName: '$aadhar.lastName',
+        contact: '$aadhar.contact',
+        aadharNumber: '$aadhar.aadharNumber',
+      },
+    },
+  );
+
+  const data = await this.userModel.aggregate(pipeline);
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    search,
+    totalPages: Math.ceil(total / limit),
+  };
+}
 
     async updateUser( id: string, updateUserDto: UpdateUserDto ){
          console.log("ID:", id);

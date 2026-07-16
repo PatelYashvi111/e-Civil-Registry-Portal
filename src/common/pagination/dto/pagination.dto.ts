@@ -12,10 +12,18 @@ page?: number = 1;
   @IsOptional()
   @Type(() => Number)
   @IsNumber()
+<<<<<<< HEAD
   limit?: number = 5;
 
    @IsOptional()
   @IsString()
   search?: string;
 
+=======
+  limit?: number = 10;
+
+  @IsOptional()
+  @Type(() => String)
+  search?: string; 
+>>>>>>> feat/user
 }
