@@ -5,7 +5,7 @@ import { DeathRepository } from "./death.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
 import { CounterService } from "../counter/counter.service";
-import { PaginationDto } from "src/common/paginatio/dto/pagination.dto";
+import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
 
 @Injectable()
 export class DeathService {

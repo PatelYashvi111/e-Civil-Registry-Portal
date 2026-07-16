@@ -3,7 +3,7 @@ import { CreateMarriageDto } from './dto/create-marriage.dto';
 import { UpdateMarriageDto } from './dto/update-marriage.dto';
 import { MarriageService } from './marriage.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-import { PaginationDto } from 'src/common/paginatio/dto/pagination.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('marriage')
 export class MarriageController {
