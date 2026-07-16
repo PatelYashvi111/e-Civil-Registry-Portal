@@ -35,14 +35,14 @@ export class UserRepository {
     async findById( id: string ){
         return this.userModel.findById( id );
     }
-async findAll(
+
+    async findAll(
   userRoleId: string,
   skip: number,
   limit: number,
   page: number,
   search?: string,
 ) {
-
   const pipeline: any[] = [
     {
       $match: {
@@ -50,6 +50,7 @@ async findAll(
       },
     },
 
+    // Aadhar Lookup
     {
       $lookup: {
         from: 'aadhars',
@@ -58,66 +59,50 @@ async findAll(
         as: 'aadhar',
       },
     },
-
     {
       $unwind: {
         path: '$aadhar',
         preserveNullAndEmptyArrays: true,
       },
     },
+
+    // Role Lookup
+{
+  $lookup: {
+    from: 'roles',
+    localField: 'roleId',
+    foreignField: '_id',
+    as: 'role',
+  },
+},
+{
+  $unwind: {
+    path: '$role',
+    preserveNullAndEmptyArrays: true,
+  },
+},
   ];
 
+  // Search
   if (search) {
     pipeline.push({
       $match: {
         $or: [
-          {
-              email: {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.firstName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.middleName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.lastName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.contact': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.aadharNumber': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            status: {
-              $regex: search,
-              $options: 'i',
-            },
-          },
+          { email: { $regex: search, $options: 'i' } },
+          { 'aadhar.firstName': { $regex: search, $options: 'i' } },
+          { 'aadhar.middleName': { $regex: search, $options: 'i' } },
+          { 'aadhar.lastName': { $regex: search, $options: 'i' } },
+          { 'aadhar.contact': { $regex: search, $options: 'i' } },
+          { 'aadhar.aadharNumber': { $regex: search, $options: 'i' } },
+          { status: { $regex: search, $options: 'i' } },
+          { 'office.officeName': { $regex: search, $options: 'i' } },
+          { 'department.departmentName': { $regex: search, $options: 'i' } },
         ],
       },
     });
   }
 
+  // Total Count
   const countPipeline = [...pipeline];
 
   countPipeline.push({
@@ -128,6 +113,7 @@ async findAll(
 
   const total = countResult.length ? countResult[0].total : 0;
 
+  // Pagination & Projection
   pipeline.push(
     {
       $sort: {
@@ -141,18 +127,15 @@ async findAll(
       $limit: limit,
     },
     {
-      $project: {
-        _id: 1,
-        email: 1,
-        status: 1,
-        createdAt: 1,
+    $project: {
+  _id: 1,
+  email: 1,
+  status: 1,
+  createdAt: 1,
 
-        firstName: '$aadhar.firstName',
-        middleName: '$aadhar.middleName',
-        lastName: '$aadhar.lastName',
-        contact: '$aadhar.contact',
-        aadharNumber: '$aadhar.aadharNumber',
-      },
+  aadharId: '$aadhar',
+  roleId: '$role',
+}
     },
   );
 

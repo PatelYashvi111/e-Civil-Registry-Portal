@@ -71,26 +71,26 @@ export class ClerkRepository {
     },
 
     // Office Department
-    {
-      $lookup: {
-        from: 'officedepartments',
-        localField: 'officeDepartmentId',
-        foreignField: '_id',
-        as: 'officeDepartment',
-      },
-    },
-    {
-      $unwind: {
-        path: '$officeDepartment',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
+    // {
+    //   $lookup: {
+    //     from: 'officedepartments',
+    //     localField: 'officeDepartmentId',
+    //     foreignField: '_id',
+    //     as: 'officeDepartment',
+    //   },
+    // },
+    // {
+    //   $unwind: {
+    //     path: '$officeDepartment',
+    //     preserveNullAndEmptyArrays: true,
+    //   },
+    // },
 
     // Office
     {
       $lookup: {
         from: 'offices',
-        localField: 'officeDepartment.officeId',
+        localField: 'officeId',
         foreignField: '_id',
         as: 'office',
       },
@@ -98,6 +98,51 @@ export class ClerkRepository {
     {
       $unwind: {
         path: '$office',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+
+    {
+  $lookup: {
+    from: 'roles',
+    localField: 'roleId',
+    foreignField: '_id',
+    as: 'role',
+  },
+},
+{
+  $unwind: {
+    path: '$role',
+    preserveNullAndEmptyArrays: true,
+  },
+},
+    
+    {
+      $lookup: {
+        from: 'districts',
+        localField: 'office.districtId',
+        foreignField: '_id',
+        as: 'district',
+      },
+    },
+    {
+      $unwind: {
+        path: '$district',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
+    
+    {
+      $lookup: {
+        from: 'departments',
+        localField: 'deapartmentId',
+        foreignField: '_id',
+        as: 'department',
+      },
+    },
+    {
+      $unwind: {
+        path: '$department',
         preserveNullAndEmptyArrays: true,
       },
     },
@@ -193,11 +238,11 @@ export class ClerkRepository {
       status: 1,
       createdAt: 1,
 
-      firstName: '$aadhar.firstName',
-      middleName: '$aadhar.middleName',
-      lastName: '$aadhar.lastName',
-
-      officeName: '$office.name',
+      aadharId: '$aadhar',
+      officeDepartmentId: '$officeDepartment',
+      officeId: '$office',
+      roleId: '$role',
+      departmentId: '$department',
     },
   });
 

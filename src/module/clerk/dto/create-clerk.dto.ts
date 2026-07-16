@@ -15,6 +15,17 @@ export class CreateClerkDto {
   @IsMongoId()
   districtId!: string;
 
+  @IsNotEmpty()
+  @IsMongoId()
+  officeId!: string;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  departmentId!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  roleId!: string;
 
   @IsNotEmpty()
   @IsEmail()
