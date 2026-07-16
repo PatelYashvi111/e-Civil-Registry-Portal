@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { District } from '../district/schema/district.schema';
 import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
+import { toObjectId } from 'src/common/utils/objectId.utils';
+
 
 @Injectable()
 export class DistrictRepository {
@@ -14,7 +16,12 @@ export class DistrictRepository {
     ) {}
 
   async create(createDistrictDto: CreateDistrictDto) {
-    return await this.model.create(createDistrictDto);
+      const createdDistrict= new this.model({
+    ...createDistrictDto,
+    stateId: toObjectId(createDistrictDto.stateId),
+  });
+
+  return createdDistrict.save();
   }
   
   async findAll(

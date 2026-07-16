@@ -3,11 +3,7 @@ import { CreateDeathDto } from './dto/create-death.dto';
 import { UpdateDeathDto } from './dto/update-death.dto';
 import { DeathService } from './death.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
-<<<<<<< HEAD
 import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
-=======
-import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
->>>>>>> feat/user
 
 @Controller('death')
 export class DeathController {

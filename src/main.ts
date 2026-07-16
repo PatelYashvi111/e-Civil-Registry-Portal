@@ -1,20 +1,16 @@
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
-<<<<<<< HEAD
-=======
 
-console.log('JWT_SECRET:', process.env.JWT_SECRET as string);
->>>>>>> feat/user
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
 
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe } from '@nestjs/common'; // <-- Add this
+import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-<<<<<<< HEAD
-  // Add this
+  // Global Validation Pipe
   app.useGlobalPipes(
     new ValidationPipe({
       whitelist: true,
@@ -25,6 +21,7 @@ async function bootstrap() {
     }),
   );
 
+  // Enable CORS
   app.enableCors({
     origin: [
       'http://localhost:5173',
@@ -35,19 +32,11 @@ async function bootstrap() {
     allowedHeaders: ['Content-Type', 'Authorization'],
   });
 
-  await app.listen(process.env.PORT || 3000);
+  const port = process.env.PORT || 3000;
 
-  console.log(`Server running on port ${process.env.PORT || 3000}`);
-=======
-  app.enableCors({
-    origin: true, 
-    credentials: true,
-    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
-  });
+  await app.listen(port);
 
-  await app.listen(process.env.PORT ?? 3000);
->>>>>>> feat/user
+  console.log(`🚀 Server running on port ${port}`);
 }
 
 bootstrap();

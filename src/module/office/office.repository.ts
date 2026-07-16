@@ -127,11 +127,12 @@ async findAll(
       districtId: {
         _id: '$district._id',
         name: '$district.name',
-      },
+    
       stateId: {
         _id: '$state._id',
         name: '$state.name',
       },
+    },
     },
   });
 
