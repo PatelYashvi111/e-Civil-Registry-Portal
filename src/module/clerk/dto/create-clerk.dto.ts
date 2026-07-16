@@ -9,6 +9,10 @@ export class CreateClerkDto {
 
   @IsNotEmpty()
   @IsMongoId()
+  aadharId!: string;
+
+  @IsNotEmpty()
+  @IsMongoId()
   officeDepartmentId!: string;
 
   @IsNotEmpty()
@@ -57,5 +61,10 @@ export class CreateClerkDto {
   @IsNotEmpty()
   @IsString()
   govEmployeeIdCard!: string;
+
+  @IsNotEmpty()
+  @IsString()
+  verificationToken!: string;
+
 }
 

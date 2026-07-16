@@ -76,6 +76,12 @@ export class Clerk {
     type: String,
   })
   govEmployeeIdCard!: string;
+
+  @Prop({
+    required: true,
+    type: String,
+  })
+  verificationToken!: string;
 }
 
 export const ClerkSchema = SchemaFactory.createForClass(Clerk);
