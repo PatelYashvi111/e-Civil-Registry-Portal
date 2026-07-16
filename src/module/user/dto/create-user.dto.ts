@@ -17,6 +17,15 @@ export class CreateUserDto {
 
   @IsNotEmpty()
   @IsMongoId()
+  officeId!: string;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  departmentId!: string;
+
+
+  @IsNotEmpty()
+  @IsMongoId()
   officeDepartmentId!: string;
 
   @IsOptional()
