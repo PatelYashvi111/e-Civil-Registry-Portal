@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/schema/user.schema';
-import { Clerk, ClerkDocument } from './schema/clerk.scheama';
+import { Clerk, ClerkDocument } from './schema/clerk.schema';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { UpdateClerkDto } from './dto/update-clerk.dto';
 import { toObjectId } from 'src/common/utils/objectId.utils';
@@ -23,9 +23,9 @@ export class ClerkRepository {
     const createdClerk = new this.userModel({
       ...createClerkDto,
       roleId: toObjectId(roleId),
-      aadharId: toObjectId(createClerkDto.aadharId),
-      officeId: toObjectId(createClerkDto.officeId),
-      departmentId: toObjectId(createClerkDto.departmentId),
+      aadharNumber: createClerkDto.aadharNumber,
+      officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
+      districtId: toObjectId(createClerkDto.districtId),
     });
 
     const savedClerk = await createdClerk.save();
@@ -33,220 +33,48 @@ export class ClerkRepository {
     const clerk = await this.userModel
       .findById(savedClerk._id)
       .populate('roleId')
-      .populate('aadharId')
-      .populate('officeId')
-      .populate('departmentId')
+      .populate('officeDepartmentId')
+      .populate('districtId');
 
     return clerk;
   }
 
   async findAllClerks(
-  clerkRoleId: string,
-  skip: number,
-  limit: number,
-  page: number,
-  search?: string,
-) {
+    clerkRoleId: string,
+    skip: number,
+    limit: number,
+    page: number,
+  ) {
+    const filter = {
+      roleId: toObjectId(clerkRoleId),
+    };
 
-  const pipeline: any[] = [
+    const data = await this.userModel
+      .find(filter)
+      .populate('roleId')
+      .populate('officeDepartmentId')
+      .populate('districtId')
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
 
-    // Get only clerks
-    {
-      $match: {
-        roleId: toObjectId(clerkRoleId),
-      },
-    },
+    const total = await this.userModel.countDocuments(filter);
 
-    // Aadhar
-    {
-      $lookup: {
-        from: 'aadhars',
-        localField: 'aadharId',
-        foreignField: '_id',
-        as: 'aadhar',
-      },
-    },
-    {
-      $unwind: {
-        path: '$aadhar',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-
-    // Office Department
-    {
-      $lookup: {
-        from: 'officedepartments',
-        localField: 'officeDepartmentId',
-        foreignField: '_id',
-        as: 'officeDepartment',
-      },
-    },
-    {
-      $unwind: {
-        path: '$officeDepartment',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-
-    // Office
-    {
-      $lookup: {
-        from: 'offices',
-        localField: 'officeId',
-        foreignField: '_id',
-        as: 'office',
-      },
-    },
-    {
-      $unwind: {
-        path: '$office',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-
-    // District
-    {
-      $lookup: {
-        from: 'districts',
-        localField: 'office.districtId',
-        foreignField: '_id',
-        as: 'district',
-      },
-    },
-    {
-      $unwind: {
-        path: '$district',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-  ];
-
-  // Search
-  if (search) {
-    pipeline.push({
-      $match: {
-        $or: [
-          {
-            employeeId: {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            email: {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.firstName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.middleName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.lastName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'office.name': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'district.name': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            status: {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-        ],
-      },
-    });
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    };
   }
-
-  // Count Pipeline
-  const countPipeline = [...pipeline];
-
-  countPipeline.push({
-    $count: 'total',
-  });
-
-  const countResult = await this.userModel.aggregate(countPipeline);
-
-  const total =
-    countResult.length > 0 ? countResult[0].total : 0;
-
-  // Sorting
-  pipeline.push({
-    $sort: {
-      createdAt: -1,
-    },
-  });
-
-  // Pagination
-  pipeline.push(
-    {
-      $skip: skip,
-    },
-    {
-      $limit: limit,
-    },
-  );
-
-  // Select fields
-  pipeline.push({
-    $project: {
-      _id: 1,
-      employeeId: 1,
-      email: 1,
-      status: 1,
-      createdAt: 1,
-
-      firstName: '$aadhar.firstName',
-      middleName: '$aadhar.middleName',
-      lastName: '$aadhar.lastName',
-
-      officeName: '$office.name',
-
-      districtName: '$district.name',
-    },
-  });
-
-  const data = await this.userModel.aggregate(pipeline);
-
-  return {
-    data,
-    total,
-    page,
-    limit,
-    search,
-    totalPages: Math.ceil(total / limit),
-  };
-}
 
   async findById(id: string) {
     return this.userModel
       .findById(id)
       .populate('roleId')
-      .populate('aadharId')
-      .populate({path: 'officeId', populate : {path: 'districtId'}})
-      .populate('departmentId')
+      .populate('officeDepartmentId')
+      .populate('districtId');
   }
 
   async findByEmail(email: string) {
@@ -257,18 +85,17 @@ export class ClerkRepository {
     return this.userModel.findOne({ aadharNumber });
   }
 
-  async findByOfficeId(officeId: string) {
+  async findByOfficeDepartmentId(officeDepartmentId: string) {
     return this.userModel.find({
-      officeId: toObjectId(officeId),
+      officeDepartmentId: toObjectId(officeDepartmentId),
     });
   }
 
-  async findByDepartmentId(departmentId: string) {
+  async findBydistrictId(districtId: string) {
     return this.userModel.find({
-      departmentId: toObjectId(departmentId),
+      districtId: toObjectId(districtId),
     });
   }
-
 
   async update(id: string, updateClerkDto: UpdateClerkDto) {
     return this.userModel.findByIdAndUpdate(id, updateClerkDto, {
