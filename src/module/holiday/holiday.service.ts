@@ -3,6 +3,7 @@ import { Types } from 'mongoose';
 import { HolidayRepository } from './holiday.repository';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class HolidayService {
@@ -43,9 +44,22 @@ export class HolidayService {
     return await this.holidayRepository.createHoliday(createHolidayDto);
   }
 
-  async findAll() {
-    return await this.holidayRepository.findAll();
-  }
+  async findAll(paginationDto: PaginationDto) {
+  const {
+    page = 1,
+    limit = 5,
+    search,
+  } = paginationDto;
+
+  const skip = (page - 1) * limit;
+
+  return await this.holidayRepository.findAll(
+    skip,
+    limit,
+    page,
+    search,
+  );
+}
 
   async findById(id: string) {
     const holiday = await this.holidayRepository.findById(id);

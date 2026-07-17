@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { Marriage, MarriageDocument } from "./schema/marriage.schema";
 import { CreateMarriageDto } from "./dto/create-marriage.dto";
 import { UpdateMarriageDto } from "./dto/update-marriage.dto";
+import { toObjectId } from "../../common/utils/objectId.utils";
 
 @Injectable()
 export class MarriageRepository {
@@ -14,13 +15,43 @@ export class MarriageRepository {
     ){}
 
     async create( createMarriageDto: CreateMarriageDto ) {
-        return await this.MarriageModel.create( createMarriageDto );
+      
+      const marriageData= { 
+       ...createMarriageDto,
+       brideAadharId: toObjectId(createMarriageDto.brideAadharId),
+       groomAadharId: toObjectId(createMarriageDto.groomAadharId),
+       witnessAadharId: toObjectId(createMarriageDto.witnessAadharId),
+       brahmanAadharId: toObjectId(createMarriageDto.brahmanAadharId),
+       OfficeDepartmentId: toObjectId(createMarriageDto.officeDepartmentId),
+      };
+      
+      return await this.MarriageModel.create( marriageData );
     }
 
     async findAll(skip: number, limit: number, page: number) {
         const data = await this.MarriageModel.find().skip(skip).limit(limit)
-        .populate('brideAadharId').populate('groomAadharId').populate('witnessAadharId').populate('brahmanAadharId')
-        .populate({path: 'marriageDistrict', populate: {path: 'stateId'}});
+        .populate('brideAadharId')
+        .populate('groomAadharId')
+        .populate('witnessAadharId')
+        .populate('brahmanAadharId')
+        .populate({
+         path: 'officeDepartmentId',
+         populate: [
+            {
+            path: 'officeId',
+            populate: {
+                path: 'districtId',
+                populate: {
+                path: 'stateId',
+                },
+            },
+            },
+            {
+            path: 'departmentId',
+            },
+        ],
+        });
+
         const total = await this.MarriageModel.countDocuments();
         return {
             data,

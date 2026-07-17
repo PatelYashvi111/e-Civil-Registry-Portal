@@ -9,13 +9,13 @@ export class CreateDeathDto {
 
     @IsNotEmpty()
     @IsMongoId()
-    deathDistrictId!: string;
+    officeDepartmentId!: string;
 
     @IsString()
     @IsNotEmpty()
     placeOfDeath!: string;
 
-    @IsDateString()
+    @IsString()
     @IsNotEmpty()
     dateAndTimeOfDeath!: string;
 
@@ -33,34 +33,14 @@ export class CreateDeathDto {
 
     @IsNotEmpty()
     @IsMongoId()
-    spouseAadharId!: string;
+    applicantAadharId!: string;
 
-    @IsString()
     @IsNotEmpty()
-    deceasedAadharCard!: string;
+    @IsString()
+    deceasedVerificationToken!: string;
 
-    @IsString()
     @IsNotEmpty()
-    spouseAadharCard!: string;
-
     @IsString()
-    @IsNotEmpty()
-    deceasedRationCard!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    deceasedPhoto!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    deceasedMedicalCertificate!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    pmReport!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    fir!: string;
+    applicantVerificationToken!: string;
 
 }

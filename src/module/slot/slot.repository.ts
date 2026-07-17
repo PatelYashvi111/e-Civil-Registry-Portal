@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { Slot, SlotDocument } from "./schema/slot.schema";
 import { CreateSlotDto } from "./dto/create-slot.dto";
 import { UpdateSlotDto } from "./dto/update-slot.dto";
+import { Types } from "mongoose";
 
 @Injectable()
 export class SlotRepository {
@@ -44,12 +45,22 @@ export class SlotRepository {
     }
 
     async findAvailableDates(officeDepartmentId: string) {
-        return await this.slotModel.distinct('slotDate', { officeDepartmentId, isAvailable: true });
-    }
+  return this.slotModel.distinct("slotDate", {
+    officeDepartmentId: new Types.ObjectId(officeDepartmentId),
+    isAvailable: true,
+  });
+}
 
-    async findAvailableSlots(officeDepartmentId: string, slotDate: Date) {
-        return await this.slotModel.find({ officeDepartmentId, slotDate, isAvailable: true });
-    }
+async findAvailableSlots(
+  officeDepartmentId: string,
+  slotDate: Date,
+) {
+  return this.slotModel.find({
+    officeDepartmentId: new Types.ObjectId(officeDepartmentId),
+    slotDate,
+    isAvailable: true,
+  });
+}    
 
     async update(id: string, updateSlotDto: UpdateSlotDto) {
         return await this.slotModel.findByIdAndUpdate(id, updateSlotDto, { returnDocument: 'after' });

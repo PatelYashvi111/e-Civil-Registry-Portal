@@ -4,6 +4,7 @@ import { Model } from "mongoose";
 import { Death, DeathDocument } from "./schema/death.schema";
 import { CreateDeathDto } from "./dto/create-death.dto";
 import { UpdateDeathDto } from "./dto/update-death.dto";
+import { toObjectId } from "../../common/utils/objectId.utils";
 
 @Injectable()
 export class DeathRepository {
@@ -14,11 +15,39 @@ export class DeathRepository {
     ){}
 
     async create( createDeathDto: CreateDeathDto ) {
-        return await this.DeathModel.create( createDeathDto );
-    }
+         const deathData = {
+            ...createDeathDto,
+            deceasedAadharId: toObjectId(createDeathDto.deceasedAadharId),
+            applicantAadharId: toObjectId(createDeathDto.applicantAadharId),
+            officeDepartmentId: toObjectId(createDeathDto.officeDepartmentId),
+          };
+        
+          return await this.DeathModel.create(deathData);
+        }
+        
 
     async findAll(skip: number, limit: number, page: number) {
-        const data = await this.DeathModel.find().skip(skip).limit(limit).populate('deceasedAadharId').populate('spouseAadharId');
+        const data = await this.DeathModel.find().skip(skip).limit(limit)
+        .populate('deceasedAadharId')
+        .populate('applicantAadharId')
+        .populate({
+         path: 'officeDepartmentId',
+         populate: [
+            {
+            path: 'officeId',
+            populate: {
+                path: 'districtId',
+                populate: {
+                path: 'stateId',
+                },
+            },
+            },
+            {
+            path: 'departmentId',
+            },
+        ],
+        });
+
         const total = await this.DeathModel.countDocuments()
         return {
             data,

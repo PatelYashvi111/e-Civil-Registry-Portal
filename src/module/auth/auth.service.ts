@@ -47,16 +47,9 @@ export class AuthService {
 
     await this.otpService.generateAadharVerificationOtp(aadhar._id.toString(),aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
 
-    const verificationToken = this.jwtService.sign(
-   {
-    aadharId: aadhar._id,
-    purpose: 'registration',
-   },
-  );
 
   return {
     message: 'Aadhar verification successful',
-    verificationToken,
   };
 }
 
@@ -71,8 +64,17 @@ export class AuthService {
     }
 
     await this.otpService.verifyAadharVerificationOtp(aadhar._id.toString(), otp, aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
+    
+    const verificationToken = this.jwtService.sign(
+   {
+    aadharId: aadhar._id,
+    purpose: 'registration',
+   },
+  );
+
     return{
        message: 'Aadhar verification successful',
+       verificationToken,
        aadharDetails: aadhar,
     }
     

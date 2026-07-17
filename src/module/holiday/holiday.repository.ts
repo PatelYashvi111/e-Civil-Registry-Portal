@@ -17,8 +17,101 @@ export class HolidayRepository {
     return await holiday.save();
   }
 
-  async findAll( filter: QueryFilter<HolidayDocument> = {} ) {
-    return await this.holidayModel.find(filter);
+  async findAll( 
+    skip: number, 
+    limit: number,
+    page: number, 
+    search?: string
+  ) {
+   
+    const pipeline: any[] = [
+  {
+    $lookup: {
+      from: 'offices',
+      localField: 'officeId',
+      foreignField: '_id',
+      as: 'office',
+    },
+  },
+  {
+    $unwind: {
+      path: '$office',
+      preserveNullAndEmptyArrays: true,
+    },
+  },
+];
+    if(search) {
+      pipeline.push({
+        $match: {
+          $or: [
+            {
+              title: {
+                $regex: search,
+                $options: 'i',
+
+              }
+            },
+            {
+              description: {
+                $regex: search,
+                $options: 'i',
+              }
+            },
+            {
+              holidayDate: {
+                $regex: search,
+                $options: 'i',
+              }
+            },
+            {
+              year: {
+                $regex: search,
+                $options: 'i',
+              }
+            },
+            {
+              isNationalHoliday: {
+                $regex: search,
+                $options: 'i',
+              }
+            }
+          ]
+        }
+      })
+    }
+
+    const countPipeline = [...pipeline];
+
+    countPipeline.push({
+      $count: 'total',
+    });
+
+    const countResult = await this.holidayModel.aggregate(countPipeline);
+
+    const total = countResult.length > 0 ? countResult[0].total : 0;
+
+    pipeline.push({
+      $sort: {
+        createdAt: -1,
+      }
+    });
+
+    pipeline.push({
+      $skip: skip,
+    }, {
+      $limit: limit,
+    });
+
+   const data = await this.holidayModel.aggregate(pipeline);
+
+  return {
+  data,
+  total,
+  page,
+  limit,
+  search,
+  totalPages: Math.ceil(total / limit),
+};
   }
 
   async findById(id: string) {

@@ -44,7 +44,7 @@ export class CreateMarriageDto {
 
     @IsNotEmpty()
     @IsMongoId()
-    marriageDistrict!: string;
+    officeDepartmentId!: string;
 
     @IsString()
     @IsNotEmpty()
@@ -85,5 +85,21 @@ export class CreateMarriageDto {
     @IsString()
     @IsNotEmpty()
     invitationCard!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    brideVerificationToken!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    groomVerificationToken!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    brahmanVerificationToken!: string;
+
+    @IsString()
+    @IsNotEmpty()
+    witnessVerificationToken!: string;
     
 }

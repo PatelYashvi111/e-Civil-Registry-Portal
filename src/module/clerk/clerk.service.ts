@@ -4,11 +4,15 @@ import { ClerkRepository } from './clerk.repository';
 import { UserRepository } from '../user/user.repository';
 import { RoleService } from '../role/role.service';
 import { AadharService } from '../aadhar/aadhar.service';
+import { AadharRepository } from '../aadhar/aadhar.repository';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { UpdateClerkDto } from './dto/update-clerk.dto';
 import { RoleEnum } from 'src/common/enums/role.enums';
+import { VerifyAadharDto } from '../auth/dto/verify.aadhar.dto';
 import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { JwtService } from '@nestjs/jwt';
+import { create } from 'domain';
 
 @Injectable()
 export class ClerkService {
@@ -17,7 +21,9 @@ export class ClerkService {
     private readonly userRepository: UserRepository,
     private readonly roleService: RoleService,
     private readonly aadharService: AadharService,
+    private readonly aadharRepository: AadharRepository,
     private readonly cloudinaryService: CloudinaryService,
+    private readonly jwtService: JwtService,
   ) {}
 
   async createClerk(
@@ -44,11 +50,21 @@ export class ClerkService {
     throw new BadRequestException('Employee ID already exists');
   }
 
-  const aadhar = await this.aadharService.findByAadharNumber(createClerkDto.aadharNumber);
+  if (!createClerkDto.verificationToken) {
+  throw new BadRequestException('Verification token is required');
+}
 
-  if (!aadhar) {
-    throw new NotFoundException('Aadhar not found');
-  }
+   const payload = this.jwtService.verify(createClerkDto.verificationToken);
+
+if (payload.purpose !== 'registration') {
+  throw new BadRequestException('Invalid token');
+}
+
+const aadhar = await this.aadharService.findById(payload.aadharId);
+
+if (!aadhar) {
+  throw new NotFoundException('Aadhar not found');
+}
 
   const clerkRole = await this.roleService.findByName(RoleEnum.CLERK);
 
@@ -78,6 +94,7 @@ export class ClerkService {
   return this.clerkRepository.createClerk(
     {
       ...createClerkDto,
+      aadharId: aadhar._id.toString(),
       email,
       password: await bcrypt.hash(createClerkDto.password, 10),
       aadharCard: aadharUpload.url,
@@ -89,10 +106,10 @@ export class ClerkService {
 }
 
    async findAll(paginationDto: PaginationDto) {
-    const {page=1, limit=10} = paginationDto;
+    const {page=1, limit=10, search} = paginationDto;
     const skip = (page - 1) * limit;
     const clerkRole = await this.roleService.findByName(RoleEnum.CLERK);
-    return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), skip, limit, page);
+    return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), skip, limit, page, search);
   }
  
   async findById(id: string) {
@@ -117,15 +134,7 @@ export class ClerkService {
       const officeDepartment = await this.clerkRepository.findByOfficeDepartmentId( updateClerkDto.officeDepartmentId );
 
       if (!officeDepartment.length) {
-        throw new BadRequestException('Office Department not found');
-      }
-    }
-
-    if (updateClerkDto.districtId) {
-      const district = await this.clerkRepository.findBydistrictId( updateClerkDto.districtId );
-
-      if (!district.length) {
-        throw new BadRequestException('District not found');
+        throw new BadRequestException('Office  not found');
       }
     }
 

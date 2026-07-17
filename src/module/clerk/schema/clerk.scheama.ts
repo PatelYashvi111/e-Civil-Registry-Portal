@@ -1,6 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Types } from 'mongoose';
-import { StatusEnum } from '../../../common/enums/status.enums';
+import { ClerkStatusEnum } from '../../../common/enums/clerk.status.enums';
 
 
 export type ClerkDocument = HydratedDocument<Clerk>;
@@ -54,10 +54,10 @@ export class Clerk {
 
      @Prop({
     type: String,
-    enum: StatusEnum,
-    default: StatusEnum.ACTIVE,
+    enum: ClerkStatusEnum,
+    default: ClerkStatusEnum.ACTIVE,
   })
-  status!: StatusEnum;
+  status!: ClerkStatusEnum;
 
   @Prop({
     required: true,
@@ -76,6 +76,12 @@ export class Clerk {
     type: String,
   })
   govEmployeeIdCard!: string;
+
+  @Prop({
+    required: true,
+    type: String,
+  })
+  verificationToken!: string;
 }
 
 export const ClerkSchema = SchemaFactory.createForClass(Clerk);

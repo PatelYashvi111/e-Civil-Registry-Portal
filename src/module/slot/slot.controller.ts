@@ -1,4 +1,4 @@
-import { Controller, Post, Get, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Post, Get, Delete, Param, Body, Query } from '@nestjs/common';
 import { SlotService } from './slot.service';
 
 @Controller('slot')
@@ -26,15 +26,16 @@ export class SlotController {
     return this.slotService.getAvailableDates( officeDepartmentId );
   }
 
-  @Get('available-slots')
-  async getAvailableSlots( @Body() body: { officeDepartmentId: string, slotDate: string },
-  ) {
-    return this.slotService.getAvailableSlots(
-      body.officeDepartmentId,
-      body.slotDate,
-    );
-  }
-
+  @Get("available-slots")
+async getAvailableSlots(
+  @Query("officeDepartmentId") officeDepartmentId: string,
+  @Query("slotDate") slotDate: string,
+) {
+  return this.slotService.getAvailableSlots(
+    officeDepartmentId,
+    slotDate,
+  );
+}
   @Post('book/:slotId')
   async bookSlot( @Param('slotId') slotId: string ) {
     return this.slotService.bookSlot(slotId);
