@@ -7,7 +7,7 @@ import { Role, RoleDocument } from '../../module/role/schema/role.schema';
 import { Aadhar, AadharDocument } from '../../module/aadhar/schema/aadhar.schema';
 import { toObjectId } from 'src/common/utils/objectId.utils';
 import { RoleEnum } from 'src/common/enums/role.enums';
-import { StatusEnum } from 'src/common/enums/clerk.status.enums';
+import { ClerkStatusEnum } from 'src/common/enums/clerk.status.enums';
 
 @Injectable()
 export class AdminSeed {
@@ -61,7 +61,7 @@ export class AdminSeed {
       password: hashedPassword,
       roleId: adminRole._id,   
       aadharId: adminAadhar._id,
-      status: StatusEnum.ACTIVE,
+      status: ClerkStatusEnum.ACTIVE,
     });
 
     this.logger.log('Default admin created successfully.');

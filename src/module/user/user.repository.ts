@@ -36,119 +36,117 @@ export class UserRepository {
         return this.userModel.findById( id );
     }
 
-    async findAll(
-  userRoleId: string,
-  skip: number,
-  limit: number,
-  page: number,
-  search?: string,
-) {
-  const pipeline: any[] = [
-    {
-      $match: {
-        roleId: toObjectId(userRoleId),
-      },
-    },
+      async findAll(
+      userRoleId: string,
+      skip: number,
+      limit: number,
+      page: number,
+      search?: string,
+    ) {
+      const pipeline: any[] = [
+        {
+          $match: {
+            roleId: toObjectId(userRoleId),
+          },
+        },
+
+        {
+          $lookup: {
+            from: 'aadhars',
+            localField: 'aadharId',
+            foreignField: '_id',
+            as: 'aadhar',
+          },
+        },
+        {
+          $unwind: {
+            path: '$aadhar',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
 
     {
       $lookup: {
-        from: 'aadhars',
-        localField: 'aadharId',
+        from: 'roles',
+        localField: 'roleId',
         foreignField: '_id',
-        as: 'aadhar',
+        as: 'role',
       },
     },
     {
       $unwind: {
-        path: '$aadhar',
+        path: '$role',
         preserveNullAndEmptyArrays: true,
       },
     },
+      ];
 
-{
-  $lookup: {
-    from: 'roles',
-    localField: 'roleId',
-    foreignField: '_id',
-    as: 'role',
-  },
-},
-{
-  $unwind: {
-    path: '$role',
-    preserveNullAndEmptyArrays: true,
-  },
-},
-  ];
+      if (search) {
+        pipeline.push({
+          $match: {
+            $or: [
+              { email: { $regex: search, $options: 'i' } },
+              { 'aadhar.firstName': { $regex: search, $options: 'i' } },
+              { 'aadhar.middleName': { $regex: search, $options: 'i' } },
+              { 'aadhar.lastName': { $regex: search, $options: 'i' } },
+              { 'aadhar.contact': { $regex: search, $options: 'i' } },
+              { 'aadhar.aadharNumber': { $regex: search, $options: 'i' } },
+              { status: { $regex: search, $options: 'i' } },
+              { 'office.officeName': { $regex: search, $options: 'i' } },
+              { 'department.departmentName': { $regex: search, $options: 'i' } },
+            ],
+          },
+        });
+      }
 
-  if (search) {
-    pipeline.push({
-      $match: {
-        $or: [
-          { email: { $regex: search, $options: 'i' } },
-          { 'aadhar.firstName': { $regex: search, $options: 'i' } },
-          { 'aadhar.middleName': { $regex: search, $options: 'i' } },
-          { 'aadhar.lastName': { $regex: search, $options: 'i' } },
-          { 'aadhar.contact': { $regex: search, $options: 'i' } },
-          { 'aadhar.aadharNumber': { $regex: search, $options: 'i' } },
-          { status: { $regex: search, $options: 'i' } },
-          { 'office.officeName': { $regex: search, $options: 'i' } },
-          { 'department.departmentName': { $regex: search, $options: 'i' } },
-        ],
-      },
-    });
-  }
+      const countPipeline = [...pipeline];
 
-  const countPipeline = [...pipeline];
+      countPipeline.push({
+        $count: 'total',
+      });
 
-  countPipeline.push({
-    $count: 'total',
-  });
+      const countResult = await this.userModel.aggregate(countPipeline);
 
-  const countResult = await this.userModel.aggregate(countPipeline);
+      const total = countResult.length ? countResult[0].total : 0;
 
-  const total = countResult.length ? countResult[0].total : 0;
+      pipeline.push(
+        {
+          $sort: {
+            createdAt: -1,
+          },
+        },
+        {
+          $skip: skip,
+        },
+        {
+          $limit: limit,
+        },
+        {
+        $project: {
+      _id: 1,
+      email: 1,
+      status: 1,
+      createdAt: 1,
 
-  pipeline.push(
-    {
-      $sort: {
-        createdAt: -1,
-      },
-    },
-    {
-      $skip: skip,
-    },
-    {
-      $limit: limit,
-    },
-    {
-    $project: {
-  _id: 1,
-  email: 1,
-  status: 1,
-  createdAt: 1,
+      aadharId: '$aadhar',
+      roleId: '$role',
+    }
+        },
+      );
 
-  aadharId: '$aadhar',
-  roleId: '$role',
-}
-    },
-  );
+      const data = await this.userModel.aggregate(pipeline);
 
-  const data = await this.userModel.aggregate(pipeline);
-
-  return {
-    data,
-    total,
-    page,
-    limit,
-    search,
-    totalPages: Math.ceil(total / limit),
-  };
-}
+      return {
+        data,
+        total,
+        page,
+        limit,
+        search,
+        totalPages: Math.ceil(total / limit),
+      };
+    }
 
     async updateUser( id: string, updateUserDto: UpdateUserDto ){
-         console.log("ID:", id);
-    console.log("DTO:", updateUserDto);
         return this.userModel.findByIdAndUpdate( id, updateUserDto, { returnDocument: 'after' } );
     }
 

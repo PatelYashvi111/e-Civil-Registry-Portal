@@ -2,7 +2,7 @@ import { Controller, Post, Get, Patch, Delete, Body, Param, Query } from "@nestj
 import { CreateDepartmentDto } from "./dto/create-department.dto";
 import { UpdateDepartmentDto } from "./dto/update-department.dto";
 import { DepartmentService } from "./department.service";
-import { PaginationDto } from "src/common/enums/pagination/pagination.dto";
+import { PaginationDto } from "../../common/pagination/dto/pagination.dto";
 
 @Controller('department')
 export class DepartmentController {

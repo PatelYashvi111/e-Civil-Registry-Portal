@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 import { Application, ApplicationDocument } from "./schema/application.schema";
 import { CreateApplicationDto } from "./dto/create-application.dto";
 import { UpdateApplicationDto } from "./dto/update-application.dto";
-import { StatusEnum } from "src/common/enums/clerk.status.enums";
+import { ApplicationStatusEnum } from "../../common/enums/application.status.enums";
 
 @Injectable()
 export class ApplicationRepository {

@@ -17,7 +17,13 @@ export class HolidayRepository {
     return await holiday.save();
   }
 
-  async findAll( skip: number, limit: number, page: number, search?: string) {
+  async findAll( 
+    skip: number, 
+    limit: number,
+    page: number, 
+    search?: string
+  ) {
+   
     const pipeline: any[] = [
   {
     $lookup: {

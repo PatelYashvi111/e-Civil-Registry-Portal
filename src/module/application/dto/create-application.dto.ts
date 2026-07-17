@@ -1,5 +1,5 @@
 import { IsString, IsMongoId, IsEnum, IsNotEmpty, IsOptional } from "class-validator";
-import { StatusEnum } from "src/common/enums/clerk.status.enums";
+import { ApplicationStatusEnum } from "../../../common/enums/application.status.enums";
 import { ServiceEnum } from "src/common/enums/service.enums";
 
 export class CreateApplicationDto {
@@ -33,8 +33,8 @@ export class CreateApplicationDto {
   serviceType!: ServiceEnum;
 
   @IsOptional()
-  @IsEnum(StatusEnum)
-  status?: StatusEnum;
+  @IsEnum(ApplicationStatusEnum)
+  status?: ApplicationStatusEnum;
 
   @IsOptional()
   @IsString()
