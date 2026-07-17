@@ -43,24 +43,4 @@ export class CreateBirthDto {
     @IsString()
     fatherVerificationToken!: string
     
-    // @IsString()
-    // @IsNotEmpty()
-    // fatherAadharCard!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // motherAadharCard!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // marriageCertificate!: string;
-    
-    // @IsString()
-    // @IsNotEmpty()
-    // birthHospitalReport!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // rationCard!: string;
-    
 }

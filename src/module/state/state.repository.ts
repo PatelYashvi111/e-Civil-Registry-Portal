@@ -13,9 +13,70 @@ export class StateRepository {
     return await this.model.create(createStateDto);
   }
 
-  async findAll() {
-    return await this.model.find();
+async findAll(
+  skip: number,
+  limit: number,
+  page: number,
+  search?: string,
+) {
+  const pipeline: any[] = [];
+
+  if (search) {
+    pipeline.push({
+      $match: {
+        name: {
+          $regex: search,
+          $options: 'i',
+        },
+      },
+    });
   }
+
+  const countPipeline = [...pipeline];
+
+  countPipeline.push({
+    $count: 'total',
+  });
+
+  const countResult = await this.model.aggregate(countPipeline);
+
+  const total = countResult.length ? countResult[0].total : 0;
+
+  pipeline.push({
+    $sort: {
+      createdAt: -1,
+    },
+  });
+
+  pipeline.push(
+    {
+      $skip: skip,
+    },
+    {
+      $limit: limit,
+    },
+  );
+
+  pipeline.push({
+    $project: {
+      _id: 1,
+      name: 1,
+      createdAt: 1,
+      updatedAt: 1,
+    },
+  });
+
+  const data = await this.model.aggregate(pipeline);
+
+  return {
+    data,
+    total,
+    page,
+    limit,
+    search,
+    totalPages: Math.ceil(total / limit),
+  };
+}
 
   async findByName(name: string) {
     return await this.model.findOne({ name });

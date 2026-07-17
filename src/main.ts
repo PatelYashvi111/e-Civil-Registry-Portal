@@ -1,6 +1,8 @@
 import * as dotenv from 'dotenv';
 dotenv.config({ path: '.env.local' });
 
+console.log('JWT_SECRET:', process.env.JWT_SECRET);
+
 import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
@@ -8,18 +10,6 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Global Validation Pipe
-  // app.useGlobalPipes(
-  //   new ValidationPipe({
-  //     whitelist: true,
-  //     transform: true,
-  //     transformOptions: {
-  //       enableImplicitConversion: true,
-  //     },
-  //   }),
-  // );
-
-  // Enable CORS
   app.enableCors({
     origin: [
       'http://localhost:5173',

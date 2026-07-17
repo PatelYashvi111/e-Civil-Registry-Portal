@@ -196,7 +196,6 @@ export class DeathService {
         deathDate,
     );
 
-    // Ignore the current record
     if (existingDeath && existingDeath.id !== id) {
         throw new BadRequestException('Death record already exists.');
     }

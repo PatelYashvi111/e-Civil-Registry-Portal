@@ -32,4 +32,4 @@ import { Aadhar, AadharSchema } from 'src/module/aadhar/schema/aadhar.schema';
 
 })
 
-export class DatabaseModule {}
+export class SeedModule {}

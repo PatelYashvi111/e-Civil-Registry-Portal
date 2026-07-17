@@ -50,7 +50,6 @@ export class UserRepository {
       },
     },
 
-    // Aadhar Lookup
     {
       $lookup: {
         from: 'aadhars',
@@ -66,7 +65,6 @@ export class UserRepository {
       },
     },
 
-    // Role Lookup
 {
   $lookup: {
     from: 'roles',
@@ -83,7 +81,6 @@ export class UserRepository {
 },
   ];
 
-  // Search
   if (search) {
     pipeline.push({
       $match: {
@@ -102,7 +99,6 @@ export class UserRepository {
     });
   }
 
-  // Total Count
   const countPipeline = [...pipeline];
 
   countPipeline.push({
@@ -113,7 +109,6 @@ export class UserRepository {
 
   const total = countResult.length ? countResult[0].total : 0;
 
-  // Pagination & Projection
   pipeline.push(
     {
       $sort: {

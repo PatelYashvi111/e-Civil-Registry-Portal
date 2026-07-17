@@ -16,11 +16,16 @@ export class OfficeDepartmentRepository {
     return await this.model.create(createOfficeDepartmentDto);
   }
 
-  async findAll() {
-    return await this.model
-      .find()
-      .populate('officeId')
-      .populate('departmentId');
+  async findAll(skip: number, limit: number, page: number) {
+    const data = await this.model.find().skip(skip).limit(limit).sort({createdAt: -1}).populate('officeId').populate('departmentId');
+    const total = await this.model.countDocuments();
+    return {
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    }
   }
 
   async findById(id: string) {

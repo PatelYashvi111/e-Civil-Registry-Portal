@@ -17,8 +17,16 @@ export class DepartmentRepository {
     return await this.model.create( createDepartmentDto );
   }
 
-  async findAll() {
-    return await this.model.find();
+  async findAll(skip: number, limit: number, page: number) {
+    const data = await this.model.find().skip(skip).limit(limit).sort({ createdAt: -1 });
+    const total = await this.model.countDocuments();
+    return{
+      data,
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    }
   }
 
   async findByName(name: string) {

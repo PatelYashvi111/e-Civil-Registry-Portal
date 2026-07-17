@@ -2,6 +2,7 @@ import { Injectable, BadRequestException, NotFoundException } from '@nestjs/comm
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { OfficeRepository } from './office.repository';
+import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class OfficeService {
@@ -17,11 +18,16 @@ export class OfficeService {
       throw new BadRequestException('Office already exists');
     }
 
-    return await this.officeRepository.create(createOfficeDto);
+      return await this.officeRepository.createOffice(createOfficeDto);
+
   }
 
-  async findAll() {
-    return await this.officeRepository.findAll();
+  async findAll(paginationDto: PaginationDto) {
+    const { page=1, limit=5, search } = paginationDto;
+
+    const skip = (page-1) * limit;
+
+    return await this.officeRepository.findAll(skip, limit, page, search);
   }
 
   async findOne(id: string) {

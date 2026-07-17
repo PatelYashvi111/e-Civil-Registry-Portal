@@ -1,7 +1,8 @@
-import { Controller, Post, Get, Patch, Delete, Body, Param} from '@nestjs/common';
+import { Controller, Post, Get, Patch, Delete, Body, Param, Query} from '@nestjs/common';
 import { StateService } from './state.service';
 import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Controller('state')
 export class StateController {
@@ -16,8 +17,8 @@ export class StateController {
   }
 
   @Get('all')
-  async findAll() {
-    return this.stateService.findAll();
+  async findAll(@Query() paginationDto: PaginationDto) {
+    return this.stateService.findAll(paginationDto);
   }
 
   @Get(':id')

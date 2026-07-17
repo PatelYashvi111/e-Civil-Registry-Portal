@@ -62,9 +62,9 @@ export class CreateClerkDto {
   @IsString()
   govEmployeeIdCard!: string;
 
-  // @IsNotEmpty()
-  // @IsString()
-  // verificationToken!: string;
+  @IsNotEmpty()
+  @IsString()
+  verificationToken!: string;
 
 }
 

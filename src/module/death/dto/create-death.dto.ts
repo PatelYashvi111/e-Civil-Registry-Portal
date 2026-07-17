@@ -43,33 +43,4 @@ export class CreateDeathDto {
     @IsString()
     applicantVerificationToken!: string;
 
-
-    // @IsString()
-    // @IsNotEmpty()
-    // deceasedAadharCard!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // spouseAadharCard!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // deceasedRationCard!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // deceasedPhoto!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // deceasedMedicalCertificate!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // pmReport!: string;
-
-    // @IsString()
-    // @IsNotEmpty()
-    // fir!: string;
-
 }
