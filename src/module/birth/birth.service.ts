@@ -6,6 +6,12 @@ import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
 import { CounterService } from "../counter/counter.service";
 import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
+import dayjs from 'dayjs';
+import customParseFormat from 'dayjs/plugin/customParseFormat';
+dayjs.extend(customParseFormat);
+import { JwtService } from "@nestjs/jwt";
+import { AadharService } from "../aadhar/aadhar.service";
+
 
 @Injectable()
 export class BirthService {
@@ -15,6 +21,8 @@ export class BirthService {
         private readonly aadharRepository: AadharRepository,
         private readonly cloudinaryService: CloudinaryService,
         private readonly counterService: CounterService,
+        private readonly jwtService: JwtService,
+        private readonly aadharService: AadharService,
     ){}
 
     async create( createBirthDto: CreateBirthDto , files: {
@@ -24,12 +32,24 @@ export class BirthService {
         birthHospitalReport?: Express.Multer.File[];
         rationCard?: Express.Multer.File[];
     }) {
-      const existingBirth = await this.birthRepository.findDuplication(
-            createBirthDto.babyName, 
-            new Date(createBirthDto.birthDateAndTime),  
-            createBirthDto.fatherAadharId, 
-            createBirthDto.motherAadharId,
-        )
+        const parsed = dayjs(
+        createBirthDto.birthDateAndTime,
+        'DD-MMM-YYYY h:mm a',
+        true,
+        );
+
+        if (!parsed.isValid()) {
+        throw new BadRequestException('Invalid birth date and time.');
+        }
+
+        const birthDate = parsed.toDate();
+
+        const existingBirth = await this.birthRepository.findDuplication(
+        createBirthDto.babyName,
+        birthDate,
+        createBirthDto.fatherAadharId,
+        createBirthDto.motherAadharId,
+        );
 
        if(existingBirth) {
           throw new BadRequestException('Birth record is already exists.');
@@ -38,14 +58,34 @@ export class BirthService {
        if( createBirthDto.babyWeight <= 0 ) {
           throw new BadRequestException('Baby weight must be greater than 0.')
        }
+
+       if (!createBirthDto.fatherVerificationToken) {
+         throw new BadRequestException('Verification token is required');
+       }
+              
+      const fatherpayload = this.jwtService.verify(createBirthDto.fatherVerificationToken);
+
+       if (fatherpayload.purpose !== 'registration') {
+         throw new BadRequestException('Invalid token');
+       }
        
-      const fatherAadhar = await this.aadharRepository.findById(createBirthDto.fatherAadharId);
+      const fatherAadhar = await this.aadharService.findById(fatherpayload.fatherAadharId);
 
         if (!fatherAadhar) {
             throw new NotFoundException('Father Aadhar ID not found.');
         }
 
-       const motherAadhar = await this.aadharRepository.findById(createBirthDto.motherAadharId);
+         if (!createBirthDto.motherVerificationToken) {
+         throw new BadRequestException('Verification token is required');
+       }
+
+      const motherpayload = this.jwtService.verify(createBirthDto.motherVerificationToken);
+
+       if (motherpayload.purpose !== 'registration') {
+         throw new BadRequestException('Invalid token');
+       }
+
+       const motherAadhar = await this.aadharService.findById(motherpayload.motherAadharId);
 
         if(!motherAadhar) {
             throw new NotFoundException('Mother Aadhar ID not found')
@@ -98,6 +138,7 @@ export class BirthService {
 
         const finalData = {
             ...createBirthDto,
+            birthDateAndTime: birthDate,
             applicationNumber,
             fatherAadharCard: fatherAadharCard.url,
             motherAadharCard: motherAadharCard.url,
@@ -106,7 +147,7 @@ export class BirthService {
             rationCard: rationCard.url,
 };
 
-        return await this.birthRepository.create( finalData );
+        return await this.birthRepository.create( finalData as any);
 
     }
 
@@ -120,28 +161,44 @@ export class BirthService {
         return await this.birthRepository.findById( id );
     }
 
-    async update( id: string, updateBirthDto: UpdateBirthDto ) {
-       const existingBirth = await this.birthRepository.findDuplication(
-            updateBirthDto.babyName as string, 
-            new Date(updateBirthDto.birthDateAndTime as string),
-            updateBirthDto.fatherAadharId as string, 
-            updateBirthDto.motherAadharId as string,
-        )
+    async update(id: string, updateBirthDto: UpdateBirthDto) {
+    const birth = await this.birthRepository.findById(id);
 
-        if(existingBirth) {
-            throw new BadRequestException('Birth record is already exists.');
-        }
-       
-       const birth = await this.birthRepository.findById( id );
-
-        if(!birth) {
-            throw new NotFoundException('Birth record not found.');
-        }
-
-        return await this.birthRepository.update( id, updateBirthDto );
+    if (!birth) {
+        throw new NotFoundException('Birth record not found.');
     }
 
-    async delete( id: string ) {
+    const parsed = dayjs(
+        updateBirthDto.birthDateAndTime as string,
+        'DD-MMM-YYYY h:mm a',
+        true,
+    );
+
+    if (!parsed.isValid()) {
+        throw new BadRequestException('Invalid birth date and time.');
+    }
+
+    const birthDate = parsed.toDate();
+
+    const existingBirth = await this.birthRepository.findDuplication(
+        updateBirthDto.babyName as string,
+        birthDate,
+        updateBirthDto.fatherAadharId as string,
+        updateBirthDto.motherAadharId as string,
+    );
+
+    if (existingBirth && existingBirth.id !== id) {
+        throw new BadRequestException('Birth record already exists.');
+    }
+
+    const finalData = {
+        ...updateBirthDto,
+        birthDateAndTime: birthDate,
+    };
+
+    return await this.birthRepository.update(id, finalData as any);
+    }
+        async delete( id: string ) {
        const birth = await this.birthRepository.findById( id );
 
         if(!birth) {

@@ -15,13 +15,13 @@ export class CreateUserDto {
   @IsMongoId()
   districtId!: string;
 
-  @IsNotEmpty()
-  @IsMongoId()
-  officeId!: string;
+  // @IsNotEmpty()
+  // @IsMongoId()
+  // officeId!: string;
 
-  @IsNotEmpty()
-  @IsMongoId()
-  departmentId!: string;
+  // @IsNotEmpty()
+  // @IsMongoId()
+  // departmentId!: string;
 
 
   @IsNotEmpty()

@@ -7,13 +7,13 @@ export class CreateBirthDto {
     @IsNotEmpty()
     babyName!: string;
 
-    @IsDateString()
+    @IsString()
     @IsNotEmpty()
     birthDateAndTime!: string;
 
     @IsNotEmpty()
     @IsMongoId()
-    birthDistrictId!: string;
+    officeDepartmentId!: string;
 
     @IsString()
     @IsNotEmpty()
@@ -34,25 +34,33 @@ export class CreateBirthDto {
     @IsNotEmpty()
     @IsMongoId()
     motherAadharId!: string;
+
+    @IsNotEmpty()
+    @IsString()
+    motherVerificationToken!: string;
+
+    @IsNotEmpty()
+    @IsString()
+    fatherVerificationToken!: string
     
-    @IsString()
-    @IsNotEmpty()
-    fatherAadharCard!: string;
+    // @IsString()
+    // @IsNotEmpty()
+    // fatherAadharCard!: string;
 
-    @IsString()
-    @IsNotEmpty()
-    motherAadharCard!: string;
+    // @IsString()
+    // @IsNotEmpty()
+    // motherAadharCard!: string;
 
-    @IsString()
-    @IsNotEmpty()
-    marriageCertificate!: string;
+    // @IsString()
+    // @IsNotEmpty()
+    // marriageCertificate!: string;
     
-    @IsString()
-    @IsNotEmpty()
-    birthHospitalReport!: string;
+    // @IsString()
+    // @IsNotEmpty()
+    // birthHospitalReport!: string;
 
-    @IsString()
-    @IsNotEmpty()
-    rationCard!: string;
+    // @IsString()
+    // @IsNotEmpty()
+    // rationCard!: string;
     
 }

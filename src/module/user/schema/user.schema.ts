@@ -33,20 +33,20 @@ export class User {
     })
   officeDepartmentId!: Types.ObjectId | null;
   
-  @Prop({
-      type: Types.ObjectId,
-      ref: 'Office', 
-      default: null 
-    })
-  officeId!: Types.ObjectId | null;
+  // @Prop({
+  //     type: Types.ObjectId,
+  //     ref: 'Office', 
+  //     default: null 
+  //   })
+  // officeId!: Types.ObjectId | null;
 
 
-  @Prop({
-      type: Types.ObjectId,
-      ref: 'Department', 
-      default: null 
-    })
-  departmentId!: Types.ObjectId | null;
+  // @Prop({
+  //     type: Types.ObjectId,
+  //     ref: 'Department', 
+  //     default: null 
+  //   })
+  // departmentId!: Types.ObjectId | null;
 
   @Prop({
     type: String,

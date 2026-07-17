@@ -33,19 +33,20 @@ export class SlotService {
     console.log("OfficeDepartmentId:", officeDepartmentId);
     console.log("Clerk Role Id:", clerkRole.id);
 
-    const clerkCount =
-      await this.clerkRepository.countClerksByOfficeDepartment(
-        officeDepartmentId.toString(),
-        clerkRole._id.toString(),
-      );
+     const clerkCount =
+       await this.clerkRepository.countClerksByOfficeDepartment(
+         officeDepartmentId.toString(),
+         clerkRole._id.toString(),
+       );
 
-    console.log('Clerk Count:', clerkCount);
+     console.log('Clerk Count:', clerkCount);
 
-    if (!clerkCount || clerkCount === 0) {
-      throw new NotFoundException(
-        'No clerks found for this office department',
-      );
-    }
+     if (!clerkCount || clerkCount === 0) {
+       throw new NotFoundException(
+         'No clerks found for this office department',
+       );
+     }
+     
     const existingSlot =
       await this.slotRepository.findByOfficeDepartmentAndDate(
         officeDepartmentId,
@@ -78,7 +79,7 @@ export class SlotService {
       slotDate: new Date(slotDate),
       startTime,
       endTime,
-      maxCapacity: clerkCount,
+      maxCapacity: 1,
       bookedCount: 0,
       isAvailable: true,
     }));

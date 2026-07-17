@@ -6,6 +6,8 @@ import { AadharRepository } from "../aadhar/aadhar.repository";
 import { CloudinaryService } from "../../common/cloudinary/cloudinary.service";
 import { CounterService } from "../counter/counter.service";
 import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
+import { JwtService } from "@nestjs/jwt";
+import { AadharService } from "../aadhar/aadhar.service";
 
 @Injectable()
 export class MarriageService {
@@ -15,6 +17,8 @@ export class MarriageService {
         private readonly aadharRepository: AadharRepository,
         private readonly cloudinaryService: CloudinaryService,
         private readonly counterService: CounterService,
+        private readonly jwtService: JwtService,
+        private readonly aadharService: AadharService,
     ){}
 
     async create( createMarriageDto: CreateMarriageDto, files: {
@@ -38,26 +42,65 @@ export class MarriageService {
             throw new BadRequestException('Marriage records is already exists.');
         }
 
-       const brideAadhar = await this.aadharRepository.findById(createMarriageDto.brideAadharId);
+         if (!createMarriageDto.brideVerificationToken) {
+        throw new BadRequestException('Verification token is required');
+        }
+
+        const bridepayload = this.jwtService.verify(createMarriageDto.brideVerificationToken);
+
+        if (bridepayload.purpose !== 'registration') {
+        throw new BadRequestException('Invalid token');
+        }
+
+       const brideAadhar = await this.aadharService.findById(bridepayload.brideAadharId);
 
         if(!brideAadhar) {
             throw new NotFoundException('Bride Aadhar ID not found.');
         
         }
 
-       const groomAadhar = await this.aadharRepository.findById(createMarriageDto.groomAadharId);
+        if (!createMarriageDto.groomVerificationToken) {
+        throw new BadRequestException('Verification token is required');
+        }
+
+        const groompayload = this.jwtService.verify(createMarriageDto.groomVerificationToken);
+
+        if (groompayload.purpose !== 'registration') {
+        throw new BadRequestException('Invalid token');
+        }
+
+       const groomAadhar = await this.aadharService.findById(groompayload.groomAadharId);
 
         if(!groomAadhar) {
             throw new NotFoundException('Groom Aadhar ID not found.');
         }
 
-       const witnessAadhar = await this.aadharRepository.findById(createMarriageDto.witnessAadharId);
+       if (!createMarriageDto.witnessVerificationToken) {
+        throw new BadRequestException('Verification token is required');
+        }
+
+        const witnesspayload = this.jwtService.verify(createMarriageDto.witnessVerificationToken);
+
+        if (witnesspayload.purpose !== 'registration') {
+        throw new BadRequestException('Invalid token');
+        }
+
+       const witnessAadhar = await this.aadharService.findById(witnesspayload.witnessAadharId);
 
         if(!witnessAadhar) {
             throw new NotFoundException('Witness Aadhar ID not found.');
         }
 
-       const brahmanAadhar = await this.aadharRepository.findById(createMarriageDto.brahmanAadharId);
+        if (!createMarriageDto.brahmanVerificationToken) {
+        throw new BadRequestException('Verification token is required');
+        }
+
+        const brahmanpayload = this.jwtService.verify(createMarriageDto.brahmanVerificationToken);
+
+        if (brahmanpayload.purpose !== 'registration') {
+        throw new BadRequestException('Invalid token');
+        }
+       const brahmanAadhar = await this.aadharService.findById(brahmanpayload.brahmanAadharId);
 
         if(!brahmanAadhar) {
             throw new NotFoundException('Brahman Aadhar ID not found.');

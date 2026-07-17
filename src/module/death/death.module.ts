@@ -7,9 +7,17 @@ import { Death, DeathSchema } from "./schema/death.schema";
 import { AadharModule } from "../aadhar/aadhar.module";
 import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
 import { CounterModule } from "../counter/counter.module";
+import { JwtModule } from "@nestjs/jwt";
 
 @Module({
     imports: [
+      JwtModule.register({
+      secret: process.env.JWT_SECRET,
+      signOptions: {
+        expiresIn: '1d',
+      },
+    }),
+
         MongooseModule.forFeature([
             {
                 name:Death.name,

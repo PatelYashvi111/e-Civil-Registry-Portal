@@ -76,9 +76,9 @@ export class Marriage {
       @Prop({
         required: true,
         type: Types.ObjectId,
-        ref: 'District',
+        ref: 'officeDepartment',
       })
-      marriageDistrict!: Types.ObjectId;
+      officeDepartment!: Types.ObjectId;
 
       @Prop({
         required: true,
@@ -139,6 +139,31 @@ export class Marriage {
         type: String,
       })
       invitationCard!: string;
+
+      @Prop({
+        required: true,
+        type: String,
+      })
+      brideVerificationToken!: string;
+
+      @Prop({
+        required: true,
+        type: String,
+      })
+      groomVerificationToken!: string;
+
+      @Prop({
+        required: true,
+        type: String,
+      })
+      brahmanVerificationToken!: string;
+
+      @Prop({
+        required: true,
+        type: String,
+      })
+      witnessVerificationToken!: string;
+
 
 }
 

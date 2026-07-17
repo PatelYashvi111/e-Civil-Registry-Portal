@@ -19,13 +19,13 @@ export class CreateClerkDto {
   @IsMongoId()
   districtId!: string;
 
-  @IsNotEmpty()
-  @IsMongoId()
-  officeId!: string;
+  // @IsNotEmpty()
+  // @IsMongoId()
+  // officeId!: string;
 
-  @IsNotEmpty()
-  @IsMongoId()
-  departmentId!: string;
+  // @IsNotEmpty()
+  // @IsMongoId()
+  // departmentId!: string;
 
   @IsNotEmpty()
   @IsString()
@@ -62,9 +62,9 @@ export class CreateClerkDto {
   @IsString()
   govEmployeeIdCard!: string;
 
-  @IsNotEmpty()
-  @IsString()
-  verificationToken!: string;
+  // @IsNotEmpty()
+  // @IsString()
+  // verificationToken!: string;
 
 }
 

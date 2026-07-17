@@ -24,9 +24,9 @@ export class Birth {
     @Prop({
         required: true,
         type: Types.ObjectId,
-        ref: 'District',
+        ref: 'OfficeDepartment',
     })
-    birthDistrictId!: Types.ObjectId;
+    officeDepartmentId!: Types.ObjectId;
 
     @Prop({
         required: true,
@@ -90,6 +90,19 @@ export class Birth {
         type: String,
     })
     rationCard!: string;
+
+    @Prop({
+        required: true,
+        type: String,
+    })
+    motherVerificationToken!: string;
+
+        @Prop({
+        required: true,
+        type: String,
+    })
+    fatherVerificationToken!: string;
+
 
 }
 

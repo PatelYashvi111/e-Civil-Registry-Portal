@@ -20,16 +20,16 @@ export class Death {
     @Prop({
          required: true,
          type: Types.ObjectId,
-         ref: 'District',
+         ref: 'officeDepartment',
     })
-    deathDistrictId!: Types.ObjectId;
+    officeDepartmentId!: Types.ObjectId;
     
     @Prop({
         required: true,
         type: Types.ObjectId,
         ref: 'Aadhar'
     })
-    spouseAadharId!: Types.ObjectId; 
+    applicantAadharId!: Types.ObjectId; 
    
     @Prop({
         required: true,
@@ -73,7 +73,7 @@ export class Death {
         required: true,
         type: String,
     })
-    spouseAadharCard!: string;
+    applicantAadharCard!: string;
 
     @Prop({
         required: true,
@@ -104,6 +104,18 @@ export class Death {
         type: String,
     })
     fir!: string;
+
+    @Prop({
+        required: true,
+        type: String,
+    })
+    deceasedVerificationToken!: string;
+
+    @Prop({
+    required: true,
+    type: String,
+    })
+    applicantVerificationToken!: string;
 
 }
 

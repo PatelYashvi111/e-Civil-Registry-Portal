@@ -4,22 +4,49 @@ import { Model } from "mongoose";
 import { Birth, BirthDocument } from "./schema/birth.schema";
 import { CreateBirthDto } from "./dto/create-birth.dto";
 import { UpdateBirthDto } from "./dto/update-birth.dto";
+import { toObjectId } from "../../common/utils/objectId.utils";
+
 
 @Injectable()
 export class BirthRepository {
-
     constructor(
         @InjectModel(Birth.name)
         private readonly BirthModel: Model<BirthDocument>
     ){}
 
-    async create( createBirthDto: CreateBirthDto ) {
-        return await this.BirthModel.create(createBirthDto);
-    }
+    async create(createBirthDto: CreateBirthDto) {
+   const birthData = {
+    ...createBirthDto,
+    fatherAadharId: toObjectId(createBirthDto.fatherAadharId),
+    motherAadharId: toObjectId(createBirthDto.motherAadharId),
+    officeDepartmentId: toObjectId(createBirthDto.officeDepartmentId),
+  };
+
+  return await this.BirthModel.create(birthData);
+}
 
     async findAll(skip: number, limit: number, page: number) {
         const data = await this.BirthModel.find().skip(skip).limit(limit)
-        .populate('fatherAadharId').populate('motherAadharId').populate({path: 'districtId',populate: {path: 'stateId'}});
+        .populate('fatherAadharId')
+        .populate('motherAadharId')
+        .populate({
+         path: 'officeDepartmentId',
+         populate: [
+            {
+            path: 'officeId',
+            populate: {
+                path: 'districtId',
+                populate: {
+                path: 'stateId',
+                },
+            },
+            },
+            {
+            path: 'departmentId',
+            },
+        ],
+        });
+                
         const total = await this.BirthModel.countDocuments();
         return{
             data,

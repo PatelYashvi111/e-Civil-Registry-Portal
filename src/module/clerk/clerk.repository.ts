@@ -338,8 +338,8 @@ export class ClerkRepository {
       ...createClerkDto,
       roleId: toObjectId(roleId),
       aadharId: toObjectId(createClerkDto.aadharId),
-      officeId: toObjectId(createClerkDto.officeId),
-      departmentId: toObjectId(createClerkDto.departmentId),
+      officeDepartmentId: toObjectId(createClerkDto.officeDepartmentId),
+     // departmentId: toObjectId(createClerkDto.departmentId),
     });
 
     const savedClerk = await createdClerk.save();
@@ -348,8 +348,8 @@ export class ClerkRepository {
       .findById(savedClerk._id)
       .populate('roleId')
       .populate('aadharId')
-      .populate('officeId')
-      .populate('departmentId')
+      .populate('officeDepartmentId')
+      //.populate('departmentId')
 
     return clerk;
   }
@@ -388,26 +388,26 @@ export class ClerkRepository {
     },
 
     // Office Department
-    // {
-    //   $lookup: {
-    //     from: 'officedepartments',
-    //     localField: 'officeDepartmentId',
-    //     foreignField: '_id',
-    //     as: 'officeDepartment',
-    //   },
-    // },
-    // {
-    //   $unwind: {
-    //     path: '$officeDepartment',
-    //     preserveNullAndEmptyArrays: true,
-    //   },
-    // },
+    {
+      $lookup: {
+        from: 'officedepartments',
+        localField: 'officeDepartmentId',
+        foreignField: '_id',
+        as: 'officeDepartment',
+      },
+    },
+    {
+      $unwind: {
+        path: '$officeDepartment',
+        preserveNullAndEmptyArrays: true,
+      },
+    },
 
     // Office
     {
       $lookup: {
         from: 'offices',
-        localField: 'officeId',
+        localField: 'officeDepartmentofficeId',
         foreignField: '_id',
         as: 'office',
       },
@@ -452,7 +452,7 @@ export class ClerkRepository {
     {
       $lookup: {
         from: 'departments',
-        localField: 'deapartmentId',
+        localField: 'officeDepartment.departmentId',
         foreignField: '_id',
         as: 'department',
       },
@@ -499,6 +499,12 @@ export class ClerkRepository {
               $regex: search,
               $options: 'i',
             },
+          },
+          {
+            'aadhar.contact': {
+              $regex: search,
+              $options: 'i',
+            }
           },
           {
             'office.name': {
@@ -580,8 +586,26 @@ export class ClerkRepository {
       .findById(id)
       .populate('roleId')
       .populate('aadharId')
-      .populate({path: 'officeId', populate : {path: 'districtId'}})
-      .populate('departmentId')
+      .populate({
+         path: 'officeDepartmentId',
+         populate: [
+            {
+            path: 'officeId',
+            populate: {
+                path: 'districtId',
+                populate: {
+                path: 'stateId',
+                },
+            },
+            },
+            {
+            path: 'departmentId',
+            },
+        ],
+        });
+        
+      //.populate({path: 'officeId', populate : {path: 'districtId'}})
+     // .populate('departmentId')
   }
 
   async findByEmail(email: string) {
