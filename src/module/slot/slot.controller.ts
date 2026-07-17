@@ -22,7 +22,7 @@ export class SlotController {
   }
 
   @Get('available-dates/:officeDepartmentId')
-  async getAvailableDates( @Query('officeDepartmentId') officeDepartmentId: string ) {
+  async getAvailableDates( @Param('officeDepartmentId') officeDepartmentId: string ) {
     return this.slotService.getAvailableDates( officeDepartmentId );
   }
 

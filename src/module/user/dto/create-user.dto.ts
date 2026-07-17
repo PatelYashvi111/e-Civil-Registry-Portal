@@ -1,5 +1,5 @@
 import { IsEmail, IsNotEmpty, IsOptional, IsString ,IsEnum, IsDateString, IsMongoId, Length } from 'class-validator';
-import { StatusEnum } from '../../../common/enums/status.enums';
+import { StatusEnum } from '../../../common/enums/clerk.status.enums';
 
 export class CreateUserDto {
 

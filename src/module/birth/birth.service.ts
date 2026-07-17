@@ -207,5 +207,4 @@ export class BirthService {
 
         return await this.birthRepository.delete( id );
     }
-    
 }

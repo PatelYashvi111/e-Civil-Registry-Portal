@@ -9,7 +9,7 @@ import { District } from '../district/schema/district.schema';
 import { Office } from '../office/schema/office.schema';
 import { Department } from '../department/schema/department.schema';
 import { RoleEnum } from '../../common/enums/role.enums';
-import { StatusEnum } from '../../common/enums/status.enums';
+import { ApplicationStatusEnum } from 'src/common/enums/application.status.enums';
 
 @Injectable()
 export class DashboardService {
@@ -77,15 +77,15 @@ export class DashboardService {
       this.applicationModel.countDocuments(),
 
       this.applicationModel.countDocuments({
-        status: StatusEnum.ACTIVE,
+        status: ApplicationStatusEnum.APPROVED,
       }),
 
       this.applicationModel.countDocuments({
-        status: StatusEnum.PENDING,
+        status: ApplicationStatusEnum.PENDING,
       }),
 
       this.applicationModel.countDocuments({
-        status: StatusEnum.BLOCKED,
+        status: ApplicationStatusEnum.REJECTED,
       }),
     ]);
 

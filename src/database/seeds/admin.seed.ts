@@ -7,7 +7,7 @@ import { Role, RoleDocument } from '../../module/role/schema/role.schema';
 import { Aadhar, AadharDocument } from '../../module/aadhar/schema/aadhar.schema';
 import { toObjectId } from 'src/common/utils/objectId.utils';
 import { RoleEnum } from 'src/common/enums/role.enums';
-import { StatusEnum } from 'src/common/enums/status.enums';
+import { StatusEnum } from 'src/common/enums/clerk.status.enums';
 
 @Injectable()
 export class AdminSeed {

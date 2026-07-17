@@ -87,7 +87,7 @@ export class ClerkRepository {
     {
       $lookup: {
         from: 'offices',
-        localField: 'officeDepartmentofficeId',
+        localField: 'officeDepartment.officeId',
         foreignField: '_id',
         as: 'office',
       },
@@ -98,6 +98,13 @@ export class ClerkRepository {
         preserveNullAndEmptyArrays: true,
       },
     },
+
+    {
+  $project: {
+    officeDepartment: 1,
+    office: 1,
+  },
+},
 
     {
   $lookup: {
@@ -237,10 +244,20 @@ export class ClerkRepository {
       createdAt: 1,
 
       aadharId: '$aadhar',
-      officeDepartmentId: '$officeDepartment',
-      officeId: '$office',
       roleId: '$role',
-      departmentId: '$department',
+      officeDepartmentId: {
+    _id: "$officeDepartment._id",
+
+    officeId: {
+      _id: "$office._id",
+      name: "$office.name",
+    },
+
+    departmentId: {
+      _id: "$department._id",
+      name: "$department.name",
+    },
+  },
     },
   });
 
