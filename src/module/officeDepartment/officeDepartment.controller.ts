@@ -21,6 +21,14 @@ export class OfficeDepartmentController {
     return this.officeDepartmentService.findAll(paginationDto);
   }
 
+  @Get('mapping')
+  async getMapping(
+    @Query('officeId') officeId: string,
+    @Query('departmentId') departmentId: string,
+  ) {
+    return this.officeDepartmentService.findMapping(officeId, departmentId);
+  }
+
   @Get(':id')
   async findOne( @Param('id') id: string ) {
     return this.officeDepartmentService.findOne(id);
@@ -30,6 +38,7 @@ export class OfficeDepartmentController {
   async getByOffice( @Param('officeId') officeId: string ) {
     return this.officeDepartmentService.getByOffice( officeId );
   }
+
 
   @Get('department/:departmentId')
   async getByDepartment( @Param('departmentId') departmentId: string ) {

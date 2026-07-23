@@ -1,17 +1,19 @@
-import { Injectable, BadRequestException, NotFoundException } from "@nestjs/common";
+import { Injectable, BadRequestException, NotFoundException, Inject, forwardRef } from "@nestjs/common";
 import { CreateBirthDto } from "./dto/create-birth.dto";
 import { UpdateBirthDto } from "./dto/update-birth.dto";
 import { BirthRepository } from "./birth.repositroy";
 import { AadharRepository } from "../aadhar/aadhar.repository";
+import { ApplicationService } from "../application/application.service"
+import { OfficeDepartmentService } from "../officeDepartment/officeDepartment.service";
+import { SlotService } from "../slot/slot.service";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
 import { CounterService } from "../counter/counter.service";
 import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-dayjs.extend(customParseFormat);
 import { JwtService } from "@nestjs/jwt";
 import { AadharService } from "../aadhar/aadhar.service";
-
+import { Types } from 'mongoose';
+import { GenderEnum } from "src/common/enums/gender.enums";
+import { ServiceEnum } from "src/common/enums/service.enums";
 
 @Injectable()
 export class BirthService {
@@ -21,28 +23,29 @@ export class BirthService {
         private readonly aadharRepository: AadharRepository,
         private readonly cloudinaryService: CloudinaryService,
         private readonly counterService: CounterService,
+        private readonly applicationService: ApplicationService,
+        private readonly officeDepartmentService: OfficeDepartmentService,
+        private readonly slotService: SlotService,
         private readonly jwtService: JwtService,
         private readonly aadharService: AadharService,
     ){}
 
-    async create( createBirthDto: CreateBirthDto , files: {
+    async create( createBirthDto: CreateBirthDto ,user,files: {
         fatherAadharCard?: Express.Multer.File[];
         motherAadharCard?: Express.Multer.File[];
         marriageCertificate?: Express.Multer.File[];
         birthHospitalReport?: Express.Multer.File[];
         rationCard?: Express.Multer.File[];
     }) {
-        const parsed = dayjs(
-        createBirthDto.birthDateAndTime,
-        'DD-MMM-YYYY h:mm a',
-        true,
-        );
 
-        if (!parsed.isValid()) {
+          createBirthDto.babyGender =
+      createBirthDto.babyGender.trim().toLowerCase() as GenderEnum;
+      
+    const birthDate = new Date(createBirthDto.birthDateAndTime);
+
+    if (isNaN(birthDate.getTime())) {
         throw new BadRequestException('Invalid birth date and time.');
-        }
-
-        const birthDate = parsed.toDate();
+    }
 
         const existingBirth = await this.birthRepository.findDuplication(
         createBirthDto.babyName,
@@ -69,11 +72,23 @@ export class BirthService {
          throw new BadRequestException('Invalid token');
        }
        
-      const fatherAadhar = await this.aadharService.findById(fatherpayload.fatherAadharId);
+        
+       let fatherAadhar;
+
+        if (Types.ObjectId.isValid(createBirthDto.fatherAadharId)) {
+        fatherAadhar = await this.aadharService.findById(
+            createBirthDto.fatherAadharId,
+        );
+        } else {
+        fatherAadhar = await this.aadharService.findByAadharNumber(
+            createBirthDto.fatherAadharId,
+        );
+        }
 
         if (!fatherAadhar) {
-            throw new NotFoundException('Father Aadhar ID not found.');
+        throw new NotFoundException('Father Aadhar not found');
         }
+
 
          if (!createBirthDto.motherVerificationToken) {
          throw new BadRequestException('Verification token is required');
@@ -85,11 +100,53 @@ export class BirthService {
          throw new BadRequestException('Invalid token');
        }
 
-       const motherAadhar = await this.aadharService.findById(motherpayload.motherAadharId);
+       let motherAadhar;
 
-        if(!motherAadhar) {
-            throw new NotFoundException('Mother Aadhar ID not found')
+       if (Types.ObjectId.isValid(createBirthDto.motherAadharId)) {
+        motherAadhar = await this.aadharService.findById(
+            createBirthDto.motherAadharId,
+        );
+        } else {
+        motherAadhar = await this.aadharService.findByAadharNumber(
+            createBirthDto.motherAadharId,
+        );
         }
+        
+        if(!motherAadhar) {
+                throw new NotFoundException('Mother Aadhar ID not found')
+            }
+
+        let officeDepartment;
+
+        if (Types.ObjectId.isValid(createBirthDto.officeDepartmentId)) {
+        officeDepartment = await this.officeDepartmentService.findById(
+            createBirthDto.officeDepartmentId,
+        );
+        } else {
+        officeDepartment = await this.officeDepartmentService.findByName(
+            createBirthDto.officeDepartmentId,
+        );
+        }
+
+        if (!officeDepartment) {
+        throw new NotFoundException('Office Department not found');
+        }
+
+        const slot = await this.slotService.findById(createBirthDto.slotId);
+
+        if (!slot) {
+        throw new NotFoundException('Slot not found.');
+        }
+
+
+        if (!slot.isAvailable) {
+        throw new BadRequestException('Selected slot is not available.');
+        }
+
+        if (slot.bookedCount >= slot.maxCapacity) {
+        throw new BadRequestException('Selected slot is full.');
+        }
+
 
         const fatherAadharCardFile = files.fatherAadharCard?.[0];
         const motherAadharCardFile = files.motherAadharCard?.[0];
@@ -140,6 +197,10 @@ export class BirthService {
             ...createBirthDto,
             birthDateAndTime: birthDate,
             applicationNumber,
+            fatherAadharId: fatherAadhar._id.toString(),
+            motherAadharId: motherAadhar._id.toString(),
+            officeDepartmentId: officeDepartment._id.toString(),
+            slotId: slot._id.toString(),
             fatherAadharCard: fatherAadharCard.url,
             motherAadharCard: motherAadharCard.url,
             marriageCertificate: marriageCertificate.url,
@@ -147,8 +208,18 @@ export class BirthService {
             rationCard: rationCard.url,
 };
 
-        return await this.birthRepository.create( finalData as any);
+        const birth = await this.birthRepository.create(finalData as any);
 
+      await this.applicationService.createApplicationFromService({
+        userId: user.userId,
+        officeDepartmentId: birth.officeDepartmentId.toString(),
+        slotId: birth.slotId.toString(),
+        serviceId: birth._id.toString(),
+        serviceType: ServiceEnum.BIRTH,
+        applicationNumber,
+    });
+
+       return birth;
     }
 
     async findAll(paginationDto: PaginationDto) {
@@ -168,23 +239,65 @@ export class BirthService {
         throw new NotFoundException('Birth record not found.');
     }
 
-    const parsed = dayjs(
-        updateBirthDto.birthDateAndTime as string,
-        'DD-MMM-YYYY h:mm a',
-        true,
-    );
+    const birthDate = new Date(updateBirthDto.birthDateAndTime as string);
 
-    if (!parsed.isValid()) {
+    if (isNaN(birthDate.getTime())) {
         throw new BadRequestException('Invalid birth date and time.');
     }
 
-    const birthDate = parsed.toDate();
+    let fatherAadhar;
+
+    if (Types.ObjectId.isValid(updateBirthDto.fatherAadharId as string)) {
+        fatherAadhar = await this.aadharService.findById(
+        updateBirthDto.fatherAadharId as string,
+        );
+    } else {
+        fatherAadhar = await this.aadharService.findByAadharNumber(
+        updateBirthDto.fatherAadharId as string,
+        );
+    }
+
+    if (!fatherAadhar) {
+        throw new NotFoundException('Father Aadhar not found');
+    }
+
+    let motherAadhar;
+
+    if (Types.ObjectId.isValid(updateBirthDto.motherAadharId as string)) {
+        motherAadhar = await this.aadharService.findById(
+        updateBirthDto.motherAadharId as string,
+        );
+    } else {
+        motherAadhar = await this.aadharService.findByAadharNumber(
+        updateBirthDto.motherAadharId as string,
+        );
+    }
+
+    if (!motherAadhar) {
+        throw new NotFoundException('Mother Aadhar not found');
+    }
+
+    let officeDepartment;
+
+    if (Types.ObjectId.isValid(updateBirthDto.officeDepartmentId as string)) {
+        officeDepartment = await this.officeDepartmentService.findById(
+        updateBirthDto.officeDepartmentId as string,
+        );
+    } else {
+        officeDepartment = await this.officeDepartmentService.findByName(
+        updateBirthDto.officeDepartmentId as string,
+        );
+    }
+
+    if (!officeDepartment) {
+        throw new NotFoundException('Office Department not found');
+    }
 
     const existingBirth = await this.birthRepository.findDuplication(
         updateBirthDto.babyName as string,
         birthDate,
-        updateBirthDto.fatherAadharId as string,
-        updateBirthDto.motherAadharId as string,
+        fatherAadhar._id.toString(),
+        motherAadhar._id.toString(),
     );
 
     if (existingBirth && existingBirth.id !== id) {
@@ -194,17 +307,22 @@ export class BirthService {
     const finalData = {
         ...updateBirthDto,
         birthDateAndTime: birthDate,
+        fatherAadharId: fatherAadhar._id.toString(),
+        motherAadharId: motherAadhar._id.toString(),
+        officeDepartmentId: officeDepartment._id.toString(),
     };
 
     return await this.birthRepository.update(id, finalData as any);
     }
-        async delete( id: string ) {
-       const birth = await this.birthRepository.findById( id );
+    
+    async delete( id: string ) {
+   const birth = await this.birthRepository.findById( id );
 
-        if(!birth) {
-            throw new NotFoundException('Birth record not found.');
-        }
+   if(!birth) {
+       throw new NotFoundException('Birth record not found.');
+   }
 
-        return await this.birthRepository.delete( id );
-    }
+   return await this.birthRepository.delete( id );
+}
+
 }

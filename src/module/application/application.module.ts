@@ -11,6 +11,7 @@ import { UserModule } from "../user/user.module";
 import { SlotModule } from "../slot/slot.module";
 import { EmailModule } from "../email/email.module";
 import { AadharModule } from "../aadhar/aadhar.module";
+import { ClerkModule } from "../clerk/clerk.module";
 
 @Module({
     imports: [
@@ -27,6 +28,7 @@ import { AadharModule } from "../aadhar/aadhar.module";
         CounterModule,
         EmailModule,
         AadharModule,
+        ClerkModule,
     ],
 
     controllers: [ApplicationController],

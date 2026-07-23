@@ -4,6 +4,7 @@ import { Model } from 'mongoose';
 import { OfficeDepartment } from './schema/officeDepartment.schema';
 import { CreateOfficeDepartmentDto } from './dto/create-officeDepartment.dto';
 import { UpdateOfficeDepartmentDto } from './dto/update-officeDepartment.dto';
+import { toObjectId } from 'src/common/utils/objectId.utils';
 
 @Injectable()
 export class OfficeDepartmentRepository {
@@ -13,7 +14,12 @@ export class OfficeDepartmentRepository {
   ) {}
 
   async create(createOfficeDepartmentDto: CreateOfficeDepartmentDto) {
-    return await this.model.create(createOfficeDepartmentDto);
+    const officeDepartmentData = {
+      ...CreateOfficeDepartmentDto,
+      officeId: toObjectId(createOfficeDepartmentDto.officeId),
+      departmentId: toObjectId(createOfficeDepartmentDto.departmentId),
+    }
+    return await this.model.create(officeDepartmentData);
   }
 
   async findAll(skip: number, limit: number, page: number) {
@@ -32,6 +38,10 @@ export class OfficeDepartmentRepository {
     return await this.model.findById(id);
   }
   
+  async findByName(name: string) {
+    return await this.model.findOne({ name });
+  }
+
   async findMapping( officeId: string, departmentId: string ) {
     return await this.model.findOne({ officeId, departmentId });
   }

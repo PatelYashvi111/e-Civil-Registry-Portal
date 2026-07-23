@@ -3,11 +3,8 @@ import { IsEmail, IsNotEmpty, IsString, Length } from 'class-validator';
 export class ResetPasswordDto {
   @IsNotEmpty()
   @IsEmail()
-  email!: string;
+  resetToken!: string;
 
-  @IsNotEmpty()
-  @IsString()
-  otp!: string;
 
   @IsNotEmpty()
   @IsString()

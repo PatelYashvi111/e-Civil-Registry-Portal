@@ -100,6 +100,19 @@ export class User {
     default: null
   })
   refreshToken!: string | null;
+
+  @Prop({
+  type: Boolean,
+  default: true,
+})
+isAvailable!: boolean;
+
+@Prop({
+  type: Number,
+  default: 0,
+})
+assignedApplicationCount!: number;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

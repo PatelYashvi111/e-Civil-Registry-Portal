@@ -110,7 +110,7 @@ async findAll(
       $skip: skip,
     },
     {
-      $limit: limit,
+      $limit: Number(limit),
     },
   );
 

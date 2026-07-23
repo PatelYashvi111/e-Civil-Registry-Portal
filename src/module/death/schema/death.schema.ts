@@ -107,6 +107,14 @@ export class Death {
 
     @Prop({
         required: true,
+        type: Types.ObjectId,
+        ref: 'Slot',
+
+    })
+    slotId!: Types.ObjectId;
+    
+    @Prop({
+        required: true,
         type: String,
     })
     deceasedVerificationToken!: string;

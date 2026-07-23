@@ -18,6 +18,11 @@ import { SlotModule } from './module/slot/slot.module';
 import { ApplicationModule } from './module/application/application.module';
 import { OtpModule } from './module/otp/otp.module';
 import { ClerkModule } from './module/clerk/clerk.module';
+import { BirthModule } from './module/birth/birth.module';
+import { DeathModule } from './module/death/death.module';
+import { MarriageModule } from './module/marriage/marriage.module';
+import { DashboardModule } from './module/dashboard/dashboard.module';
+import { HolidayModule } from './module/holiday/holiday.module';
 //import { DatabaseModule } from './database/seeds/seed.module';
 
 @Module({
@@ -46,6 +51,11 @@ import { ClerkModule } from './module/clerk/clerk.module';
     ApplicationModule,
     OtpModule,
     ClerkModule,
+    BirthModule,
+    DeathModule,
+    MarriageModule,
+    DashboardModule,
+    HolidayModule,
   ],
 
   controllers: [AppController],

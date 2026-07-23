@@ -15,7 +15,7 @@ export class CreateDeathDto {
     @IsNotEmpty()
     placeOfDeath!: string;
 
-    @IsString()
+    @IsDateString()
     @IsNotEmpty()
     dateAndTimeOfDeath!: string;
 
@@ -34,6 +34,10 @@ export class CreateDeathDto {
     @IsNotEmpty()
     @IsMongoId()
     applicantAadharId!: string;
+
+    @IsNotEmpty()
+    @IsMongoId()
+    slotId!: string;
 
     @IsNotEmpty()
     @IsString()

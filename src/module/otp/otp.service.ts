@@ -1,6 +1,7 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { OtpRepository } from './otp.repository';
 import { OtpEnum } from '../../common/enums/otp.enums';
+import { UpdateOtpDto } from './dto/update-otp.dto';
 import { EmailService } from 'src/module/email/email.service';
 import { JwtService } from '@nestjs/jwt';
 
@@ -90,28 +91,105 @@ console.log('Created ExpiredAt:', createdOtp.expiredAt);
     console.log(`Generated OTP for forgot password: ${otp}`);
   }
 
-  async verifyForgotPasswordOtp( userId: string, otp: string, email: string, name: string ): Promise<void> {
-    const otpRecord = await this.otpRepository.findOne({
-      userId,
-      serviceType: OtpEnum.FORGOT_PASSWORD,
-    });
+async verifyForgotPasswordOtp(
+  userId: string,
+  otp: string,
+): Promise<void> {
 
-    if (!otpRecord) {
-      throw new BadRequestException('OTP not found');
-    }
+  const otpRecord = await this.otpRepository.findOne({
+    userId,
+    serviceType: OtpEnum.FORGOT_PASSWORD,
+  });
 
-    if (new Date() > otpRecord.expiredAt) {
-      throw new BadRequestException('OTP expired');
-    }
 
-    if (otpRecord.otpNumber !== otp) {
-      throw new BadRequestException('Invalid OTP');
-    }
-
-    await this.otpRepository.deleteOtp(otpRecord._id.toString());
-    await this.emailService.sendOtpEmail(email,name,otp,'Forgot Password OTP')
-    console.log(`Verified OTP for forgot password: ${otp}`);
+  if (!otpRecord) {
+    throw new BadRequestException('OTP not found');
   }
+
+
+  if (new Date() > otpRecord.expiredAt) {
+    throw new BadRequestException('OTP expired');
+  }
+
+
+  if (otpRecord.otpNumber !== otp) {
+    throw new BadRequestException('Invalid OTP');
+  }
+
+
+  await this.otpRepository.markOtpVerified(
+    otpRecord._id.toString(),
+  );
+
+
+  console.log(`Verified Forgot Password OTP: ${otp}`);
+}
+
+  async checkForgotPasswordOtpVerified(
+  userId: string,
+): Promise<boolean> {
+
+  const otpRecord = await this.otpRepository.findOne({
+    userId,
+    serviceType: OtpEnum.FORGOT_PASSWORD,
+  });
+
+  if (!otpRecord) {
+    return false;
+  }
+
+  return otpRecord.isVerified === true;
+}
+
+async deleteForgotPasswordOtp(
+  userId: string,
+): Promise<void> {
+
+  const otpRecord = await this.otpRepository.findOne({
+    userId,
+    serviceType: OtpEnum.FORGOT_PASSWORD,
+  });
+
+  if (otpRecord) {
+    await this.otpRepository.deleteOtp(
+      otpRecord._id.toString(),
+    );
+  }
+}
+
+async generateResetToken(
+  userId: string,
+): Promise<string> {
+  return this.jwtService.sign(
+    {
+      userId,
+      purpose: 'reset_password',
+    },
+    {
+      expiresIn: '10m',
+    },
+  );
+}
+
+async verifyResetToken(
+  resetToken: string,
+): Promise<any> {
+  try {
+    const payload = this.jwtService.verify(resetToken);
+
+    if (payload.purpose !== 'reset_password') {
+      throw new BadRequestException(
+        'Invalid token purpose',
+      );
+    }
+
+    return payload;
+  } catch {
+    throw new BadRequestException(
+      'Invalid or expired reset token',
+    );
+  }
+}
 
   async generateInvitationToken(userId: string): Promise<string> {
   return this.jwtService.sign(

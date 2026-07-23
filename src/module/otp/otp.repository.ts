@@ -26,6 +26,18 @@ export class OtpRepository {
         return await this.otpModel.findById(id);
     }
 
+    async markOtpVerified(id: string) {
+  return this.otpModel.findByIdAndUpdate(
+    id,
+    {
+      isVerified: true,
+    },
+    {
+      new: true,
+    },
+  );
+}
+
     async updateOtp(id: string, updateOtpDto: UpdateOtpDto) {
         return await this.otpModel.findByIdAndUpdate(id, updateOtpDto, { new: true });
     }

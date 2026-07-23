@@ -41,6 +41,10 @@ export class Otp {
     })
     expiredAt!: Date;
 
+   @Prop({ default: false })
+isVerified!: boolean;
+
+
 }
 
 export const OtpSchema = SchemaFactory.createForClass(Otp);

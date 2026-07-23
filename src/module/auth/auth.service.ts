@@ -184,74 +184,106 @@ async login(loginDto: LoginDto) {
 }
 
   async forgotPassword(forgotPasswordDto: ForgotPasswordDto) {
-    const { email } = forgotPasswordDto;
+  const { email } = forgotPasswordDto;
 
-    const user = await this.userModel.findOne({ email });
+  const user = await this.userModel.findOne({
+    email: email.toLowerCase(),
+  });
 
-    if(!user) {
-      throw new BadRequestException('User Not Found');
-    }
-
-    const aadhar = await this.aadharModel.findById(user.aadharId);
-
-    if(!aadhar) {
-      throw new BadRequestException('Aadhar Not Found');
-    }
-
-    await this.otpService.generateForgotPasswordOtp(user._id.toString(), aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
-
-    return { message: 'OTP sent successfully' };
-
-  }
-  
-  async verifyForgotPassword(verifyForgotPasswordDto: VerifyForgotPasswordDto) {
-    const { email, otp } = verifyForgotPasswordDto;
-
-    const user = await this.userModel.findOne({ email });
-
-    if(!user) {
-      throw new BadRequestException('User not found');
-    }
-
-    const aadhar = await this.aadharModel.findById(user.aadharId);
-
-    if(!aadhar) {
-      throw new BadRequestException('Aadhar not found');
-    }
-
-    await this.otpService.verifyForgotPasswordOtp( user._id.toString(), otp, aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`);
-
-    return { message: 'OTP verified successfully' }
-
+  if (!user) {
+    throw new BadRequestException('User Not Found');
   }
 
-  async resetPassword(resetPasswordDto: ResetPasswordDto) {
-    const { email, otp, password, confirmPassword } = resetPasswordDto;
+  const aadhar = await this.aadharModel.findById(user.aadharId);
 
-    const user = await this.userModel.findOne({ email });
-
-    if(!user) {
-      throw new BadRequestException('User Not Found');
-    }
-
-    const aadhar = await this.aadharModel.findById(user.aadharId);
-
-    if(!aadhar) {
-      throw new BadRequestException('Aadhar Not Found');
-    }
-
-    await this.otpService.verifyForgotPasswordOtp( user._id.toString(), otp, aadhar.email,`${aadhar.firstName} ${aadhar.lastName}`)
-  
-    if (password !== confirmPassword) {
-       throw new BadRequestException( 'Password and Confirm Password do not match' );
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    user.password = hashedPassword;
-    await user.save();
-
-    return { message: 'Password reset successful' };
-
+  if (!aadhar) {
+    throw new BadRequestException('Aadhar Not Found');
   }
 
+  await this.otpService.generateForgotPasswordOtp(
+    user._id.toString(),
+    aadhar.email,
+    `${aadhar.firstName} ${aadhar.lastName}`,
+  );
+
+  return {
+    message: 'OTP sent successfully',
+  };
+}
+
+ async verifyForgotPassword(
+  verifyForgotPasswordDto: VerifyForgotPasswordDto,
+) {
+  const { email, otp } = verifyForgotPasswordDto;
+
+  const user = await this.userModel.findOne({
+    email: email.toLowerCase(),
+  });
+
+  if (!user) {
+    throw new BadRequestException('User not found');
+  }
+
+  await this.otpService.verifyForgotPasswordOtp(
+    user._id.toString(),
+    otp,
+  );
+
+  const resetToken =
+    await this.otpService.generateResetToken(
+      user._id.toString(),
+    );
+  return {
+    message: 'OTP verified successfully',
+    resetToken,
+  };
+}  
+
+  async resetPassword(
+  resetPasswordDto: ResetPasswordDto,
+) {
+  const {
+    resetToken,
+    password,
+    confirmPassword,
+  } = resetPasswordDto;
+
+  const payload =
+    await this.otpService.verifyResetToken(
+      resetToken,
+    );
+
+  const user = await this.userModel.findById(
+    payload.userId,
+  );
+
+  if (!user) {
+    throw new BadRequestException(
+      'User not found',
+    );
+  }
+
+  if (password !== confirmPassword) {
+    throw new BadRequestException(
+      'Password and Confirm Password do not match',
+    );
+  }
+
+  const hashedPassword = await bcrypt.hash(
+    password,
+    10,
+  );
+
+  user.password = hashedPassword;
+
+  await user.save();
+
+  await this.otpService.deleteForgotPasswordOtp(
+    user._id.toString(),
+  );
+
+  return {
+    message: 'Password reset successful',
+  };
+}
 }

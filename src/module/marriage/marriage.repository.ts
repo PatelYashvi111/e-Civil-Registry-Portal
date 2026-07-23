@@ -10,7 +10,7 @@ import { toObjectId } from "../../common/utils/objectId.utils";
 export class MarriageRepository {
 
     constructor(
-        @InjectModel(Marriage.name)
+        @InjectModel("marriage")
         private readonly MarriageModel: Model<MarriageDocument>
     ){}
 
@@ -22,7 +22,8 @@ export class MarriageRepository {
        groomAadharId: toObjectId(createMarriageDto.groomAadharId),
        witnessAadharId: toObjectId(createMarriageDto.witnessAadharId),
        brahmanAadharId: toObjectId(createMarriageDto.brahmanAadharId),
-       OfficeDepartmentId: toObjectId(createMarriageDto.officeDepartmentId),
+        officeDepartmentId: toObjectId(createMarriageDto.officeDepartmentId),
+       slotId: toObjectId(createMarriageDto.slotId),
       };
       
       return await this.MarriageModel.create( marriageData );
@@ -67,7 +68,13 @@ export class MarriageRepository {
         groomAadharId: string, 
         marriageDate: Date, 
     ){
-        return await this.MarriageModel.findOne({brideAadharId, groomAadharId, marriageDate})
+       const marriage = await this.MarriageModel.findOne({
+    brideAadharId: toObjectId(brideAadharId),
+    groomAadharId: toObjectId(groomAadharId),
+    marriageDate,
+  });
+
+  return marriage;
     }
 
     async findById( id: string ) {

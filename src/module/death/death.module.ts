@@ -5,9 +5,12 @@ import { DeathService } from "./death.service";
 import { DeathController } from "./death.controller";
 import { Death, DeathSchema } from "./schema/death.schema";
 import { AadharModule } from "../aadhar/aadhar.module";
+import { OfficeDepartmentModule } from "../officeDepartment/officeDepartment.module";
+import { SlotModule } from "../slot/slot.module";
 import { CloudinaryModule } from "../../common/cloudinary/cloudinary.module";
 import { CounterModule } from "../counter/counter.module";
 import { JwtModule } from "@nestjs/jwt";
+import { ApplicationModule } from "../application/application.module";
 
 @Module({
     imports: [
@@ -20,7 +23,7 @@ import { JwtModule } from "@nestjs/jwt";
 
         MongooseModule.forFeature([
             {
-                name:Death.name,
+                name:"death",
                 schema: DeathSchema
             }
         ]),
@@ -28,6 +31,9 @@ import { JwtModule } from "@nestjs/jwt";
         AadharModule,
         CloudinaryModule,
         CounterModule,
+        OfficeDepartmentModule,
+        ApplicationModule,
+        SlotModule,
     ], 
 
     controllers: [DeathController],

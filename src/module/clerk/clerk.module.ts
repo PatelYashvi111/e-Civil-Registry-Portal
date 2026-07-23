@@ -2,7 +2,7 @@ import { Module } from "@nestjs/common";
 import { InjectModel, MongooseModule } from "@nestjs/mongoose";
 import { Injectable } from "@nestjs/common";
 import { User, UserSchema } from "src/module/user/schema/user.schema";
-import { Clerk, ClerkSchema } from "./schema/clerk.scheama";
+import { Clerk, ClerkSchema } from "./schema/clerk.schema";
 import { ClerkRepository } from "./clerk.repository";
 import { ClerkService } from "./clerk.service";
 import { ClerkController } from "./clerk.controller";
@@ -14,6 +14,7 @@ import { CloudinaryModule } from "src/common/cloudinary/cloudinary.module";
 import { EmailModule } from "src/module/email/email.module";
 import { OtpModule } from "../otp/otp.module";
 import { JwtModule } from "@nestjs/jwt";
+import { OfficeDepartmentModule } from "../officeDepartment/officeDepartment.module";
 
 @Module({
     imports: [
@@ -32,6 +33,7 @@ import { JwtModule } from "@nestjs/jwt";
         AadharModule,
         CounterModule,
         CloudinaryModule,
+        OfficeDepartmentModule,
         EmailModule,
         OtpModule,
     ],

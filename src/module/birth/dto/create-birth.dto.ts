@@ -1,5 +1,6 @@
 import { IsString, IsDateString, IsNotEmpty, IsMongoId, IsNumber, IsEnum} from "class-validator";
 import { GenderEnum } from "src/common/enums/gender.enums";
+import { Type } from "class-transformer";
 
 export class CreateBirthDto {
     
@@ -7,7 +8,7 @@ export class CreateBirthDto {
     @IsNotEmpty()
     babyName!: string;
 
-    @IsString()
+    @IsDateString()
     @IsNotEmpty()
     birthDateAndTime!: string;
 
@@ -23,8 +24,9 @@ export class CreateBirthDto {
     @IsEnum(GenderEnum)
     babyGender!: GenderEnum;
     
-    @IsNumber()
     @IsNotEmpty()
+    @Type(() => Number)
+    @IsNumber()
     babyWeight!: number;
 
     @IsNotEmpty()
@@ -34,6 +36,10 @@ export class CreateBirthDto {
     @IsNotEmpty()
     @IsMongoId()
     motherAadharId!: string;
+
+    @IsNotEmpty()
+    @IsMongoId()
+    slotId!: string;
 
     @IsNotEmpty()
     @IsString()

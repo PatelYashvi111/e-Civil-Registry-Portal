@@ -43,6 +43,7 @@ async getAvailableSlots(
 
   @Get(':id')
   async findById( @Param('id') id: string ) {
+
     return this.slotService.findById(id);
   }
 

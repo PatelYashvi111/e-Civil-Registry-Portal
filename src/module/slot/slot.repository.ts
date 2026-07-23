@@ -36,6 +36,14 @@ export class SlotRepository {
         return await this.slotModel.findById(id);
     }
 
+   async findByTime(officeDepartmentId: string, slotDate: Date, startTime: string, endTime: string) {
+       return await this.slotModel.findOne({
+        officeDepartmentId,
+        slotDate,
+        startTime,
+        endTime,
+       });
+   }
     async findByOfficeDepartment(officeDepartmentId: string) {
         return await this.slotModel.find({officeDepartmentId})
     }

@@ -36,70 +36,118 @@ export class DashboardService {
     private readonly departmentModel: Model<Department>,
   ) {}
 
-  async getDashboard() {
-    
-    const userRole = await this.roleModel.findOne({
-      name: RoleEnum.USER,
-    });
+  async getDashboard(type?: string) {
+  const userRole = await this.roleModel.findOne({
+    name: RoleEnum.USER,
+  });
 
-    const clerkRole = await this.roleModel.findOne({
-      name: RoleEnum.CLERK,
-    });
+  const clerkRole = await this.roleModel.findOne({
+    name: RoleEnum.CLERK,
+  });
 
-    const [
-      totalUsers,
-      totalClerks,
-      totalStates,
-      totalDistricts,
-      totalOffices,
-      totalDepartments,
-      totalApplications,
-      approvedApplications,
-      pendingApplications,
-      rejectedApplications,
-    ] = await Promise.all([
-      this.userModel.countDocuments({
-        roleId: userRole?._id,
-      }),
+  switch (type) {
+    case 'totalUsers':
+      return {
+        totalUsers: await this.userModel.countDocuments({
+          roleId: userRole?._id,
+        }),
+      };
 
-      this.userModel.countDocuments({
-        roleId: clerkRole?._id,
-      }),
+    case 'totalClerks':
+      return {
+        totalClerks: await this.userModel.countDocuments({
+          roleId: clerkRole?._id,
+        }),
+      };
 
-      this.stateModel.countDocuments(),
+    case 'totalStates':
+      return {
+        totalStates: await this.stateModel.countDocuments(),
+      };
 
-      this.districtModel.countDocuments(),
+    case 'totalDistricts':
+      return {
+        totalDistricts: await this.districtModel.countDocuments(),
+      };
 
-      this.officeModel.countDocuments(),
+    case 'totalOffices':
+      return {
+        totalOffices: await this.officeModel.countDocuments(),
+      };
 
-      this.departmentModel.countDocuments(),
+    case 'totalDepartments':
+      return {
+        totalDepartments: await this.departmentModel.countDocuments(),
+      };
 
-      this.applicationModel.countDocuments(),
+    case 'totalApplications':
+      return {
+        totalApplications: await this.applicationModel.countDocuments(),
+      };
 
-      this.applicationModel.countDocuments({
-        status: ApplicationStatusEnum.APPROVED,
-      }),
+    case 'approvedApplications':
+      return {
+        approvedApplications: await this.applicationModel.countDocuments({
+          status: ApplicationStatusEnum.APPROVED,
+        }),
+      };
 
-      this.applicationModel.countDocuments({
-        status: ApplicationStatusEnum.PENDING,
-      }),
+    case 'pendingApplications':
+      return {
+        pendingApplications: await this.applicationModel.countDocuments({
+          status: ApplicationStatusEnum.PENDING,
+        }),
+      };
 
-      this.applicationModel.countDocuments({
-        status: ApplicationStatusEnum.REJECTED,
-      }),
-    ]);
-
-    return {
-      totalUsers,
-      totalClerks,
-      totalStates,
-      totalDistricts,
-      totalOffices,
-      totalDepartments,
-      totalApplications,
-      approvedApplications,
-      pendingApplications,
-      rejectedApplications,
-    };
+    case 'rejectedApplications':
+      return {
+        rejectedApplications: await this.applicationModel.countDocuments({
+          status: ApplicationStatusEnum.REJECTED,
+        }),
+      };
   }
+
+  const [
+    totalUsers,
+    totalClerks,
+    totalStates,
+    totalDistricts,
+    totalOffices,
+    totalDepartments,
+    totalApplications,
+    approvedApplications,
+    pendingApplications,
+    rejectedApplications,
+  ] = await Promise.all([
+    this.userModel.countDocuments({ roleId: userRole?._id }),
+    this.userModel.countDocuments({ roleId: clerkRole?._id }),
+    this.stateModel.countDocuments(),
+    this.districtModel.countDocuments(),
+    this.officeModel.countDocuments(),
+    this.departmentModel.countDocuments(),
+    this.applicationModel.countDocuments(),
+    this.applicationModel.countDocuments({
+      status: ApplicationStatusEnum.APPROVED,
+    }),
+    this.applicationModel.countDocuments({
+      status: ApplicationStatusEnum.PENDING,
+    }),
+    this.applicationModel.countDocuments({
+      status: ApplicationStatusEnum.REJECTED,
+    }),
+  ]);
+
+  return {
+    totalUsers,
+    totalClerks,
+    totalStates,
+    totalDistricts,
+    totalOffices,
+    totalDepartments,
+    totalApplications,
+    approvedApplications,
+    pendingApplications,
+    rejectedApplications,
+  };
+}
 }

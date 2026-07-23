@@ -46,10 +46,11 @@ export class Application {
    slotId!: Types.ObjectId;
 
    @Prop({
-    required: true,
-    type: Types.ObjectId,
-   })
-   serviceId!: Types.ObjectId;
+  required: true,
+  type: Types.ObjectId,
+  refPath: "serviceType",
+})
+serviceId!: Types.ObjectId;
 
    @Prop({
     required: true,
@@ -58,6 +59,7 @@ export class Application {
    })
    serviceType!: ServiceEnum;
   
+
   @Prop({
     type: String,
     enum: ApplicationStatusEnum,

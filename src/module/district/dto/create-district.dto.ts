@@ -4,7 +4,7 @@ export class CreateDistrictDto {
 
   @IsString()
   @IsNotEmpty()
-  @MaxLength(15)
+  @MaxLength(20)
   name!: string;
 
   @IsString()

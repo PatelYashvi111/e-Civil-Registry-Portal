@@ -1,4 +1,4 @@
-import { Controller, Get } from '@nestjs/common';
+import { Controller, Get, Query } from '@nestjs/common';
 import { DashboardService } from './dashboard.service';
 
 @Controller('dashboard')
@@ -8,7 +8,9 @@ export class DashboardController {
   ) {}
 
   @Get()
-  async getDashboard() {
-    return await this.dashboardService.getDashboard();
+  async getDashboard(
+    @Query('type') type?: string,
+  ) {
+    return await this.dashboardService.getDashboard(type);
   }
 }

@@ -89,7 +89,7 @@ export class DistrictRepository {
       $skip: skip,
     },
     {
-      $limit: limit,
+      $limit: Number(limit),
     },
   );
 

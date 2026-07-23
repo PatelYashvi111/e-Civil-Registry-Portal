@@ -25,4 +25,6 @@ export class CreateOtpDto {
     @Type(() => Date)
     expiredAt!: Date;
 
+    
+
 }

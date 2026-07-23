@@ -48,6 +48,28 @@ export class OfficeDepartmentService {
     return await this.officeDepartmentRepository.findAll(skip, limit, page);
   }
 
+async findById(id: string) {
+    const officeDepartment =
+      await this.officeDepartmentRepository.findById(id);
+
+    if (!officeDepartment) {
+      throw new NotFoundException('Office Department not found');
+    }
+
+    return officeDepartment;
+  }
+
+  async findByName(name: string) {
+    const officeDepartment =
+      await this.officeDepartmentRepository.findByName(name);
+
+    if (!officeDepartment) {
+      throw new NotFoundException('Office Department not found');
+    }
+
+    return officeDepartment;
+  }
+  
   async findOne(id: string) {
     const mapping = await this.officeDepartmentRepository.findById(id);
 
@@ -65,6 +87,21 @@ export class OfficeDepartmentService {
   async getByDepartment(departmentId: string) {
     return await this.officeDepartmentRepository.findByDepartment(departmentId);
   }
+
+  async findMapping(officeId: string, departmentId: string) {
+  console.log({ officeId, departmentId });
+
+  const mapping = await this.officeDepartmentRepository.findMapping(
+    officeId,
+    departmentId,
+  );
+
+  if (!mapping) {
+    throw new NotFoundException('Office Department mapping not found');
+  }
+
+  return mapping;
+}
 
   async update(id: string, updateOfficeDepartmentDto: UpdateOfficeDepartmentDto) {
     const mapping = await this.officeDepartmentRepository.findById(id);
