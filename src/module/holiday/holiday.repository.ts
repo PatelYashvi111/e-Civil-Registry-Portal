@@ -96,13 +96,39 @@ export class HolidayRepository {
       }
     });
 
-    pipeline.push({
-      $skip: skip,
-    }, {
-      $limit: limit,
-    });
+   pipeline.push(
+  {
+    $skip: skip,
+  },
+  {
+    $limit: Number(limit),
+  },
+);
 
-   const data = await this.holidayModel.aggregate(pipeline);
+pipeline.push({
+   $project: {
+    _id: 1,
+    holidayDate: 1,
+    year: 1,
+    title: 1,
+    description: 1,
+    isNationalHoliday: 1,
+    createdAt: 1,
+
+    officeId: {
+      $cond: {
+        if: { $eq: ["$officeId", undefined] },
+        then: undefined,
+        else: {
+          _id: "$office._id",
+          name: "$office.name",
+        },
+      },
+    },
+  },
+});
+
+const data = await this.holidayModel.aggregate(pipeline);
 
   return {
   data,

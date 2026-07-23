@@ -6,7 +6,7 @@ import { RoleEnum } from "src/common/enums/role.enums";
 import { RolesGuard } from "src/common/guards/role.guards";
 import { Roles } from "src/common/decorators/role.decorators";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guards";
-import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
+import { FilterDto } from "../application/dto/filter-application.dto";
 
 @Controller('application')
 export class ApplicationController {
@@ -15,27 +15,35 @@ export class ApplicationController {
         private readonly applicationService: ApplicationService,
     ) {}
 
-    @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(RoleEnum.USER, RoleEnum.CLERK, RoleEnum.ADMIN)
-    @Post('create')
-    async createApplication( @Body() createApplicationDto: CreateApplicationDto, @Req() req ) {
-        return await this.applicationService.createApplication( createApplicationDto, req.user );
-    }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(RoleEnum.CLERK, RoleEnum.ADMIN)
     @Get('all') 
-    async findAll(@Query() paginationDto: PaginationDto, @Req() req) {
-        return await this.applicationService.findAll(paginationDto, req.user);
+    async findAll(@Query() filterDto: FilterDto, @Req() req) {
+        return await this.applicationService.findAll(filterDto, req.user);
+    }
+
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(RoleEnum.ADMIN)
+    @Get("monthly-trend")
+    async getMonthlyApplications(@Query("year") year: number) {
+    return await this.applicationService.getMonthlyApplications(Number(year));
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(RoleEnum.USER, RoleEnum.CLERK, RoleEnum.ADMIN)
-    @Get(':applicationNumber')
-    async findByApplicationNumber( @Param('applicationNumber') applicationNumber: string, @Req() req ) {
-        return await this.applicationService.findByApplicationNumber(applicationNumber, req.user );
+    @Get(":id")
+    async findById(@Param("id") id: string,@Req() req) {
+    return await this.applicationService.findById(id, req.user);
     }
 
+    @UseGuards(JwtAuthGuard, RolesGuard)
+    @Roles(RoleEnum.USER, RoleEnum.CLERK, RoleEnum.ADMIN)
+    @Get(":applicationNumber")
+    async findByApplicationNumber(@Param("applicationNumber") applicationNumber: string,@Req() req) {
+    return await this.applicationService.findByApplicationNumber(applicationNumber,req.user);
+    }
+    
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(RoleEnum.USER, RoleEnum.CLERK, RoleEnum.ADMIN)
     @Patch(':id')

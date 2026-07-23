@@ -91,6 +91,13 @@ export class Birth {
     })
     rationCard!: string;
 
+     @Prop({
+    required: true,
+    type: Types.ObjectId,
+    ref: 'Slot',
+  })
+   slotId!: Types.ObjectId;
+
     @Prop({
         required: true,
         type: String,

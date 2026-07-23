@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User, UserDocument } from '../user/schema/user.schema';
-import { Clerk, ClerkDocument } from './schema/clerk.scheama';
+import { Clerk, ClerkDocument } from './schema/clerk.schema';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { UpdateClerkDto } from './dto/update-clerk.dto';
 import { toObjectId } from 'src/common/utils/objectId.utils';
@@ -99,13 +99,7 @@ export class ClerkRepository {
       },
     },
 
-    {
-  $project: {
-    officeDepartment: 1,
-    office: 1,
-  },
-},
-
+ 
     {
   $lookup: {
     from: 'roles',
@@ -231,7 +225,7 @@ export class ClerkRepository {
       $skip: skip,
     },
     {
-      $limit: limit,
+      $limit: Number(limit),
     },
   );
 
@@ -251,6 +245,10 @@ export class ClerkRepository {
     officeId: {
       _id: "$office._id",
       name: "$office.name",
+       districtId: {
+      _id: "$district._id",
+      name: "$district.name",
+    },
     },
 
     departmentId: {
@@ -306,14 +304,43 @@ export class ClerkRepository {
     return this.userModel.findOne({ aadharNumber });
   }
 
-  async findByOfficeDepartmentId(officeDepartmentId: string) {
+  async findAvailableClerk( officeDepartmentId:string, clerkRoleId:string ){
+
+    return this.userModel.findOne({
+      officeDepartmentId:toObjectId(officeDepartmentId),
+      roleId:toObjectId(clerkRoleId),
+      isAvailable:true })
+   .sort({
+      assignedApplicationCount:1
+  });
+
+}
+
+async incrementAssignedApplicationCount(clerkId:string){
+
+    return this.userModel.findByIdAndUpdate(
+        clerkId,
+        {
+            $inc:{
+                assignedApplicationCount:1
+            }
+        },
+        {
+            new:true
+        }
+    );
+
+}
+
+  async findByOfficeDepartmentId(officeDepartmentId: string){
     return this.userModel.find({
       officeDepartmentId: toObjectId(officeDepartmentId),
     });
   }
 
   async update(id: string, updateClerkDto: UpdateClerkDto) {
-    return this.userModel.findByIdAndUpdate(id, updateClerkDto, {
+    return this.userModel.findByIdAndUpdate(id, updateClerkDto, 
+    {
       new: true,
       runValidators: true,
     });

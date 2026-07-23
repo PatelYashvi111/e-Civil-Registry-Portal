@@ -33,7 +33,26 @@ export class UserRepository {
     }
 
     async findById( id: string ){
-        return this.userModel.findById( id );
+        return this.userModel.findById( id )
+            .populate('roleId')
+      .populate('aadharId')
+      .populate({
+         path: 'officeDepartmentId',
+         populate: [
+            {
+            path: 'officeId',
+            populate: {
+                path: 'districtId',
+                populate: {
+                path: 'stateId',
+                },
+            },
+            },
+            {
+            path: 'departmentId',
+            },
+        ],
+        });
     }
 
       async findAll(
@@ -119,7 +138,7 @@ export class UserRepository {
           $skip: skip,
         },
         {
-          $limit: limit,
+          $limit: Number(limit),
         },
         {
         $project: {

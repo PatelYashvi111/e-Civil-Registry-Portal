@@ -11,7 +11,9 @@ export class DistrictService {
      private readonly districtRepository: DistrictRepository, 
     ) {}
 
-  async create(createDistrictDto: CreateDistrictDto) {
+  async create(createDistrictDto: CreateDistrictDto) {  
+      console.log('DTO:', createDistrictDto);
+
   const name = createDistrictDto.name.trim().toLowerCase();
 
   const existingDistrict = await this.districtRepository.findByName(name);

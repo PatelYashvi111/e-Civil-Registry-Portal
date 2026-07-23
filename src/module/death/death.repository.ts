@@ -10,7 +10,7 @@ import { toObjectId } from "../../common/utils/objectId.utils";
 export class DeathRepository {
 
     constructor(
-        @InjectModel(Death.name)
+        @InjectModel("death")
         private readonly DeathModel: Model<DeathDocument>
     ){}
 
@@ -20,6 +20,7 @@ export class DeathRepository {
             deceasedAadharId: toObjectId(createDeathDto.deceasedAadharId),
             applicantAadharId: toObjectId(createDeathDto.applicantAadharId),
             officeDepartmentId: toObjectId(createDeathDto.officeDepartmentId),
+            slotId: toObjectId(createDeathDto.slotId),
           };
         
           return await this.DeathModel.create(deathData);

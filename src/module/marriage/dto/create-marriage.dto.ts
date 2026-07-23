@@ -52,30 +52,6 @@ export class CreateMarriageDto {
 
     @IsString()
     @IsNotEmpty()
-    brideAadharCard!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    groomAadharCard!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    witnessAadharCard!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    brahmanAadharCard!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    brideRationCard!: string;
-
-    @IsString()
-    @IsNotEmpty()
-    groomRationCard!: string;
-
-    @IsString()
-    @IsNotEmpty()
     bridePhoto!: string;
 
     @IsString()
@@ -84,7 +60,7 @@ export class CreateMarriageDto {
 
     @IsString()
     @IsNotEmpty()
-    invitationCard!: string;
+    slotId!: string;
 
     @IsString()
     @IsNotEmpty()

@@ -1,9 +1,12 @@
-import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, UploadedFiles, Query } from '@nestjs/common';
+import { Get, Post, Patch, Delete, Body, Controller, Param, UseInterceptors, Request, UploadedFiles, Query } from '@nestjs/common';
 import { CreateMarriageDto } from './dto/create-marriage.dto';
 import { UpdateMarriageDto } from './dto/update-marriage.dto';
 import { MarriageService } from './marriage.service';
 import { FileFieldsInterceptor } from '@nestjs/platform-express';
 import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guards';
+import { UseGuards } from '@nestjs/common';
+import { JwtPayload } from 'src/common/interface/jwt-payload.interface';
 
 @Controller('marriage')
 export class MarriageController {
@@ -13,6 +16,7 @@ export class MarriageController {
     ){}
     
     @Post('create')
+    @UseGuards(JwtAuthGuard)
     @UseInterceptors(
     FileFieldsInterceptor([
         { name: 'brideAadharCard', maxCount: 1 },
@@ -26,7 +30,10 @@ export class MarriageController {
         { name: 'invitationCard', maxCount: 1 },
     ])
     )
-    async create( @Body()  createMarriageDto: CreateMarriageDto, @UploadedFiles() files: {
+    async create( 
+        @Body()  createMarriageDto: CreateMarriageDto,
+        @Request() req,
+        @UploadedFiles() files: {
         brideAadharCard?: Express.Multer.File[];
         groomAadharCard?: Express.Multer.File[];
         witnessAadharCard?: Express.Multer.File[];
@@ -37,7 +44,9 @@ export class MarriageController {
         groomPhoto?: Express.Multer.File[];
         invitationCard?: Express.Multer.File[];
     }){
-        return this.marriageService.create( createMarriageDto, {
+        return this.marriageService.create( 
+            createMarriageDto,
+            req.user, {
             brideAadharCard: files?.brideAadharCard,
             groomAadharCard: files?.groomAadharCard,
             witnessAadharCard: files?.witnessAadharCard,

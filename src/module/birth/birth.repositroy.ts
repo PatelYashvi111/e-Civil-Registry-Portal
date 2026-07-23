@@ -10,7 +10,7 @@ import { toObjectId } from "../../common/utils/objectId.utils";
 @Injectable()
 export class BirthRepository {
     constructor(
-        @InjectModel(Birth.name)
+        @InjectModel("birth")
         private readonly BirthModel: Model<BirthDocument>
     ){}
 
@@ -20,6 +20,7 @@ export class BirthRepository {
     fatherAadharId: toObjectId(createBirthDto.fatherAadharId),
     motherAadharId: toObjectId(createBirthDto.motherAadharId),
     officeDepartmentId: toObjectId(createBirthDto.officeDepartmentId),
+    slotId: toObjectId(createBirthDto.slotId),
   };
 
   return await this.BirthModel.create(birthData);
@@ -62,7 +63,22 @@ export class BirthRepository {
     }
 
     async findById( id: string ) {
-        return await this.BirthModel.findById(id);
+        return await this.BirthModel.findById(id)
+        .populate("fatherAadharId")
+        .populate("motherAadharId")
+        .populate({
+        path: "officeDepartmentId",
+        populate: {
+            path: "officeId",
+            populate: {
+            path: "districtId",
+            populate: {
+                path: "stateId",
+            },
+            },
+        },
+        })
+        .populate("slotId");
     }
 
     async update( id: string, updateBirthDto: UpdateBirthDto) {

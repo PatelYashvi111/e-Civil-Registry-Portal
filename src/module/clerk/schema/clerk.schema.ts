@@ -82,6 +82,7 @@ export class Clerk {
     type: String,
   })
   verificationToken!: string;
+  
 }
 
 export const ClerkSchema = SchemaFactory.createForClass(Clerk);

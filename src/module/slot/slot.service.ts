@@ -91,15 +91,19 @@ export class SlotService {
     return await this.slotRepository.findAll();
   }
 
-  async findById(id: string) {
-    const slot = await this.slotRepository.findById(id);
+async findById(id: string) {
+  console.log("Searching Slot ID:", id);
 
-    if (!slot) {
-      throw new Error('Slot not found');
-    }
+  const slot = await this.slotRepository.findById(id);
 
-    return slot;
+  console.log("Slot Found:", slot);
+
+  if (!slot) {
+    throw new Error("Slot not found");
   }
+
+  return slot;
+}
 
   async getAvailableDates(officeDepartmentId: string) {
     const officeDepartment = await this.officeDepartmentRepository.findById(officeDepartmentId);
@@ -129,6 +133,26 @@ export class SlotService {
 
     return slot;
   }
+
+ async findByTime(
+  officeDepartmentId: string,
+  slotDate: Date,
+  startTime: string,
+  endTime: string,
+) {
+  const slot = await this.slotRepository.findByTime(
+    officeDepartmentId,
+    slotDate,
+    startTime,
+    endTime,
+  );
+
+  if (!slot) {
+    throw new NotFoundException('Slot not found');
+  }
+
+  return slot;
+}
 
   async bookSlot(slotId: string) {
     const slot = await this.slotRepository.findById(slotId);

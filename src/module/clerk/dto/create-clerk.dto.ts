@@ -3,9 +3,6 @@ import { ClerkStatusEnum } from '../../../common/enums/clerk.status.enums';
 
 export class CreateClerkDto {
 
-  @IsNotEmpty()
-  @IsString()
-  aadharNumber!: string;
 
   @IsNotEmpty()
   @IsMongoId()

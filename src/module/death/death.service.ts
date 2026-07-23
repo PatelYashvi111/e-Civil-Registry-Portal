@@ -3,14 +3,18 @@ import { CreateDeathDto } from "./dto/create-death.dto";
 import { UpdateDeathDto } from "./dto/update-death.dto";
 import { DeathRepository } from "./death.repository";
 import { AadharRepository } from "../aadhar/aadhar.repository";
+import { SlotService } from "../slot/slot.service";
 import { CloudinaryService } from "src/common/cloudinary/cloudinary.service";
 import { CounterService } from "../counter/counter.service";
 import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
-import dayjs from 'dayjs';
-import customParseFormat from 'dayjs/plugin/customParseFormat';
-dayjs.extend(customParseFormat);
+import { OfficeDepartmentService } from "../officeDepartment/officeDepartment.service";
+import { Types } from "mongoose";
 import { JwtService } from "@nestjs/jwt";
+import { JwtPayload } from "src/common/interface/jwt-payload.interface";
+import { ApplicationService } from "../application/application.service";
 import { AadharService } from "../aadhar/aadhar.service";
+import { DeathEnum } from "../../common/enums/death.enums";
+import { ServiceEnum } from "src/common/enums/service.enums";
 
 @Injectable()
 export class DeathService {
@@ -20,11 +24,14 @@ export class DeathService {
         private readonly aadharRepository: AadharRepository,
         private readonly cloudinaryService: CloudinaryService,
         private readonly counterService: CounterService,
+        private readonly officeDepartmentService: OfficeDepartmentService,
+        private readonly applicationService: ApplicationService,
         private readonly jwtService: JwtService,
         private readonly aadharService: AadharService,
+        private readonly slotService: SlotService,
     ){}
 
-    async create( createDeathDto: CreateDeathDto , files: {
+    async create( createDeathDto: CreateDeathDto ,user: JwtPayload,files: {
         deceasedAadharCard?: Express.Multer.File[];
         applicantAadharCard?: Express.Multer.File[];
         deceasedRationCard?: Express.Multer.File[];
@@ -34,19 +41,16 @@ export class DeathService {
         fir?: Express.Multer.File[];
 
     }) {
-         
-        const parsed = dayjs(
-        createDeathDto.dateAndTimeOfDeath,
-        'DD-MMM-YYYY h:mm a',
-        true,
-        );
+       
+         createDeathDto.deathType =
+    createDeathDto.deathType.trim().toLowerCase() as DeathEnum;
+    
+        const deathDate = new Date(createDeathDto.dateAndTimeOfDeath);
 
-        if (!parsed.isValid()) {
-        throw new BadRequestException('Invalid birth date and time.');
+        if (isNaN(deathDate.getTime())) {
+        throw new BadRequestException('Invalid death date and time.');
         }
 
-        const deathDate = parsed.toDate();
-        
         const existingDeath = await this.deathRepository.findDuplication(
             createDeathDto.deceasedAadharId,
             deathDate,   
@@ -66,10 +70,20 @@ export class DeathService {
             throw new BadRequestException('Invalid token');
         }
 
-       const deceasedAadhar = await this.aadharService.findById(deceasedpayload.deceasedAadharId);
-        
-        if(!deceasedAadhar) {
-            throw new NotFoundException('Deceased Aadhar ID not found.');
+        let deceasedAadhar;
+
+        if (Types.ObjectId.isValid(createDeathDto.deceasedAadharId)) {
+            deceasedAadhar = await this.aadharService.findById(
+                createDeathDto.deceasedAadharId,
+            );
+        } else {
+            deceasedAadhar = await this.aadharService.findByAadharNumber(
+                createDeathDto.deceasedAadharId,
+            );
+        }
+
+        if (!deceasedAadhar) {
+            throw new NotFoundException('Deceased Aadhar not found.');
         }
         
         if (!createDeathDto.applicantVerificationToken) {
@@ -82,11 +96,61 @@ export class DeathService {
             throw new BadRequestException('Invalid token');
         }
 
-       const applicantAadhar = await this.aadharRepository.findById(applicantpayload.applicantAadharId);
+        let applicantAadhar;
 
-        if(!applicantAadhar) {
-            throw new NotFoundException('Spouse Aadhar ID not found.');
+        if (Types.ObjectId.isValid(createDeathDto.applicantAadharId)) {
+            applicantAadhar = await this.aadharService.findById(
+                createDeathDto.applicantAadharId,
+            );
+        } else {
+            applicantAadhar = await this.aadharService.findByAadharNumber(
+                createDeathDto.applicantAadharId,
+            );
         }
+
+        if (!applicantAadhar) {
+            throw new NotFoundException('Applicant Aadhar not found.');
+        }
+
+       let officeDepartment;
+
+if (Types.ObjectId.isValid(createDeathDto.officeDepartmentId)) {
+    officeDepartment = await this.officeDepartmentService.findById(
+        createDeathDto.officeDepartmentId,
+    );
+} else {
+    officeDepartment = await this.officeDepartmentService.findByName(
+        createDeathDto.officeDepartmentId,
+    );
+}
+
+if (!officeDepartment) {
+    throw new NotFoundException('Office Department not found.');
+}
+
+
+
+if (!createDeathDto.slotId || createDeathDto.slotId === 'undefined') {
+    throw new BadRequestException('Frontend Error: You forgot to send the slotId in the FormData.');
+}
+
+if (!Types.ObjectId.isValid(createDeathDto.slotId)) {
+    throw new BadRequestException('Frontend Error: The slotId provided is not a valid MongoDB ObjectId.');
+}
+        const slot = await this.slotService.findById(createDeathDto.slotId);
+
+        if (!slot) {
+        throw new NotFoundException('Slot not found.');
+        }
+
+        if (!slot.isAvailable) {
+        throw new BadRequestException('Selected slot is not available.');
+        }
+
+        if (slot.bookedCount >= slot.maxCapacity) {
+        throw new BadRequestException('Selected slot is full.');
+        }
+        
 
         const deceasedAadharCardFile = files.deceasedAadharCard?.[0];
         const applicantAadharCardFile = files.applicantAadharCard?.[0];
@@ -149,6 +213,10 @@ export class DeathService {
         ...createDeathDto,
         applicationNumber,
         dateAndTimeOfDeath: deathDate,
+        deceasedAadharId: deceasedAadhar._id.toString(),
+        applicantAadharId: applicantAadhar._id.toString(),
+        officeDepartmentId: officeDepartment._id.toString(),
+        slotId: slot._id.toString(),
         deceasedAadharCard: deceasedAadharCard.url,
         applicantAadharCard: applicantAadharCard.url,
         deceasedRationCard: deceasedRationCard.url,
@@ -158,8 +226,19 @@ export class DeathService {
         fir: fir.url,
         }
 
-        return await this.deathRepository.create( finalData as any );
-
+        const death = await this.deathRepository.create( finalData as any );
+        
+            await this.applicationService.createApplicationFromService({
+            userId: user.userId,
+            officeDepartmentId: death.officeDepartmentId.toString(),
+            slotId: death.slotId.toString(),
+            serviceId: death._id.toString(),
+            serviceType: ServiceEnum.DEATH,
+            applicationNumber,
+        });
+        
+               return death;
+        
     }
 
     async findAll(paginationDto: PaginationDto) {
@@ -172,27 +251,69 @@ export class DeathService {
         return await this.deathRepository.findById( id );
     }
 
-        async update(id: string, updateDeathDto: UpdateDeathDto) {
+   async update(id: string, updateDeathDto: UpdateDeathDto) {
     const death = await this.deathRepository.findById(id);
 
     if (!death) {
         throw new NotFoundException('Death record not found.');
     }
 
-    const parsed = dayjs(
-        updateDeathDto.dateAndTimeOfDeath as string,
-        'DD-MMM-YYYY h:mm a',
-        true,
-    );
+    const deathDate = new Date(updateDeathDto.dateAndTimeOfDeath as string);
 
-    if (!parsed.isValid()) {
+    if (isNaN(deathDate.getTime())) {
         throw new BadRequestException('Invalid death date and time.');
     }
 
-    const deathDate = parsed.toDate();
+    let deceasedAadhar;
+
+    if (Types.ObjectId.isValid(updateDeathDto.deceasedAadharId as string)) {
+        deceasedAadhar = await this.aadharService.findById(
+            updateDeathDto.deceasedAadharId as string,
+        );
+    } else {
+        deceasedAadhar = await this.aadharService.findByAadharNumber(
+            updateDeathDto.deceasedAadharId as string,
+        );
+    }
+
+    if (!deceasedAadhar) {
+        throw new NotFoundException('Deceased Aadhar not found');
+    }
+
+    let applicantAadhar;
+
+    if (Types.ObjectId.isValid(updateDeathDto.applicantAadharId as string)) {
+        applicantAadhar = await this.aadharService.findById(
+            updateDeathDto.applicantAadharId as string,
+        );
+    } else {
+        applicantAadhar = await this.aadharService.findByAadharNumber(
+            updateDeathDto.applicantAadharId as string,
+        );
+    }
+
+    if (!applicantAadhar) {
+        throw new NotFoundException('Applicant Aadhar not found');
+    }
+
+    let officeDepartment;
+
+    if (Types.ObjectId.isValid(updateDeathDto.officeDepartmentId as string)) {
+        officeDepartment = await this.officeDepartmentService.findById(
+            updateDeathDto.officeDepartmentId as string,
+        );
+    } else {
+        officeDepartment = await this.officeDepartmentService.findByName(
+            updateDeathDto.officeDepartmentId as string,
+        );
+    }
+
+    if (!officeDepartment) {
+        throw new NotFoundException('Office Department not found');
+    }
 
     const existingDeath = await this.deathRepository.findDuplication(
-        updateDeathDto.deceasedAadharId as string,
+        deceasedAadhar._id.toString(),
         deathDate,
     );
 
@@ -203,11 +324,13 @@ export class DeathService {
     const finalData = {
         ...updateDeathDto,
         dateAndTimeOfDeath: deathDate,
+        deceasedAadharId: deceasedAadhar._id.toString(),
+        applicantAadharId: applicantAadhar._id.toString(),
+        officeDepartmentId: officeDepartment._id.toString(),
     };
 
     return await this.deathRepository.update(id, finalData as any);
-    }
-
+}
     async delete( id: string ) {
        const death = await this.deathRepository.findById( id );
         

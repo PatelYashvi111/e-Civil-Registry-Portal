@@ -38,5 +38,5 @@ export class CreateApplicationDto {
 
   @IsOptional()
   @IsString()
-  remarks?: string;
+  remark?: string;
 }
