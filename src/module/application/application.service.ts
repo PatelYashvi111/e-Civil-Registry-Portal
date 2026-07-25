@@ -78,7 +78,7 @@ export class ApplicationService {
     }
 
     async findAll(filterDto: FilterDto, user: JwtPayload) {
-        const { page=1, limit=10, status } = filterDto;
+        const { page=1, limit=10, search, status } = filterDto;
 
         const skip = (page - 1) * limit;
 
@@ -86,7 +86,7 @@ export class ApplicationService {
             return await this.applicationRepository.findByUserId(user.userId,skip,limit,status);
         }
 
-        return await this.applicationRepository.findAll(skip,limit,status);  
+        return await this.applicationRepository.findAll(skip,limit,page,search,status);  
     }
     
     async findByApplicationNumber( applicationNumber: string, user: JwtPayload ) {

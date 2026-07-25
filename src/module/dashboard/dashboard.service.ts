@@ -10,6 +10,7 @@ import { Office } from '../office/schema/office.schema';
 import { Department } from '../department/schema/department.schema';
 import { RoleEnum } from '../../common/enums/role.enums';
 import { ApplicationStatusEnum } from 'src/common/enums/application.status.enums';
+import { toObjectId } from 'src/common/utils/objectId.utils';
 
 @Injectable()
 export class DashboardService {
@@ -45,68 +46,6 @@ export class DashboardService {
     name: RoleEnum.CLERK,
   });
 
-  switch (type) {
-    case 'totalUsers':
-      return {
-        totalUsers: await this.userModel.countDocuments({
-          roleId: userRole?._id,
-        }),
-      };
-
-    case 'totalClerks':
-      return {
-        totalClerks: await this.userModel.countDocuments({
-          roleId: clerkRole?._id,
-        }),
-      };
-
-    case 'totalStates':
-      return {
-        totalStates: await this.stateModel.countDocuments(),
-      };
-
-    case 'totalDistricts':
-      return {
-        totalDistricts: await this.districtModel.countDocuments(),
-      };
-
-    case 'totalOffices':
-      return {
-        totalOffices: await this.officeModel.countDocuments(),
-      };
-
-    case 'totalDepartments':
-      return {
-        totalDepartments: await this.departmentModel.countDocuments(),
-      };
-
-    case 'totalApplications':
-      return {
-        totalApplications: await this.applicationModel.countDocuments(),
-      };
-
-    case 'approvedApplications':
-      return {
-        approvedApplications: await this.applicationModel.countDocuments({
-          status: ApplicationStatusEnum.APPROVED,
-        }),
-      };
-
-    case 'pendingApplications':
-      return {
-        pendingApplications: await this.applicationModel.countDocuments({
-          status: ApplicationStatusEnum.PENDING,
-        }),
-      };
-
-    case 'rejectedApplications':
-      return {
-        rejectedApplications: await this.applicationModel.countDocuments({
-          status: ApplicationStatusEnum.REJECTED,
-        }),
-      };
-  }
-
   const [
     totalUsers,
     totalClerks,
@@ -119,31 +58,82 @@ export class DashboardService {
     pendingApplications,
     rejectedApplications,
   ] = await Promise.all([
-    this.userModel.countDocuments({ roleId: userRole?._id }),
-    this.userModel.countDocuments({ roleId: clerkRole?._id }),
+    this.userModel.countDocuments({
+      roleId: userRole?._id,
+    }),
+
+    this.userModel.countDocuments({
+      roleId: clerkRole?._id,
+    }),
+
     this.stateModel.countDocuments(),
+
     this.districtModel.countDocuments(),
+
     this.officeModel.countDocuments(),
+
     this.departmentModel.countDocuments(),
+
     this.applicationModel.countDocuments(),
+
     this.applicationModel.countDocuments({
       status: ApplicationStatusEnum.APPROVED,
     }),
+
     this.applicationModel.countDocuments({
       status: ApplicationStatusEnum.PENDING,
     }),
+
     this.applicationModel.countDocuments({
       status: ApplicationStatusEnum.REJECTED,
     }),
   ]);
 
-  return {
+  return { 
     totalUsers,
     totalClerks,
     totalStates,
     totalDistricts,
     totalOffices,
     totalDepartments,
+    totalApplications,
+    approvedApplications,
+    pendingApplications,
+    rejectedApplications,
+  };
+}
+
+async clerkDashboard(clerkId: string) {
+
+  const clerkObjectId = toObjectId(clerkId);
+
+  const [
+    totalApplications,
+    approvedApplications,
+    pendingApplications,
+    rejectedApplications,
+  ] = await Promise.all([
+    this.applicationModel.countDocuments({
+      clerkId: clerkObjectId,
+    }),
+
+    this.applicationModel.countDocuments({
+      clerkId: clerkObjectId,
+      status: ApplicationStatusEnum.APPROVED,
+    }),
+
+    this.applicationModel.countDocuments({
+      clerkId: clerkObjectId,
+      status: ApplicationStatusEnum.PENDING,
+    }),
+
+    this.applicationModel.countDocuments({
+      clerkId: clerkObjectId,
+      status: ApplicationStatusEnum.REJECTED,
+    }),
+  ]);
+
+  return {
     totalApplications,
     approvedApplications,
     pendingApplications,

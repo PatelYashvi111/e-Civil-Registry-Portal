@@ -52,6 +52,7 @@ export class Meeting {
     default: null,
   })
   endedAt?: Date;
+
 }
 
 export const MeetingSchema = SchemaFactory.createForClass(Meeting);

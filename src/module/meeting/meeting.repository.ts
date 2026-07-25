@@ -91,7 +91,8 @@ export class MeetingRepository {
     }
 
     async findByApplicationId(applicationId: string) {
-        return await this.meetingModel.findOne({applicationId: toObjectId(applicationId)}).populate("applicationId");
+        return await this.meetingModel.findOne({applicationId: toObjectId(applicationId)})
+        .populate("applicationId");
     }
 
     async findByRoomId(roomId: string) {

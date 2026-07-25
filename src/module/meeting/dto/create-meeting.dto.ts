@@ -1,7 +1,6 @@
 import { IsMongoId, IsOptional, IsEnum, IsString, IsNotEmpty, IsDateString } from "class-validator";
 import { MeetingStatusEnum } from "../../../common/enums/meeting.status.enums";
 
-
 export class CreateMeetingDto {
 
     @IsNotEmpty()
@@ -31,4 +30,5 @@ export class CreateMeetingDto {
     @IsOptional()
     @IsDateString()
     endedAt?: Date;
+
 }
