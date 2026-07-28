@@ -147,7 +147,6 @@ export class BirthService {
         throw new BadRequestException('Selected slot is full.');
         }
 
-
         const fatherAadharCardFile = files.fatherAadharCard?.[0];
         const motherAadharCardFile = files.motherAadharCard?.[0];
         const marriageCertificateFile = files.marriageCertificate?.[0];

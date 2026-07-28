@@ -326,7 +326,7 @@ async incrementAssignedApplicationCount(clerkId:string){
             }
         },
         {
-            new:true
+            new: true
         }
     );
 

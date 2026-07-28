@@ -10,7 +10,7 @@ export type MeetingDocument = HydratedDocument<Meeting>;
 export class Meeting {
   @Prop({
     type: Types.ObjectId,
-    ref: "application",
+    ref: "Application",
     required: true,
   })
   applicationId!: Types.ObjectId;
@@ -52,6 +52,7 @@ export class Meeting {
     default: null,
   })
   endedAt?: Date;
+
 }
 
 export const MeetingSchema = SchemaFactory.createForClass(Meeting);

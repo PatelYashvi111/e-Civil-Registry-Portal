@@ -15,7 +15,6 @@ export class ApplicationController {
         private readonly applicationService: ApplicationService,
     ) {}
 
-
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(RoleEnum.CLERK, RoleEnum.ADMIN)
     @Get('all') 
@@ -39,7 +38,7 @@ export class ApplicationController {
 
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(RoleEnum.USER, RoleEnum.CLERK, RoleEnum.ADMIN)
-    @Get(":applicationNumber")
+    @Get("application/:applicationNumber")
     async findByApplicationNumber(@Param("applicationNumber") applicationNumber: string,@Req() req) {
     return await this.applicationService.findByApplicationNumber(applicationNumber,req.user);
     }

@@ -9,16 +9,15 @@ import { toObjectId } from "../../common/utils/objectId.utils";
 @Injectable()
 export class MeetingRepository {
     constructor(
-        @InjectModel("meeting")
+        @InjectModel(Meeting.name)
         private readonly meetingModel: Model<MeetingDocument>,
     ) {}
 
     async create(createMeetingDto: CreateMeetingDto) {
         const meetingData = {
-            ...createMeetingDto,
-            applicationId: toObjectId(createMeetingDto.applicationId),
-        };
-
+         ...createMeetingDto,
+         applicationId: toObjectId(createMeetingDto.applicationId)
+        }
         return await this.meetingModel.create(meetingData);
     }
 
@@ -27,30 +26,39 @@ export class MeetingRepository {
             .find()
             .skip(skip)
             .limit(limit)
-            .populate("applicationId")
             .populate({
-                path: "applicationId",
-                populate: "userId",
-            })
-            .populate({
-                path: "applicationId",
-                populate: "clerkId",
-            })
-            .populate({
-                path: "applicationId",
-                populate: "slotId",
-            })
-            .populate({
-                path: "applicationId",
-                populate: {
-                    path: "officeDepartmentId",
-                    populate: [
-                        { path: "officeId" },
-                        { path: "departmentId" },
-                    ],
+            path: "applicationId",
+            populate: [
+                {
+                path: "userId",
+                populate: [
+                    { path: "roleId" },
+                    { path: "aadharId" }
+                ]
                 },
+                {
+                path: "clerkId",
+                },
+                {
+                path: "slotId",
+                },
+                {
+                path: "officeDepartmentId",
+                populate: [
+                    { path: "officeId",
+                        populate: ({
+                             path: "districtId",
+                                populate: ({
+                                   path: "stateId",
+                                })
+                        }),
+                     },
+                    { path: "departmentId" },
+                ],
+                },
+            ],
             });
-
+    
         const total = await this.meetingModel.countDocuments();
 
         return {
@@ -65,34 +73,47 @@ export class MeetingRepository {
     async findById(id: string) {
         return await this.meetingModel
             .findById(id)
-            .populate("applicationId")
             .populate({
-                path: "applicationId",
-                populate: "userId",
-            })
-            .populate({
-                path: "applicationId",
-                populate: "clerkId",
-            })
-            .populate({
-                path: "applicationId",
-                populate: "slotId",
-            })
-            .populate({
-                path: "applicationId",
-                populate: {
-                    path: "officeDepartmentId",
-                    populate: [
-                        { path: "officeId" },
-                        { path: "departmentId" },
-                    ],
+            path: "applicationId",
+            populate: [
+                {
+                path: "userId",
+                populate: [
+                    { path: "roleId" },
+                    { path: "aadharId" },
+                ],
                 },
+                {
+                path: "clerkId",
+                },
+                {
+                path: "slotId",
+                },
+                {
+                path: "officeDepartmentId",
+                populate: [
+                     { path: "officeId",
+                        populate: ({
+                             path: "districtId",
+                                populate: ({
+                                   path: "stateId",
+                                })
+                        }),
+                     },
+                    { path: "departmentId" },                
+                ],
+                },
+            ],
             });
     }
 
-    async findByApplicationId(applicationId: string) {
-        return await this.meetingModel.findOne({applicationId: toObjectId(applicationId)}).populate("applicationId");
-    }
+
+    async findByApplicationId(applicationId:string){
+    return await this.meetingModel.findOne({
+        applicationId: toObjectId(applicationId)
+    
+    });
+}
 
     async findByRoomId(roomId: string) {
         return await this.meetingModel.findOne({ roomId });

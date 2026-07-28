@@ -13,4 +13,12 @@ export class DashboardController {
   ) {
     return await this.dashboardService.getDashboard(type);
   }
+
+  @Get("clerk-dashboard")
+  async clerkDashboard(
+    @Query("clerkId") clerkId: string,
+  ) {
+    return this.dashboardService.clerkDashboard(clerkId);
+  }
+
 }
