@@ -282,22 +282,20 @@ pipeline.push({
   },
 });
 
-const data = await this.applicationModel.aggregate(pipeline);
+  const data = await this.applicationModel.aggregate(pipeline);
 
-return {
-  data,
-  total,
-  page,
-  limit,
-  search,
-  status,
-  totalPages: Math.ceil(total / limit),
-};
+  return {
+    data,
+    total,
+    page,
+    limit,
+    search,
+    status,
+    totalPages: Math.ceil(total / limit),
+  };
     }
 
-    async findById(id: string) {
-    return await this.applicationModel
-    .findById(id)
+    async findById(id: string) {return await this.applicationModel.findById(id)
     .populate({
       path: "userId",
       populate: [{
@@ -418,14 +416,11 @@ return {
     ]);
   }
 
-   async updateApplication(
-    id:string,
-    updateApplicationDto:UpdateApplicationDto
-    ){
-    return await this.applicationModel.findByIdAndUpdate(
-        id,
-        updateApplicationDto,
-        {new: true}
+   async updateApplication(id:string, updateApplicationDto:UpdateApplicationDto){
+    return await this.applicationModel.findByIdAndUpdate(id, updateApplicationDto,
+        {
+          new: true
+        }
     );
    }
 

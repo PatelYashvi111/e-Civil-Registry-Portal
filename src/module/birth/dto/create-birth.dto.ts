@@ -1,4 +1,4 @@
-import { IsString, IsDateString, IsNotEmpty, IsMongoId, IsNumber, IsEnum} from "class-validator";
+import { IsString, IsDateString, IsNotEmpty, IsMongoId, IsNumber, IsEnum, IsOptional, IsBoolean } from "class-validator";
 import { GenderEnum } from "src/common/enums/gender.enums";
 import { Type } from "class-transformer";
 
@@ -48,5 +48,5 @@ export class CreateBirthDto {
     @IsNotEmpty()
     @IsString()
     fatherVerificationToken!: string
-    
+ 
 }

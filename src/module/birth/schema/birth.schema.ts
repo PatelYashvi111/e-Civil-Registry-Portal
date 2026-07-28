@@ -104,12 +104,11 @@ export class Birth {
     })
     motherVerificationToken!: string;
 
-        @Prop({
+    @Prop({
         required: true,
         type: String,
     })
     fatherVerificationToken!: string;
-
 
 }
 

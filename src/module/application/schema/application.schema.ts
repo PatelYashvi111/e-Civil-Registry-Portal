@@ -58,7 +58,6 @@ serviceId!: Types.ObjectId;
     enum: ServiceEnum,
    })
    serviceType!: ServiceEnum;
-  
 
   @Prop({
     type: String,

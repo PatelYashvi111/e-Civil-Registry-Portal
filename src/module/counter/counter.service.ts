@@ -50,11 +50,13 @@ export class CounterService {
     return `${prefix}${dateStr}${sequence}`;
   }
 
-  async generateEmployeeId(): Promise<string> {
-    const key = 'EMP';
+  async generateMeetingRoomId(): Promise<string> {
+    const prefix = "MT";
+    const dateStr = this.getDateString();
+    const key = `${prefix}${dateStr}`;
     const counter = await this.counterRepo.increment(key);
     const sequence = this.formatSequence(counter.sequence);
 
-    return `EMP-${sequence}`;
+    return `${prefix}${dateStr}${sequence}`;
 }
 }

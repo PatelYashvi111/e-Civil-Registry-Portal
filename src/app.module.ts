@@ -23,6 +23,7 @@ import { DeathModule } from './module/death/death.module';
 import { MarriageModule } from './module/marriage/marriage.module';
 import { DashboardModule } from './module/dashboard/dashboard.module';
 import { HolidayModule } from './module/holiday/holiday.module';
+import { MeetingModule } from './module/meeting/meeting.module';
 //import { DatabaseModule } from './database/seeds/seed.module';
 
 @Module({
@@ -56,6 +57,7 @@ import { HolidayModule } from './module/holiday/holiday.module';
     MarriageModule,
     DashboardModule,
     HolidayModule,
+    MeetingModule,
   ],
 
   controllers: [AppController],

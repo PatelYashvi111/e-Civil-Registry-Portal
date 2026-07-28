@@ -15,7 +15,6 @@ export class ApplicationController {
         private readonly applicationService: ApplicationService,
     ) {}
 
-
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(RoleEnum.CLERK, RoleEnum.ADMIN)
     @Get('all') 

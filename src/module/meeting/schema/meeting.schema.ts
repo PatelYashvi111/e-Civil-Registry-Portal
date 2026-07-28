@@ -10,7 +10,7 @@ export type MeetingDocument = HydratedDocument<Meeting>;
 export class Meeting {
   @Prop({
     type: Types.ObjectId,
-    ref: "application",
+    ref: "Application",
     required: true,
   })
   applicationId!: Types.ObjectId;

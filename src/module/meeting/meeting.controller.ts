@@ -1,4 +1,4 @@
-import {Body,Controller,Delete,Get,Param,Patch,Post,Query} from "@nestjs/common";
+import { Body, Controller, Delete, Get, Param, Patch, Post, Query} from "@nestjs/common";
 import { MeetingService } from "./meeting.service";
 import { CreateMeetingDto } from "./dto/create-meeting.dto";
 import { UpdateMeetingDto } from "./dto/update-meeting.dto";
@@ -8,12 +8,12 @@ import { FilterDto } from "../application/dto/filter-application.dto";
 export class MeetingController {
   constructor(private readonly meetingService: MeetingService) {}
 
-  @Post()
+  @Post("create")
   async create(@Body() createMeetingDto: CreateMeetingDto) {
     return await this.meetingService.create(createMeetingDto);
   }
 
-  @Get()
+  @Get("all")
   async findAll(@Query() filterDto: FilterDto) {
     return await this.meetingService.findAll(filterDto);
   }

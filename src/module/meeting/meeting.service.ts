@@ -3,6 +3,7 @@ import { CreateMeetingDto } from "./dto/create-meeting.dto";
 import { UpdateMeetingDto } from "./dto/update-meeting.dto";
 import { MeetingRepository } from "./meeting.repository";
 import { ApplicationRepository } from "../application/application.repository";
+import { CounterService } from "../counter/counter.service";
 import { ApplicationStatusEnum } from "src/common/enums/application.status.enums";
 import { FilterDto } from "../application/dto/filter-application.dto";
 import { MeetingStatusEnum } from "src/common/enums/meeting.status.enums";
@@ -13,10 +14,14 @@ export class MeetingService {
   constructor(
     private readonly meetingRepository: MeetingRepository,
     private readonly applicationRepository: ApplicationRepository,
+    private readonly counterService: CounterService,
   ) {}
 
-  async create(createMeetingDto: CreateMeetingDto) {
-  const application = await this.applicationRepository.findById(createMeetingDto.applicationId);
+    async create(createMeetingDto: CreateMeetingDto) {
+
+     console.log("Received applicationId:", createMeetingDto.applicationId);
+
+    const application = await this.applicationRepository.findById(createMeetingDto.applicationId);
 
   if (!application) {
     throw new NotFoundException("Application not found");
@@ -32,11 +37,11 @@ export class MeetingService {
     throw new BadRequestException("Meeting can only be created for approved applications");
   }
 
-  const room = await this.meetingRepository.findByRoomId(createMeetingDto.roomId);
+  const roomId = await this.counterService.generateMeetingRoomId();
 
-  if (room) {
-    throw new BadRequestException("Room ID already exists");
-  }
+  createMeetingDto.roomId = roomId;
+
+  console.log("MeetingRoomId", roomId);
 
   return await this.meetingRepository.create(createMeetingDto);
 }
@@ -51,8 +56,8 @@ export class MeetingService {
 
   async findById(id: string) {
 
-    if (!Types.ObjectId.isValid(id)) {
-       throw new BadRequestException("Invalid Meeting ID");
+     if (!Types.ObjectId.isValid(id)) {
+        throw new BadRequestException("Invalid Meeting ID");
     }
 
     const meeting = await this.meetingRepository.findById(id);
@@ -64,21 +69,27 @@ export class MeetingService {
     return meeting;  
       }
 
-  async findByApplicationId(applicationId: string) {
-   
-    if (!Types.ObjectId.isValid(applicationId)) {
-       throw new BadRequestException("Invalid Application ID");
-   }
+    async findByApplicationId(applicationId:string){
 
-    const meeting = await this.meetingRepository.findByApplicationId(applicationId);
+    if(!Types.ObjectId.isValid(applicationId)){
+        throw new BadRequestException(
+          "Invalid Application ID"
+        );
+    }
 
-    if (!meeting) {
-        throw new NotFoundException("Meeting not found");
+    const meeting =
+      await this.meetingRepository.findByApplicationId(applicationId);
+
+
+    if(!meeting){
+        throw new NotFoundException(
+          "Meeting not found"
+        );
     }
 
     return meeting;
-   }
-
+}
+  
     async findByRoomId(roomId: string) {
       const meeting = await this.meetingRepository.findByRoomId(roomId);
 
@@ -99,15 +110,6 @@ export class MeetingService {
       if (updateMeetingDto.applicationId) {
           throw new BadRequestException("Application cannot be changed");
       }
-
-      if (updateMeetingDto.roomId) {
-
-      const room = await this.meetingRepository.findByRoomId(updateMeetingDto.roomId);
-
-      if (room && room._id.toString() !== id) {
-          throw new BadRequestException("Room ID already exists");
-      }
-    }
 
     const updatedMeeting = await this.meetingRepository.update(id, updateMeetingDto);
 

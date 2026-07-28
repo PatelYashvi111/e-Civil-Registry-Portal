@@ -120,39 +120,37 @@ export class ApplicationService {
     return application;
   }
 
-  async updateApplication(
-      id: string,
-      updateApplicationDto: UpdateApplicationDto,
-      user: JwtPayload
-  ) {
+   async updateApplication(id: string, updateApplicationDto: UpdateApplicationDto, user: JwtPayload) {
 
-    const application =
-        await this.applicationRepository.findById(id);
+    const application = await this.applicationRepository.findById(id);
 
     if (!application) {
-        throw new NotFoundException('Application Not found');
+        throw new NotFoundException("Application Not found");
+    }
+
+    if (user.role === RoleEnum.USER && application.userId.toString() !== user.userId) {
+        throw new ForbiddenException("Access Denied");
+    }
+
+    if (application.status !== ApplicationStatusEnum.PENDING) {
+        throw new BadRequestException("Application has already been processed");
     }
 
     if (
-        user.role === RoleEnum.USER &&
-        application.userId.toString() !== user.userId
+        updateApplicationDto.status !== ApplicationStatusEnum.APPROVED &&
+        updateApplicationDto.status !== ApplicationStatusEnum.REJECTED
     ) {
-        throw new ForbiddenException('Access Denied');
+        throw new BadRequestException("Status must be APPROVED or REJECTED");
     }
 
-    const updatedApplication =
-        await this.applicationRepository.updateApplication(
-            id,
-            updateApplicationDto
-        );
+    const updatedApplication = await this.applicationRepository.updateApplication(id, updateApplicationDto);
 
     if (!updatedApplication) {
-        throw new NotFoundException('Application update failed');
+        throw new NotFoundException("Application update failed");
     }
 
-  return updatedApplication;
-
- };
+    return updatedApplication;
+}
 
     async getMonthlyApplications(year: number) {
       const result = await this.applicationRepository.getMonthlyApplications(year);
