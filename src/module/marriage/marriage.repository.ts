@@ -78,7 +78,24 @@ export class MarriageRepository {
     }
 
     async findById( id: string ) {
-        return await this.MarriageModel.findById( id );
+        return await this.MarriageModel.findById( id )
+        .populate('brideAadharId')
+        .populate('groomAadharId')
+        .populate('witnessAadharId')
+        .populate('brahmanAadharId')
+        .populate({
+        path: "officeDepartmentId",
+        populate: {
+            path: "officeId",
+            populate: {
+            path: "districtId",
+            populate: {
+                path: "stateId",
+            },
+            },
+        },
+        })
+        .populate("slotId");
     }
 
     async update( id: string, updateMarriageDto: UpdateMarriageDto) {

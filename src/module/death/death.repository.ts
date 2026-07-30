@@ -59,12 +59,27 @@ export class DeathRepository {
         }
     }
 
-    async findDuplication(deacasedAadharId: string, dateAndTimeOfDeath: Date ) {
-        return await this.DeathModel.findOne({deacasedAadharId, dateAndTimeOfDeath })
+    async findDuplication(deceasedAadharId: string, dateAndTimeOfDeath: Date ) {
+        return await this.DeathModel.findOne({deceasedAadharId, dateAndTimeOfDeath })
     }
         
     async findById( id: string ) {
-        return await this.DeathModel.findById( id );
+        return await this.DeathModel.findById( id )
+        .populate('deceasedAadharId')
+        .populate('applicantAadharId')
+        .populate({
+        path: "officeDepartmentId",
+        populate: {
+            path: "officeId",
+            populate: {
+            path: "districtId",
+            populate: {
+                path: "stateId",
+            },
+            },
+        },
+        })
+        .populate("slotId");
     }
 
     async update( id: string, updateDeathDto: UpdateDeathDto) {

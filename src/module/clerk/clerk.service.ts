@@ -9,6 +9,7 @@ import { OfficeDepartmentService } from '../officeDepartment/officeDepartment.se
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { UpdateClerkDto } from './dto/update-clerk.dto';
+import { ClerkStatusEnum } from 'src/common/enums/clerk.status.enums';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { VerifyAadharDto } from '../auth/dto/verify.aadhar.dto';
 import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
@@ -186,20 +187,21 @@ export class ClerkService {
     if (updateClerkDto.password) {
       updateClerkDto.password = await bcrypt.hash( updateClerkDto.password, 10 );
     }
-
+    
     const updatedClerk = await this.clerkRepository.update( id, updateClerkDto );
 
     return updatedClerk;
   }
 
-  async deleteClerk(id: string) {
-    const clerk = await this.clerkRepository.delete(id)
+    async deleteClerk(id: string) {
+      const clerk = await this.clerkRepository.delete(id)
 
-    if(!clerk) {
-      throw new BadRequestException('Clerk not found');
-    }
+      if(!clerk) {
+        throw new BadRequestException('Clerk Not Found');
+      }
 
-    return clerk;
-  
-    }
+      return clerk;
+
+      }
+
 }

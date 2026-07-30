@@ -238,59 +238,79 @@ export class BirthService {
         throw new NotFoundException('Birth record not found.');
     }
 
-    const birthDate = new Date(updateBirthDto.birthDateAndTime as string);
+
+    let birthDate = birth.birthDateAndTime;
+
+if (updateBirthDto.birthDateAndTime) {
+    birthDate = new Date(updateBirthDto.birthDateAndTime);
 
     if (isNaN(birthDate.getTime())) {
         throw new BadRequestException('Invalid birth date and time.');
     }
+}
 
     let fatherAadhar;
 
-    if (Types.ObjectId.isValid(updateBirthDto.fatherAadharId as string)) {
+    if (updateBirthDto.fatherAadharId) {
+
+    if (Types.ObjectId.isValid(updateBirthDto.fatherAadharId)) {
         fatherAadhar = await this.aadharService.findById(
-        updateBirthDto.fatherAadharId as string,
+        updateBirthDto.fatherAadharId,
         );
     } else {
         fatherAadhar = await this.aadharService.findByAadharNumber(
-        updateBirthDto.fatherAadharId as string,
+        updateBirthDto.fatherAadharId,
         );
     }
+
 
     if (!fatherAadhar) {
         throw new NotFoundException('Father Aadhar not found');
     }
+    }else {
+         fatherAadhar = birth.fatherAadharId;
+    }
 
     let motherAadhar;
 
-    if (Types.ObjectId.isValid(updateBirthDto.motherAadharId as string)) {
+    if (updateBirthDto.motherAadharId) {
+    if (Types.ObjectId.isValid(updateBirthDto.motherAadharId )) {
         motherAadhar = await this.aadharService.findById(
-        updateBirthDto.motherAadharId as string,
+        updateBirthDto.motherAadharId,
         );
     } else {
         motherAadhar = await this.aadharService.findByAadharNumber(
-        updateBirthDto.motherAadharId as string,
+        updateBirthDto.motherAadharId,
         );
     }
 
     if (!motherAadhar) {
         throw new NotFoundException('Mother Aadhar not found');
     }
+}else {
+    motherAadhar = birth.motherAadharId
+}
+
 
     let officeDepartment;
 
-    if (Types.ObjectId.isValid(updateBirthDto.officeDepartmentId as string)) {
+    if (updateBirthDto.officeDepartmentId) {
+    if (Types.ObjectId.isValid(updateBirthDto.officeDepartmentId)) {
         officeDepartment = await this.officeDepartmentService.findById(
-        updateBirthDto.officeDepartmentId as string,
+        updateBirthDto.officeDepartmentId,
         );
     } else {
         officeDepartment = await this.officeDepartmentService.findByName(
-        updateBirthDto.officeDepartmentId as string,
+        updateBirthDto.officeDepartmentId,
         );
     }
 
     if (!officeDepartment) {
         throw new NotFoundException('Office Department not found');
     }
+} else {
+    officeDepartment = birth.officeDepartmentId;
+}
 
     const existingBirth = await this.birthRepository.findDuplication(
         updateBirthDto.babyName as string,
@@ -304,6 +324,7 @@ export class BirthService {
     }
 
     const finalData = {
+            ...birth.toObject(),
         ...updateBirthDto,
         birthDateAndTime: birthDate,
         fatherAadharId: fatherAadhar._id.toString(),

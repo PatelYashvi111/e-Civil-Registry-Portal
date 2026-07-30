@@ -335,17 +335,30 @@ if (isNaN(marriageDate.getTime())) {
         throw new NotFoundException('Marriage record not found.');
     }
 
+let marriageDate = marriage.marriageDate;
+
+if (updateMarriageDto.marriageDate) {
+    marriageDate = new Date(updateMarriageDto.marriageDate);
+
+    if (isNaN(marriageDate.getTime())) {
+        throw new BadRequestException('Invalid marriage date.');
+    }
+}
     let brideAadhar;
 
-    if (Types.ObjectId.isValid(updateMarriageDto.brideAadharId as string)) {
+    if(updateMarriageDto.brideAadharId) {
+    if (Types.ObjectId.isValid(updateMarriageDto.brideAadharId )) {
         brideAadhar = await this.aadharService.findById(
-            updateMarriageDto.brideAadharId as string,
+            updateMarriageDto.brideAadharId ,
         );
     } else {
         brideAadhar = await this.aadharService.findByAadharNumber(
-            updateMarriageDto.brideAadharId as string,
+            updateMarriageDto.brideAadharId ,
         );
     }
+}else{
+    brideAadhar = marriage.brideAadharId;
+}
 
     if (!brideAadhar) {
         throw new NotFoundException('Bride Aadhar not found');
@@ -353,15 +366,19 @@ if (isNaN(marriageDate.getTime())) {
 
     let groomAadhar;
 
-    if (Types.ObjectId.isValid(updateMarriageDto.groomAadharId as string)) {
+    if(updateMarriageDto.groomAadharId) {
+    if (Types.ObjectId.isValid(updateMarriageDto.groomAadharId )) {
         groomAadhar = await this.aadharService.findById(
-            updateMarriageDto.groomAadharId as string,
+            updateMarriageDto.groomAadharId ,
         );
     } else {
         groomAadhar = await this.aadharService.findByAadharNumber(
-            updateMarriageDto.groomAadharId as string,
+            updateMarriageDto.groomAadharId ,
         );
     }
+}else{
+    groomAadhar = marriage.groomAadharId;
+}
 
     if (!groomAadhar) {
         throw new NotFoundException('Groom Aadhar not found');
@@ -369,15 +386,19 @@ if (isNaN(marriageDate.getTime())) {
 
     let witnessAadhar;
 
-    if (Types.ObjectId.isValid(updateMarriageDto.witnessAadharId as string)) {
+    if(updateMarriageDto.witnessAadharId) {
+    if (Types.ObjectId.isValid(updateMarriageDto.witnessAadharId )) {
         witnessAadhar = await this.aadharService.findById(
-            updateMarriageDto.witnessAadharId as string,
+            updateMarriageDto.witnessAadharId ,
         );
     } else {
         witnessAadhar = await this.aadharService.findByAadharNumber(
-            updateMarriageDto.witnessAadharId as string,
+            updateMarriageDto.witnessAadharId,
         );
     }
+}else {
+    witnessAadhar = marriage.witnessAadharId;
+}
 
     if (!witnessAadhar) {
         throw new NotFoundException('Witness Aadhar not found');
@@ -385,15 +406,19 @@ if (isNaN(marriageDate.getTime())) {
 
     let brahmanAadhar;
 
-    if (Types.ObjectId.isValid(updateMarriageDto.brahmanAadharId as string)) {
+    if(updateMarriageDto.brahmanAadharId) {
+    if (Types.ObjectId.isValid(updateMarriageDto.brahmanAadharId )) {
         brahmanAadhar = await this.aadharService.findById(
-            updateMarriageDto.brahmanAadharId as string,
+            updateMarriageDto.brahmanAadharId ,
         );
     } else {
         brahmanAadhar = await this.aadharService.findByAadharNumber(
-            updateMarriageDto.brahmanAadharId as string,
+            updateMarriageDto.brahmanAadharId ,
         );
     }
+}else{
+    brahmanAadhar = marriage.brahmanAadharId;
+}
 
     if (!brahmanAadhar) {
         throw new NotFoundException('Brahman Aadhar not found');
@@ -401,43 +426,48 @@ if (isNaN(marriageDate.getTime())) {
 
     let officeDepartment;
 
-    if (Types.ObjectId.isValid(updateMarriageDto.officeDepartmentId as string)) {
+    if(updateMarriageDto.officeDepartmentId) {
+    if (Types.ObjectId.isValid(updateMarriageDto.officeDepartmentId)) {
         officeDepartment = await this.officeDepartmentService.findById(
-            updateMarriageDto.officeDepartmentId as string,
+            updateMarriageDto.officeDepartmentId ,
         );
     } else {
         officeDepartment = await this.officeDepartmentService.findByName(
-            updateMarriageDto.officeDepartmentId as string,
+            updateMarriageDto.officeDepartmentId ,
         );
-    }
+    }  
+  
+}else{
+    officeDepartment = marriage.officeDepartmentId;
+}
 
     if (!officeDepartment) {
         throw new NotFoundException('Office Department not found');
     }
 
-    if (!updateMarriageDto.slotId) {
-        throw new BadRequestException('Slot ID is required.');
-    }
+    // if (!updateMarriageDto.slotId) {
+    //     throw new BadRequestException('Slot ID is required.');
+    // }
 
-    const slot = await this.slotService.findById(updateMarriageDto.slotId);
+    // const slot = await this.slotService.findById(updateMarriageDto.slotId);
 
-    if (!slot) {
-        throw new NotFoundException('Slot not found.');
-    }
+    // if (!slot) {
+    //     throw new NotFoundException('Slot not found.');
+    // }
 
-    if (!slot.isAvailable) {
-        throw new BadRequestException('Selected slot is not available.');
-    }
+    // if (!slot.isAvailable) {
+    //     throw new BadRequestException('Selected slot is not available.');
+    // }
 
-    if (slot.bookedCount >= slot.maxCapacity) {
-        throw new BadRequestException('Selected slot is full.');
-    }
+    // if (slot.bookedCount >= slot.maxCapacity) {
+    //     throw new BadRequestException('Selected slot is full.');
+    // }
 
 
     const existingMarriage = await this.marriageRepository.findDuplication(
         brideAadhar._id.toString(),
         groomAadhar._id.toString(),
-        new Date(updateMarriageDto.marriageDate as string),
+         marriageDate,
     );
 
     if (existingMarriage && existingMarriage.id !== id) {
@@ -445,13 +475,15 @@ if (isNaN(marriageDate.getTime())) {
     }
 
     const finalData = {
+           ...marriage.toObject(),
         ...updateMarriageDto,
+         marriageDate,
         brideAadharId: brideAadhar._id.toString(),
         groomAadharId: groomAadhar._id.toString(),
         witnessAadharId: witnessAadhar._id.toString(),
         brahmanAadharId: brahmanAadhar._id.toString(),
         officeDepartmentId: officeDepartment._id.toString(),
-        slotId: slot._id.toString(),
+        //slotId: slot._id.toString(),
     };
 
     return await this.marriageRepository.update(id, finalData as any);

@@ -53,6 +53,12 @@ export class Meeting {
   })
   endedAt?: Date;
 
+  @Prop({
+    required: true,
+    type: String,
+  })
+  meetingLink?: string;
+
 }
 
 export const MeetingSchema = SchemaFactory.createForClass(Meeting);

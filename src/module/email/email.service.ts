@@ -4,6 +4,7 @@ import * as nodemailer from 'nodemailer';
 @Injectable()
 export class EmailService {
   private transporter;
+  private clerkTransporter;
 
   constructor() {
     this.transporter = nodemailer.createTransport({
@@ -13,6 +14,14 @@ export class EmailService {
         pass: process.env.EMAIL_PASS1,
       },
     });
+
+     this.clerkTransporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+    },
+  });
   }
 
   async sendWelcomeEmail(to: string, name: string) {
@@ -272,6 +281,46 @@ async sendClerkInvitationEmail(
 
       </body>
       </html>
+    `,
+  });
+}
+
+async sendMeetingLinkToUser(
+  to: string,
+  meetingLink: string,
+) {
+  await this.transporter.sendMail({
+    from: `"E-Civil Registry Portal" <${process.env.EMAIL_USER1}>`,
+    to,
+    subject: "Meeting Invitation",
+    html: `
+      <h2>Meeting Invitation</h2>
+
+      <p>Your meeting has been scheduled successfully.</p>
+
+      <a href="${meetingLink}">
+        Join Meeting
+      </a>
+    `,
+  });
+}
+
+async sendMeetingLinkToClerk(
+  to: string,
+  meetingLink: string,
+) {
+  await this.clerkTransporter.sendMail({
+    from: `"E-Civil Registry Portal" <${process.env.CLERK_EMAIL}>`,
+    to,
+    subject: "Meeting Invitation",
+    html: `
+      <h2>Meeting Invitation</h2>
+
+      <p>Your meeting has been scheduled successfully.</p>
+
+      <a href="${meetingLink}">
+        Join Meeting
+      </a>
     `,
   });
 }
