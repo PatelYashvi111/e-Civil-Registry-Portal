@@ -35,7 +35,10 @@ export class MeetingGateway
   }
 
   @SubscribeMessage('join-room')
-  async joinRoom(@MessageBody() data: any, @ConnectedSocket() client: Socket) {
+  async joinRoom(
+    @MessageBody() data: any, 
+    @ConnectedSocket() client: Socket
+  ) {
 
     const meeting = await this.meetingService.findByRoomId(data.roomId);
 
