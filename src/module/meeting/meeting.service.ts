@@ -4,6 +4,7 @@ import { UpdateMeetingDto } from "./dto/update-meeting.dto";
 import { MeetingRepository } from "./meeting.repository";
 import { ApplicationRepository } from "../application/application.repository";
 import { CounterService } from "../counter/counter.service";
+import { EmailService } from "../email/email.service";
 import { ApplicationStatusEnum } from "src/common/enums/application.status.enums";
 import { FilterDto } from "../application/dto/filter-application.dto";
 import { MeetingStatusEnum } from "src/common/enums/meeting.status.enums";
@@ -15,6 +16,7 @@ export class MeetingService {
     private readonly meetingRepository: MeetingRepository,
     private readonly applicationRepository: ApplicationRepository,
     private readonly counterService: CounterService,
+    private readonly emailService: EmailService,
   ) {}
 
     async create(createMeetingDto: CreateMeetingDto) {
@@ -43,7 +45,26 @@ export class MeetingService {
 
   console.log("MeetingRoomId", roomId);
 
-  return await this.meetingRepository.create(createMeetingDto);
+  const meetingLink = `${process.env.FRONTEND_URL}/meeting/${roomId}`;
+
+createMeetingDto.meetingLink = meetingLink;
+
+  const meeting = await this.meetingRepository.create(createMeetingDto);
+
+// // const userEmail = application.userId.email;
+// // const clerkEmail = application.clerkId.email;
+
+// await this.emailService.sendMeetingLinkToUser(
+//   userEmail,
+//   meetingLink,
+// );
+
+// await this.emailService.sendMeetingLinkToClerk(
+//   clerkEmail,
+//   meetingLink,
+// );
+
+return meeting;
 }
 
   async findAll(filterDto: FilterDto) {
@@ -98,6 +119,56 @@ export class MeetingService {
       }
 
       return meeting;
+    }
+
+  async userJoined(roomId: string) {
+     const meeting = await this.meetingRepository.findByRoomId(roomId);
+
+  if (!meeting) {
+    throw new NotFoundException('Meeting not found');
+  }
+
+  return await this.meetingRepository.update(meeting._id.toString(), {
+    userJoinedAt: new Date(),
+  } as any);
+ }
+
+  async clerkJoined(roomId: string) {
+    const meeting = await this.meetingRepository.findByRoomId(roomId);
+
+    if (!meeting) {
+      throw new NotFoundException('Meeting not found');
+    }
+
+    return await this.meetingRepository.update(meeting._id.toString(), {
+      clerkJoinedAt: new Date(),
+    } as any);
+  }
+
+  async startMeeting(roomId: string) {
+    const meeting = await this.meetingRepository.findByRoomId(roomId);
+
+    if (!meeting) {
+      throw new NotFoundException('Meeting not found');
+    }
+
+    return await this.meetingRepository.update(meeting._id.toString(), {
+      status: MeetingStatusEnum.IN_PROGRESS,
+      startedAt: new Date(),
+    } as any);
+  }
+
+    async endMeeting(roomId: string) {
+      const meeting = await this.meetingRepository.findByRoomId(roomId);
+
+      if (!meeting) {
+        throw new NotFoundException('Meeting not found.');
+      }
+
+      return await this.meetingRepository.update(meeting._id.toString(), {
+        status: MeetingStatusEnum.COMPLETED,
+        endedAt: new Date(),
+      } as any);
     }
 
     async update(id: string,updateMeetingDto: UpdateMeetingDto) {

@@ -305,7 +305,27 @@ pipeline.push({
         path: "aadharId",
       }],
     })
-    .populate("clerkId")
+    .populate({
+      path: "clerkId",
+      populate: [{
+      path: "officeDepartmentId",
+      populate: [
+        { path: "officeId",
+          populate: {
+            path: "districtId",
+            populate: {
+              path: "stateId",
+            },
+          },
+        },
+        { path: "departmentId" },
+      ],
+    },
+    {path: "aadharId"},
+    {path: "roleId"},
+  ]
+    
+    })
     .populate({
       path: "officeDepartmentId",
       populate: [
@@ -393,15 +413,21 @@ pipeline.push({
         return await this.applicationModel.findOne({ applicationNumber });
     }
 
-    async getMonthlyApplications(year: number) {
-    return await this.applicationModel.aggregate([
-      {
-        $match: {
-          $expr: {
-            $eq: [{ $year: "$createdAt" }, year],
-          },
-        },
-      },
+    async getMonthlyApplications(year: number, clerkId? : string) {
+    const match: any = {
+    $expr: {
+      $eq: [{ $year: "$createdAt" }, year],
+    },
+  };
+
+  if (clerkId) {
+    match.clerkId = new Types.ObjectId(clerkId);
+  }
+
+  return await this.applicationModel.aggregate([
+    {
+      $match: match,
+    },
       {
         $group: {
           _id: { $month: "$createdAt" },

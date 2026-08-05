@@ -258,59 +258,94 @@ if (!Types.ObjectId.isValid(createDeathDto.slotId)) {
         throw new NotFoundException('Death record not found.');
     }
 
-    const deathDate = new Date(updateDeathDto.dateAndTimeOfDeath as string);
+   let deathDate = death.dateAndTimeOfDeath;
+
+if (updateDeathDto.dateAndTimeOfDeath) {
+    deathDate = new Date(updateDeathDto.dateAndTimeOfDeath);
 
     if (isNaN(deathDate.getTime())) {
         throw new BadRequestException('Invalid death date and time.');
     }
+}
 
     let deceasedAadhar;
 
-    if (Types.ObjectId.isValid(updateDeathDto.deceasedAadharId as string)) {
+    console.log("Deceased Aadhar:", updateDeathDto.deceasedAadharId);
+
+    if(updateDeathDto.deceasedAadharId){
+    if (Types.ObjectId.isValid(updateDeathDto.deceasedAadharId)) {
         deceasedAadhar = await this.aadharService.findById(
-            updateDeathDto.deceasedAadharId as string,
+            updateDeathDto.deceasedAadharId,
         );
     } else {
         deceasedAadhar = await this.aadharService.findByAadharNumber(
-            updateDeathDto.deceasedAadharId as string,
+            updateDeathDto.deceasedAadharId,
         );
     }
+       if (!deceasedAadhar) {
+            throw new NotFoundException('decease Aadhar not found');
+        }
+    }
+   
+    else{
+        deceasedAadhar = death.deceasedAadharId;
+    }
 
+    console.log("Deceased Found:", deceasedAadhar);
     if (!deceasedAadhar) {
         throw new NotFoundException('Deceased Aadhar not found');
     }
 
     let applicantAadhar;
 
-    if (Types.ObjectId.isValid(updateDeathDto.applicantAadharId as string)) {
+    console.log("Applicant Aadhar:", updateDeathDto.applicantAadharId);
+
+    if (updateDeathDto.applicantAadharId) {
+    if (Types.ObjectId.isValid(updateDeathDto.applicantAadharId)) {
         applicantAadhar = await this.aadharService.findById(
-            updateDeathDto.applicantAadharId as string,
+            updateDeathDto.applicantAadharId,
         );
     } else {
         applicantAadhar = await this.aadharService.findByAadharNumber(
-            updateDeathDto.applicantAadharId as string,
+            updateDeathDto.applicantAadharId,
         );
     }
 
+ if (!applicantAadhar) {
+            throw new NotFoundException('applicant Aadhar not found');
+        }
+    }    
+else{
+     applicantAadhar = death.applicantAadharId;
+}
+
+    console.log("Applicant Found:", applicantAadhar);
     if (!applicantAadhar) {
         throw new NotFoundException('Applicant Aadhar not found');
     }
 
     let officeDepartment;
 
-    if (Types.ObjectId.isValid(updateDeathDto.officeDepartmentId as string)) {
+    if(updateDeathDto.officeDepartmentId) {
+    if (Types.ObjectId.isValid(updateDeathDto.officeDepartmentId)) {
         officeDepartment = await this.officeDepartmentService.findById(
-            updateDeathDto.officeDepartmentId as string,
+            updateDeathDto.officeDepartmentId,
         );
     } else {
         officeDepartment = await this.officeDepartmentService.findByName(
-            updateDeathDto.officeDepartmentId as string,
+            updateDeathDto.officeDepartmentId,
         );
+    }
+    
+}
+
+    else{
+        officeDepartment = death.officeDepartmentId;
     }
 
     if (!officeDepartment) {
-        throw new NotFoundException('Office Department not found');
-    }
+            throw new NotFoundException('officeDepartment not found');
+        }
 
     const existingDeath = await this.deathRepository.findDuplication(
         deceasedAadhar._id.toString(),
@@ -322,6 +357,7 @@ if (!Types.ObjectId.isValid(createDeathDto.slotId)) {
     }
 
     const finalData = {
+            ...death.toObject(),
         ...updateDeathDto,
         dateAndTimeOfDeath: deathDate,
         deceasedAadharId: deceasedAadhar._id.toString(),

@@ -25,8 +25,11 @@ export class ApplicationController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(RoleEnum.ADMIN)
     @Get("monthly-trend")
-    async getMonthlyApplications(@Query("year") year: number) {
-    return await this.applicationService.getMonthlyApplications(Number(year));
+    async getMonthlyApplications(
+        @Query("year") year: number,
+        @Query("clerkId") clerkId?: string,
+    ) {
+    return await this.applicationService.getMonthlyApplications(Number(year),clerkId);
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)

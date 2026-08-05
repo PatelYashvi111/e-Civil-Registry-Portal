@@ -10,6 +10,7 @@ import { CounterService } from '../counter/counter.service';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { CloudinaryService } from 'src/common/cloudinary/cloudinary.service';
 import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { ClerkStatusEnum } from 'src/common/enums/clerk.status.enums';
 
 @Injectable()
 export class UserService{
@@ -94,8 +95,38 @@ export class UserService{
             throw new NotFoundException('User not found');
         }
 
+        if (updateUserDto.status) {
+
+        if (user.status === updateUserDto.status) {
+            throw new BadRequestException(
+                `Clerk status is already ${user.status}`,
+            );
+        }
+
+        if (user.status === ClerkStatusEnum.PENDING) {
+        if (
+            updateUserDto.status !== ClerkStatusEnum.ACTIVE &&
+            updateUserDto.status !== ClerkStatusEnum.BLOCKED
+        ) {
+            throw new BadRequestException(
+                'Pending clerk can only be changed to ACTIVE or BLOCKED.',
+            );
+        }
+    }
+
+        if (
+        (user.status === ClerkStatusEnum.ACTIVE ||
+            user.status === ClerkStatusEnum.BLOCKED) &&
+        updateUserDto.status === ClerkStatusEnum.PENDING
+    ) {
+        throw new BadRequestException(
+            'Clerk status cannot be changed back to PENDING.',
+        );
+    } 
+    }
+
         return this.userRepository.updateUser( id, updateUserDto );
-        
+             
     }
 
   async deleteUser( id: string ){

@@ -14,4 +14,8 @@ export class CreateMeetingDto {
     @IsOptional()
     @IsEnum(MeetingStatusEnum)
     status?: MeetingStatusEnum;
+
+    @IsOptional()
+    @IsString()
+    meetingLink?: string;
 }

@@ -76,7 +76,7 @@ export class Marriage {
       @Prop({
         required: true,
         type: Types.ObjectId,
-        ref: 'officeDepartment',
+        ref: 'OfficeDepartment',
       })
       officeDepartmentId!: Types.ObjectId;
 

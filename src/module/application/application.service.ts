@@ -120,6 +120,16 @@ export class ApplicationService {
     return application;
   }
 
+  async findApplicationById(id: string) {
+  const application = await this.applicationRepository.findById(id);
+
+  if (!application) {
+    throw new NotFoundException('Application not found');
+  }
+
+  return application;
+}
+
    async updateApplication(id: string, updateApplicationDto: UpdateApplicationDto, user: JwtPayload) {
 
     const application = await this.applicationRepository.findById(id);
@@ -152,8 +162,8 @@ export class ApplicationService {
     return updatedApplication;
 }
 
-    async getMonthlyApplications(year: number) {
-      const result = await this.applicationRepository.getMonthlyApplications(year);
+    async getMonthlyApplications(year: number, clerkId?: string) {
+      const result = await this.applicationRepository.getMonthlyApplications(year,clerkId);
 
       const months = [
         "Jan",
