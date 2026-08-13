@@ -5,6 +5,8 @@ import { Death, DeathDocument } from "./schema/death.schema";
 import { CreateDeathDto } from "./dto/create-death.dto";
 import { UpdateDeathDto } from "./dto/update-death.dto";
 import { toObjectId } from "../../common/utils/objectId.utils";
+import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
+import { PaginationUtil } from "src/common/utils/pagination.utils";
 
 @Injectable()
 export class DeathRepository {
@@ -27,7 +29,11 @@ export class DeathRepository {
         }
         
 
-    async findAll(skip: number, limit: number, page: number) {
+    async findAll(paginationDto: PaginationDto) {
+        const { page = 1, limit = 5 } = paginationDto;
+
+        const skip = PaginationUtil.getSkip(page, limit);
+
         const data = await this.DeathModel.find().skip(skip).limit(limit)
         .populate('deceasedAadharId')
         .populate('applicantAadharId')
@@ -50,13 +56,14 @@ export class DeathRepository {
         });
 
         const total = await this.DeathModel.countDocuments()
-        return {
+    
+            return PaginationUtil.getPaginationResponse(
             data,
             total,
             page,
             limit,
-            totalPages: Math.ceil(total / limit)
-        }
+            );
+        
     }
 
     async findDuplication(deceasedAadharId: string, dateAndTimeOfDeath: Date ) {

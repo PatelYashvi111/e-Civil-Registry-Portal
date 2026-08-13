@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { State } from '../state/schema/state.schema';
 import { CreateStateDto } from './dto/create-state.dto';
 import { UpdateStateDto } from './dto/update-state.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginationUtil } from 'src/common/utils/pagination.utils';
 
 @Injectable()
 export class StateRepository {
@@ -13,12 +15,11 @@ export class StateRepository {
     return await this.model.create(createStateDto);
   }
 
-async findAll(
-  skip: number,
-  limit: number,
-  page: number,
-  search?: string,
-) {
+async findAll(paginationDto: PaginationDto) {
+  const { page = 1, limit = 5, search } = paginationDto;
+
+  const skip = PaginationUtil.getSkip(page, limit);
+
   const pipeline: any[] = [];
 
   if (search) {
@@ -69,12 +70,13 @@ async findAll(
   const data = await this.model.aggregate(pipeline);
 
   return {
+    ...PaginationUtil.getPaginationResponse(
     data,
     total,
     page,
     limit,
+    ),
     search,
-    totalPages: Math.ceil(total / limit),
   };
 }
 

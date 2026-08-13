@@ -6,7 +6,7 @@ import { RoleEnum } from "src/common/enums/role.enums";
 import { RolesGuard } from "src/common/guards/role.guards";
 import { Roles } from "src/common/decorators/role.decorators";
 import { JwtAuthGuard } from "../../common/guards/jwt-auth.guards";
-import { FilterDto } from "../application/dto/filter-application.dto";
+import { FilterApplicationDto } from "../application/dto/filter-application.dto";
 
 @Controller('application')
 export class ApplicationController {
@@ -18,12 +18,12 @@ export class ApplicationController {
     @UseGuards(JwtAuthGuard, RolesGuard)
     @Roles(RoleEnum.CLERK, RoleEnum.ADMIN)
     @Get('all') 
-    async findAll(@Query() filterDto: FilterDto, @Req() req) {
-        return await this.applicationService.findAll(filterDto, req.user);
+    async findAll(@Query() filterApplicationDto: FilterApplicationDto, @Req() req) {
+        return await this.applicationService.findAll(filterApplicationDto, req.user);
     }
 
     @UseGuards(JwtAuthGuard, RolesGuard)
-    @Roles(RoleEnum.ADMIN)
+    @Roles(RoleEnum.ADMIN, RoleEnum.CLERK)
     @Get("monthly-trend")
     async getMonthlyApplications(
         @Query("year") year: number,

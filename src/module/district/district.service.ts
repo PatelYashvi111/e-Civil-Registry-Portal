@@ -25,11 +25,7 @@ export class DistrictService {
   return await this.districtRepository.create({...createDistrictDto,name });
 }
   async findAll(paginationDto: PaginationDto) {
-    const { page=1, limit=5, search } = paginationDto;
-
-    const skip = (page-1) * limit;
-
-      return await this.districtRepository.findAll(skip, limit, page, search);  
+      return await this.districtRepository.findAll(paginationDto);  
   }
 
   async findOne(id: string) {
@@ -41,6 +37,10 @@ export class DistrictService {
 
     return district;
   }
+
+  async findByName(name: string) {
+  return this.districtRepository.findByName(name);
+}
 
   async update(id: string, updateDistrictDto: UpdateDistrictDto) {
     const district = await this.districtRepository.findById(id);

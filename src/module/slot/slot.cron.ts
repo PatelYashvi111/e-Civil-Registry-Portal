@@ -18,11 +18,10 @@ export class SlotCron {
     this.logger.log('Slot generation cron started.');
 
     // If findAll() returns pagination
-    const result = await this.officeDepartmentRepository.findAll(
-      0,
-      Number.MAX_SAFE_INTEGER,
-      1,
-    );
+   const result = await this.officeDepartmentRepository.findAll({
+  page: 1,
+  limit: Number.MAX_SAFE_INTEGER,
+});
 
     const officeDepartments = result.data;
 

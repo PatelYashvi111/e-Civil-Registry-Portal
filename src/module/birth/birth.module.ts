@@ -36,7 +36,7 @@ import { ApplicationModule } from "../application/application.module";
     ], 
 
         controllers: [BirthController],
-        providers: [BirthService,BirthRepository,],
+        providers: [BirthService,BirthRepository],
         exports: [BirthService,BirthRepository,],
 
 })

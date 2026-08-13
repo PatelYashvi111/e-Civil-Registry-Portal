@@ -1,5 +1,6 @@
 import { Controller, Post, Get, Delete, Param, Body, Query } from '@nestjs/common';
 import { SlotService } from './slot.service';
+import { FilterSlotDto } from './dto/filter-slot.dto';
 
 @Controller('slot')
 export class SlotController {
@@ -17,8 +18,8 @@ export class SlotController {
   }
 
   @Get('all')
-  async findAll() {
-    return this.slotService.findAll();
+  async findAll(@Query() filterSlotDto: FilterSlotDto) {
+    return this.slotService.findAll(filterSlotDto);
   }
 
   @Get('available-dates/:officeDepartmentId')
@@ -27,15 +28,16 @@ export class SlotController {
   }
 
   @Get("available-slots")
-async getAvailableSlots(
-  @Query("officeDepartmentId") officeDepartmentId: string,
-  @Query("slotDate") slotDate: string,
-) {
-  return this.slotService.getAvailableSlots(
-    officeDepartmentId,
-    slotDate,
-  );
-}
+  async getAvailableSlots(
+    @Query("officeDepartmentId") officeDepartmentId: string,
+    @Query("slotDate") slotDate: string,
+  ) {
+    return this.slotService.getAvailableSlots(
+      officeDepartmentId,
+      slotDate,
+    );
+  }
+  
   @Post('book/:slotId')
   async bookSlot( @Param('slotId') slotId: string ) {
     return this.slotService.bookSlot(slotId);

@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { Department } from '../department/schema/department.schema';
 import { CreateDepartmentDto } from './dto/create-department.dto';
 import { UpdateDepartmentDto } from './dto/update-department.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginationUtil } from 'src/common/utils/pagination.utils';
 
 @Injectable()
 export class DepartmentRepository {
@@ -17,16 +19,21 @@ export class DepartmentRepository {
     return await this.model.create( createDepartmentDto );
   }
 
-  async findAll(skip: number, limit: number, page: number) {
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, limit = 5 } = paginationDto;
+
+    const skip = PaginationUtil.getSkip(page, limit);
+
     const data = await this.model.find().skip(skip).limit(limit).sort({ createdAt: -1 });
+
     const total = await this.model.countDocuments();
-    return{
+
+    return PaginationUtil.getPaginationResponse(
       data,
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
-    }
+    );
   }
 
   async findByName(name: string) {

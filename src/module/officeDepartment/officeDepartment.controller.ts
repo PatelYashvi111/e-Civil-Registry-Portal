@@ -29,10 +29,6 @@ export class OfficeDepartmentController {
     return this.officeDepartmentService.findMapping(officeId, departmentId);
   }
 
-  @Get(':id')
-  async findOne( @Param('id') id: string ) {
-    return this.officeDepartmentService.findOne(id);
-  }
 
   @Get('office/:officeId')
   async getByOffice( @Param('officeId') officeId: string ) {
@@ -45,6 +41,11 @@ export class OfficeDepartmentController {
     return this.officeDepartmentService.getByDepartment( departmentId );
   }
 
+    @Get(':id')
+  async findOne( @Param('id') id: string ) {
+    return this.officeDepartmentService.findOne(id);
+  }
+  
   @Patch(':id')
   async update( @Param('id') id: string, @Body() updateOfficeDepartmentDto: UpdateOfficeDepartmentDto ) {
     return this.officeDepartmentService.update( id, updateOfficeDepartmentDto );

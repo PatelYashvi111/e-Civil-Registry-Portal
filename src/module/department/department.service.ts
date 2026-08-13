@@ -21,11 +21,7 @@ export class DepartmentService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page=1, limit=10 } = paginationDto;
-
-    const skip = (page-1) * limit;
-
-    return await this.departmentRepository.findAll(skip, limit, page);
+    return await this.departmentRepository.findAll(paginationDto);
   }
 
   async findOne(id: string) {
@@ -37,6 +33,10 @@ export class DepartmentService {
     
     return department;
   }
+
+  async findByName(name: string) {
+  return this.departmentRepository.findByName(name);
+}
 
   async update(id: string, updateDepartmentDto: UpdateDepartmentDto) {
     const department = await this.departmentRepository.findById(id);

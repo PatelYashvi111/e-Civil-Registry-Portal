@@ -15,6 +15,7 @@ import { ApplicationService } from "../application/application.service";
 import { AadharService } from "../aadhar/aadhar.service";
 import { DeathEnum } from "../../common/enums/death.enums";
 import { ServiceEnum } from "src/common/enums/service.enums";
+import { CreateApplicationDto } from "../application/dto/create-application.dto";
 
 @Injectable()
 export class DeathService {
@@ -226,25 +227,23 @@ if (!Types.ObjectId.isValid(createDeathDto.slotId)) {
         fir: fir.url,
         }
 
-        const death = await this.deathRepository.create( finalData as any );
+         const death = await this.deathRepository.create( finalData as any );
         
-            await this.applicationService.createApplicationFromService({
+            await this.applicationService.createApplication({
             userId: user.userId,
             officeDepartmentId: death.officeDepartmentId.toString(),
             slotId: death.slotId.toString(),
             serviceId: death._id.toString(),
             serviceType: ServiceEnum.DEATH,
             applicationNumber,
-        });
+        }as CreateApplicationDto, user);
         
                return death;
         
     }
 
     async findAll(paginationDto: PaginationDto) {
-        const { page=1 , limit=10 } = paginationDto;
-        const skip = (page - 1) * limit;
-        return await this.deathRepository.findAll(skip, limit, page);
+        return await this.deathRepository.findAll(paginationDto);
     }
 
     async findById( id: string ) {

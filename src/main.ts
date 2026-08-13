@@ -10,16 +10,14 @@ async function bootstrap() {
 
   // app.useGlobalPipes(
   //   new ValidationPipe({
-  //     transform: true,
-  //     whitelist: true,
-  //     forbidNonWhitelisted: true,
   //   }),
   // );
 
   app.enableCors({
     origin: [
       'http://localhost:5173',
-      'https://7wcqc54f-3000.inc1.devtunnels.ms',
+       'https://0zrc9vfq-5173.inc1.devtunnels.ms',
+
     ],
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

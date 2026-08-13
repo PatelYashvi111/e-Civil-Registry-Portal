@@ -113,6 +113,12 @@ isAvailable!: boolean;
 })
 assignedApplicationCount!: number;
 
+  // @Prop({
+  //   default: null,
+  //   type: String,
+  // })
+  // verificationToken!: string;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

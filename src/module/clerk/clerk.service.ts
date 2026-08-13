@@ -132,10 +132,8 @@ export class ClerkService {
 }
 
    async findAll(paginationDto: PaginationDto) {
-    const {page=1, limit=10, search} = paginationDto;
-    const skip = (page - 1) * limit;
     const clerkRole = await this.roleService.findByName(RoleEnum.CLERK);
-    return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), skip, limit, page, search);
+    return await this.clerkRepository.findAllClerks(clerkRole._id.toString(), paginationDto);
   }
  
   async findById(id: string) {

@@ -305,23 +305,4 @@ async sendMeetingLinkToUser(
   });
 }
 
-async sendMeetingLinkToClerk(
-  to: string,
-  meetingLink: string,
-) {
-  await this.clerkTransporter.sendMail({
-    from: `"E-Civil Registry Portal" <${process.env.CLERK_EMAIL}>`,
-    to,
-    subject: "Meeting Invitation",
-    html: `
-      <h2>Meeting Invitation</h2>
-
-      <p>Your meeting has been scheduled successfully.</p>
-
-      <a href="${meetingLink}">
-        Join Meeting
-      </a>
-    `,
-  });
-}
 }

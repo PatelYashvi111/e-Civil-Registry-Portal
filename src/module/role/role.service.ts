@@ -22,11 +22,7 @@ export class RoleService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page = 1, limit = 10 } = paginationDto;
-
-    const skip = (page - 1) * limit;
-
-    return this.roleRepository.findAll(skip, limit, page);
+    return this.roleRepository.findAll(paginationDto);
   }
 
   async findByName(name: RoleEnum) {

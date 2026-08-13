@@ -14,6 +14,7 @@ import { ApplicationService } from "../application/application.service";
 import { ServiceEnum } from "src/common/enums/service.enums";
 import { JwtPayload } from "src/common/interface/jwt-payload.interface";    
 import { Types } from "mongoose";
+import { CreateApplicationDto } from "../application/dto/create-application.dto";
 
 @Injectable()
 export class MarriageService {
@@ -304,14 +305,14 @@ if (isNaN(marriageDate.getTime())) {
     
         const marriage = await this.marriageRepository.create( finalData as any );
         
-            await this.applicationService.createApplicationFromService({
+            await this.applicationService.createApplication({
             userId: user.userId,
             officeDepartmentId: marriage.officeDepartmentId.toString(),
             slotId: marriage.slotId.toString(),
             serviceId: marriage._id.toString(),
             serviceType: ServiceEnum.MARRIAGE,
             applicationNumber,
-        });
+        }as CreateApplicationDto, user);
         
                 return marriage;
                 
@@ -319,9 +320,7 @@ if (isNaN(marriageDate.getTime())) {
     }
 
     async findAll(paginationDto: PaginationDto) {
-        const { page=1, limit=10} = paginationDto;
-        const skip = (page-1) *limit;
-        return await this.marriageRepository.findAll(skip,limit,page);
+        return await this.marriageRepository.findAll(paginationDto);
     }
 
     async findById( id: string ) {

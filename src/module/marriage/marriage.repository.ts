@@ -5,6 +5,8 @@ import { Marriage, MarriageDocument } from "./schema/marriage.schema";
 import { CreateMarriageDto } from "./dto/create-marriage.dto";
 import { UpdateMarriageDto } from "./dto/update-marriage.dto";
 import { toObjectId } from "../../common/utils/objectId.utils";
+import { PaginationDto } from "src/common/pagination/dto/pagination.dto";
+import { PaginationUtil } from "src/common/utils/pagination.utils";
 
 @Injectable()
 export class MarriageRepository {
@@ -29,7 +31,11 @@ export class MarriageRepository {
       return await this.MarriageModel.create( marriageData );
     }
 
-    async findAll(skip: number, limit: number, page: number) {
+    async findAll(paginationDto: PaginationDto) {
+        const { page = 1, limit = 5 } = paginationDto;
+        
+        const skip = PaginationUtil.getSkip(page, limit);
+
         const data = await this.MarriageModel.find().skip(skip).limit(limit)
         .populate('brideAadharId')
         .populate('groomAadharId')
@@ -54,13 +60,13 @@ export class MarriageRepository {
         });
 
         const total = await this.MarriageModel.countDocuments();
-        return {
+        return PaginationUtil.getPaginationResponse(
             data,
             total,
             page,
-            limit,
-            totalPages: Math.ceil(total / limit)
-        }
+            limit
+        );
+        
     }
 
     async findDuplication( 

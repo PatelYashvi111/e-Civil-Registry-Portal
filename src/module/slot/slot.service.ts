@@ -6,6 +6,7 @@ import { RoleRepository } from '../role/role.repository';
 import { OfficeDepartmentRepository } from '../officeDepartment/officeDepartment.repository';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { ClerkRepository } from '../clerk/clerk.repository';
+import { FilterSlotDto } from './dto/filter-slot.dto';
 
 @Injectable()
 export class SlotService {
@@ -87,23 +88,23 @@ export class SlotService {
     return await this.slotRepository.createMany(slots);
   }
 
-  async findAll() {
-    return await this.slotRepository.findAll();
+  async findAll(filterSlotDto: FilterSlotDto) {
+      return await this.slotRepository.findAll(filterSlotDto);
+    }
+
+  async findById(id: string) {
+    console.log("Searching Slot ID:", id);
+
+    const slot = await this.slotRepository.findById(id);
+
+    console.log("Slot Found:", slot);
+
+    if (!slot) {
+      throw new Error("Slot not found");
+    }
+
+    return slot;
   }
-
-async findById(id: string) {
-  console.log("Searching Slot ID:", id);
-
-  const slot = await this.slotRepository.findById(id);
-
-  console.log("Slot Found:", slot);
-
-  if (!slot) {
-    throw new Error("Slot not found");
-  }
-
-  return slot;
-}
 
   async getAvailableDates(officeDepartmentId: string) {
     const officeDepartment = await this.officeDepartmentRepository.findById(officeDepartmentId);

@@ -1,7 +1,7 @@
 export enum MeetingStatusEnum {
-    SCHEDULED = "Scheduled",
-    WAITING = "Waiting",
-    IN_PROGRESS = "In-Progress",
-    COMPLETED = "Completed",
-    CANCELLED = "Cancelled",
+    SCHEDULED = "scheduled",
+    WAITING = "waiting",
+    IN_PROGRESS = "in-progress",
+    COMPLETED = "completed",
+    CANCELLED = "cancelled",
 }
