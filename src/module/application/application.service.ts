@@ -36,54 +36,6 @@ export class ApplicationService {
 
     ) {}
 
-//     async createApplicationFromService(data: {
-//       userId: string;
-//       officeDepartmentId: string;
-//       slotId: string;
-//       serviceId: string;
-//       serviceType: ServiceEnum;
-//       applicationNumber: string;
-//     }) {
-//         const user = await this.userRepository.findById(data.userId);
-
-//         if (!user) {
-//           throw new NotFoundException('User not found');
-//         }
-
-//         const officeDepartment = await this.officeDepartmentRepository.findById(data.officeDepartmentId);
-
-//         if (!officeDepartment) {
-//           throw new NotFoundException('Office Department not found');
-//         }
-
-//         const slot = await this.slotRepository.findById(data.slotId);
-
-//         if (!slot) {
-//           throw new NotFoundException('Slot Not Found');
-//         }
-
-//       const clerk = await this.clerkService.assignClerk(data.officeDepartmentId);
-
-//       const clerkId = clerk._id.toString();
-
-//       const application = await this.applicationRepository.createApplication({
-//         userId: data.userId,
-//         applicationNumber: data.applicationNumber,
-//         clerkId,
-//         officeDepartmentId: data.officeDepartmentId,
-//         slotId: data.slotId,
-//         serviceId: data.serviceId,
-//         serviceType: data.serviceType,
-//     });
-
-//     await this.meetingService.create({
-//   applicationId: application._id.toString(),
-// } as CreateMeetingDto);
-
-//     await this.clerkService.increaseWorkload(clerkId);
-
-//     return application;
-//     }
 
  async createApplication( createApplicationDto: CreateApplicationDto, user: JwtPayload ) {
         const users = await this.userRepository.findById( createApplicationDto.userId );
@@ -123,30 +75,14 @@ export class ApplicationService {
         }
 
         const clerk = await this.clerkService.assignClerk(
-  createApplicationDto.officeDepartmentId,
-);
+            createApplicationDto.officeDepartmentId,
+            );
 
-if (!clerk) {
-  throw new NotFoundException("No clerk available");
-}
+            if (!clerk) {
+            throw new NotFoundException("No clerk available");
+            }
 
-const clerkId = clerk._id.toString();
-        
-        // let applicationNumber: string;
-
-        // if(createApplicationDto.serviceType === ServiceEnum.BIRTH) {
-        //     applicationNumber = await this.counterService.generateBirthApplication();
-        // }
-        // else if(createApplicationDto.serviceType === ServiceEnum.MARRIAGE) {
-        //     applicationNumber = await this.counterService.generateMarriageApplication();
-        // }
-        // else if(createApplicationDto.serviceType === ServiceEnum.DEATH) {
-        //     applicationNumber = await this.counterService.generateDeathApplication();
-        // }
-        // else {
-        //     throw new BadRequestException('Invalid Service Type');
-        // }
-
+            const clerkId = clerk._id.toString();
 
         const application = {
           ...createApplicationDto,
@@ -170,9 +106,9 @@ const clerkId = clerk._id.toString();
         //  )
 
          
-    await this.meetingService.create({
-  applicationId: createdApplication._id.toString(),
-} as CreateMeetingDto);
+        await this.meetingService.create({
+    applicationId: createdApplication._id.toString(),
+    } as CreateMeetingDto);
 
     await this.clerkService.increaseWorkload(clerkId);
 
