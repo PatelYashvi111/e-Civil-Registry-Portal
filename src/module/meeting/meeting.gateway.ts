@@ -55,9 +55,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
     const token = client.handshake.auth?.token;
 
     if (!token) {
-      this.logger.warn(
-        `Socket rejected - JWT token missing: ${client.id}`,
-      );
+      this.logger.warn(`Socket rejected - JWT token missing: ${client.id}`);
 
       client.disconnect(true);
       return;
@@ -70,9 +68,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       });
 
       if (!decodedToken?.userId) {
-        this.logger.warn(
-          `Socket rejected - userId missing in JWT: ${client.id}`,
-        );
+        this.logger.warn(`Socket rejected - userId missing in JWT: ${client.id}`);
 
         client.disconnect(true);
         return;
@@ -81,9 +77,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       const user = await this.userService.findById(decodedToken.userId);
 
       if (!user) {
-        this.logger.warn(
-          `Socket rejected - user not found: ${client.id}`,
-        );
+        this.logger.warn(`Socket rejected - user not found: ${client.id}`);
 
         client.disconnect(true);
         return;
@@ -92,21 +86,17 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       client.data.userId = user._id.toString();
       client.data.user = user;
 
-      this.logger.log(
-        `Meeting socket authenticated: ${client.id} - ${user._id}`,
-      );
+      this.logger.log(`Meeting socket authenticated: ${client.id} - ${user._id}`);
     } catch (error) {
-      this.logger.warn(
-        `Invalid JWT for socket: ${client.id}`,
-      );
+      
+      this.logger.warn(`Invalid JWT for socket: ${client.id}`);
 
       client.disconnect(true);
     }
   }
 
   private async getRoomParticipants(roomId: string) {
-    const sockets =
-      await this.server
+    const sockets = await this.server
         .in(roomId)
         .fetchSockets();
 
@@ -119,8 +109,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
 
 
   private async getRoomState(roomId: string) {
-    const participants =
-      await this.getRoomParticipants(roomId);
+    const participants = await this.getRoomParticipants(roomId);
 
     const userParticipant = participants.find(
       ({ user }) =>
@@ -148,13 +137,10 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
   private async validateRoomReadyForSignaling(
     roomId: string,
   ) {
-    const participants =
-      await this.getRoomParticipants(roomId);
+    const participants = await this.getRoomParticipants(roomId);
 
     if (participants.length !== 2) {
-      throw new WsException(
-        'Both participants have not joined the meeting.',
-      );
+      throw new WsException('Both participants have not joined the meeting.');
     }
 
     const hasUser = participants.some(
@@ -168,9 +154,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
     );
 
     if (!hasUser || !hasClerk) {
-      throw new WsException(
-        'Meeting requires one user and one clerk.',
-      );
+      throw new WsException('Meeting requires one user and one clerk.');
     }
 
     return participants;
@@ -184,66 +168,45 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
     const myUserId = client.data.userId;
 
     if (!myUserId) {
-      throw new WsException(
-        'Unauthenticated socket connection.',
-      );
+      throw new WsException('Unauthenticated socket connection.');
     }
 
     if (
       client.data.roomId &&
       client.data.roomId !== data.roomId
     ) {
-      throw new WsException(
-        'Socket is already connected to another meeting.',
-      );
+      throw new WsException('Socket is already connected to another meeting.');
     }
 
     if (
       client.data.roomId === data.roomId
     ) {
-      throw new WsException(
-        'You have already joined this meeting.',
-      );
+      throw new WsException('You have already joined this meeting.');
     }
 
     const currentUser = client.data.user;
 
     if (!currentUser) {
-      throw new WsException(
-        'User information not found.',
-      );
+      throw new WsException('User information not found.');
     }
 
     if (
       currentUser.role !== RoleEnum.USER &&
       currentUser.role !== RoleEnum.CLERK
     ) {
-      throw new WsException(
-        'Only the user or assigned clerk can join the meeting room.',
-      );
+      throw new WsException('Only the user or assigned clerk can join the meeting room.');
     }
 
-    const meeting =
-      await this.meetingService.findByRoomId(
-        data.roomId,
-        currentUser,
-      );
+    const meeting = await this.meetingService.findByRoomId(data.roomId,currentUser);
 
     if (!meeting) {
-      throw new WsException(
-        'Meeting not found.',
-      );
+      throw new WsException('Meeting not found.');
     }
 
-    const participants =
-      await this.getRoomParticipants(
-        data.roomId,
-      );
+    const participants = await this.getRoomParticipants(data.roomId);
 
     if (participants.length >= 2) {
-      throw new WsException(
-        'Room is full.',
-      );
+      throw new WsException('Room is full.');
     }
 
     const duplicateParticipant =
@@ -254,9 +217,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       );
 
     if (duplicateParticipant) {
-      throw new WsException(
-        'You have already joined this meeting.',
-      );
+      throw new WsException('You have already joined this meeting.');
     }
 
     const sameRoleParticipant =
@@ -266,9 +227,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       );
 
     if (sameRoleParticipant) {
-      throw new WsException(
-        'A participant with the same role is already in the meeting.',
-      );
+      throw new WsException('A participant with the same role is already in the meeting.');
     }
 
     await client.join(data.roomId);
@@ -278,9 +237,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
     const myEmail = currentUser.email;
     const myRole = currentUser.role;
 
-    this.logger.log(
-      `${myRole} joined meeting: ${data.roomId}`,
-    );
+    this.logger.log(`${myRole} joined meeting: ${data.roomId}`);
 
     client.to(data.roomId).emit(
       'participant-joined',
@@ -383,8 +340,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       throw new WsException('User information not found on socket.');
     }
 
-    const participants =
-      await this.validateRoomReadyForSignaling(data.roomId);
+    const participants = await this.validateRoomReadyForSignaling(data.roomId);
 
     const currentParticipant =
       participants.find(
@@ -423,8 +379,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       throw new WsException('User information not found on socket.');
     }
 
-    const participants =
-      await this.validateRoomReadyForSignaling(data.roomId);
+    const participants = await this.validateRoomReadyForSignaling(data.roomId);
 
     const currentParticipant =
       participants.find(
@@ -486,14 +441,45 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       },
     );
 
-
     await client.leave(data.roomId);
-
     client.data.roomId = undefined;
 
     this.logger.log(`Participant left meeting: ${data.roomId}`);
   }
 
+  @SubscribeMessage('end-meeting')
+  async endMeeting(
+    @MessageBody() data: RoomDto,
+    @ConnectedSocket() client: AuthSocket,
+  ) {
+    const user = client.data.user;
+
+    if (!user) {
+      throw new WsException('User information not found on socket.');
+    }
+
+    if (user.role !== RoleEnum.CLERK) {
+      throw new WsException('Only the clerk can end the meeting.');
+    }
+
+    if (client.data.roomId !== data.roomId) {
+      throw new WsException('Invalid meeting room.');
+    }
+
+    const participants = await this.getRoomParticipants(data.roomId);
+
+    const currentParticipant = participants.find(
+      ({ socketId }) => socketId === client.id,
+    );
+
+    if (!currentParticipant) {
+      throw new WsException('You are not a participant in this meeting room.');
+    }
+
+    await this.emitMeetingEnded(data.roomId);
+
+    return {message: 'Meeting ended successfully'};
+  }
   async emitMeetingEnded(roomId: string) {
     
     await this.meetingService.endMeeting(roomId);
