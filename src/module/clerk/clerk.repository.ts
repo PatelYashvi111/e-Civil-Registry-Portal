@@ -6,8 +6,8 @@ import { Clerk, ClerkDocument } from './schema/clerk.schema';
 import { CreateClerkDto } from './dto/create-clerk.dto';
 import { UpdateClerkDto } from './dto/update-clerk.dto';
 import { toObjectId } from 'src/common/utils/objectId.utils';
-import { application } from 'express';
-import { Application } from '../application/schema/application.schema';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginationUtil } from '../../common/utils/pagination.utils';
 
 @Injectable()
 export class ClerkRepository {
@@ -40,238 +40,237 @@ export class ClerkRepository {
     return clerk;
   }
 
-  async findAllClerks(
-  clerkRoleId: string,
-  skip: number,
-  limit: number,
-  page: number,
-  search?: string,
-) {
+  async findAllClerks(clerkRoleId: string, paginationDto: PaginationDto) {
 
-  const pipeline: any[] = [
+    const { page = 1, limit = 5, search } = paginationDto;
 
-    {
-      $match: {
-        roleId: toObjectId(clerkRoleId),
-      },
-    },
+    const skip = PaginationUtil.getSkip(page, limit);
+  
+      const pipeline: any[] = [
 
-    {
-      $lookup: {
-        from: 'aadhars',
-        localField: 'aadharId',
-        foreignField: '_id',
-        as: 'aadhar',
-      },
-    },
-    {
-      $unwind: {
-        path: '$aadhar',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
+        {
+          $match: {
+            roleId: toObjectId(clerkRoleId),
+          },
+        },
 
-    {
-      $lookup: {
-        from: 'officedepartments',
-        localField: 'officeDepartmentId',
-        foreignField: '_id',
-        as: 'officeDepartment',
-      },
-    },
-    {
-      $unwind: {
-        path: '$officeDepartment',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
+        {
+          $lookup: {
+            from: 'aadhars',
+            localField: 'aadharId',
+            foreignField: '_id',
+            as: 'aadhar',
+          },
+        },
+        {
+          $unwind: {
+            path: '$aadhar',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
 
-    {
-      $lookup: {
-        from: 'offices',
-        localField: 'officeDepartment.officeId',
-        foreignField: '_id',
-        as: 'office',
-      },
-    },
-    {
-      $unwind: {
-        path: '$office',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
+        {
+          $lookup: {
+            from: 'officedepartments',
+            localField: 'officeDepartmentId',
+            foreignField: '_id',
+            as: 'officeDepartment',
+          },
+        },
+        {
+          $unwind: {
+            path: '$officeDepartment',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
 
- 
-    {
-  $lookup: {
-    from: 'roles',
-    localField: 'roleId',
-    foreignField: '_id',
-    as: 'role',
-  },
-},
-{
-  $unwind: {
-    path: '$role',
-    preserveNullAndEmptyArrays: true,
-  },
-},
+        {
+          $lookup: {
+            from: 'offices',
+            localField: 'officeDepartment.officeId',
+            foreignField: '_id',
+            as: 'office',
+          },
+        },
+        {
+          $unwind: {
+            path: '$office',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+
     
-    {
+        {
       $lookup: {
-        from: 'districts',
-        localField: 'office.districtId',
+        from: 'roles',
+        localField: 'roleId',
         foreignField: '_id',
-        as: 'district',
+        as: 'role',
       },
     },
     {
       $unwind: {
-        path: '$district',
+        path: '$role',
         preserveNullAndEmptyArrays: true,
       },
     },
-    
-    {
-      $lookup: {
-        from: 'departments',
-        localField: 'officeDepartment.departmentId',
-        foreignField: '_id',
-        as: 'department',
+        
+        {
+          $lookup: {
+            from: 'districts',
+            localField: 'office.districtId',
+            foreignField: '_id',
+            as: 'district',
+          },
+        },
+        {
+          $unwind: {
+            path: '$district',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+        
+        {
+          $lookup: {
+            from: 'departments',
+            localField: 'officeDepartment.departmentId',
+            foreignField: '_id',
+            as: 'department',
+          },
+        },
+        {
+          $unwind: {
+            path: '$department',
+            preserveNullAndEmptyArrays: true,
+          },
+        },
+      ];
+
+      if (search) {
+        pipeline.push({
+          $match: {
+            $or: [
+              {
+                employeeId: {
+                  $regex: search,
+                  $options: 'i',
+                },
+              },
+              {
+                email: {
+                  $regex: search,
+                  $options: 'i',
+                },
+              },
+              {
+                'aadhar.firstName': {
+                  $regex: search,
+                  $options: 'i',
+                },
+              },
+              {
+                'aadhar.middleName': {
+                  $regex: search,
+                  $options: 'i',
+                },
+              },
+              {
+                'aadhar.lastName': {
+                  $regex: search,
+                  $options: 'i',
+                },
+              },
+              {
+                'aadhar.contact': {
+                  $regex: search,
+                  $options: 'i',
+                }
+              },
+              {
+                'office.name': {
+                  $regex: search,
+                  $options: 'i',
+                },
+              },
+              {
+                status: {
+                  $regex: search,
+                  $options: 'i',
+                },
+              },
+            ],
+          },
+        });
+      }
+
+      const countPipeline = [...pipeline];
+
+      countPipeline.push({
+        $count: 'total',
+      });
+
+      const countResult = await this.userModel.aggregate(countPipeline);
+
+      const total =
+        countResult.length > 0 ? countResult[0].total : 0;
+
+      pipeline.push({
+        $sort: {
+          createdAt: -1,
+        },
+      });
+
+      pipeline.push(
+        {
+          $skip: skip,
+        },
+        {
+          $limit: Number(limit),
+        },
+      );
+
+      pipeline.push({
+        $project: {
+          _id: 1,
+          employeeId: 1,
+          email: 1,
+          status: 1,
+          createdAt: 1,
+
+          aadharId: '$aadhar',
+          roleId: '$role',
+          officeDepartmentId: {
+        _id: "$officeDepartment._id",
+
+        officeId: {
+          _id: "$office._id",
+          name: "$office.name",
+          districtId: {
+          _id: "$district._id",
+          name: "$district.name",
+        },
+        },
+
+        departmentId: {
+          _id: "$department._id",
+          name: "$department.name",
+        },
       },
-    },
-    {
-      $unwind: {
-        path: '$department',
-        preserveNullAndEmptyArrays: true,
-      },
-    },
-  ];
+        },
+      });
 
-  if (search) {
-    pipeline.push({
-      $match: {
-        $or: [
-          {
-            employeeId: {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            email: {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.firstName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.middleName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.lastName': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            'aadhar.contact': {
-              $regex: search,
-              $options: 'i',
-            }
-          },
-          {
-            'office.name': {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-          {
-            status: {
-              $regex: search,
-              $options: 'i',
-            },
-          },
-        ],
-      },
-    });
-  }
+      const data = await this.userModel.aggregate(pipeline);
 
-  const countPipeline = [...pipeline];
-
-  countPipeline.push({
-    $count: 'total',
-  });
-
-  const countResult = await this.userModel.aggregate(countPipeline);
-
-  const total =
-    countResult.length > 0 ? countResult[0].total : 0;
-
-  pipeline.push({
-    $sort: {
-      createdAt: -1,
-    },
-  });
-
-  pipeline.push(
-    {
-      $skip: skip,
-    },
-    {
-      $limit: Number(limit),
-    },
-  );
-
-  pipeline.push({
-    $project: {
-      _id: 1,
-      employeeId: 1,
-      email: 1,
-      status: 1,
-      createdAt: 1,
-
-      aadharId: '$aadhar',
-      roleId: '$role',
-      officeDepartmentId: {
-    _id: "$officeDepartment._id",
-
-    officeId: {
-      _id: "$office._id",
-      name: "$office.name",
-       districtId: {
-      _id: "$district._id",
-      name: "$district.name",
-    },
-    },
-
-    departmentId: {
-      _id: "$department._id",
-      name: "$department.name",
-    },
-  },
-    },
-  });
-
-  const data = await this.userModel.aggregate(pipeline);
-
-  return {
-    data,
-    total,
-    page,
-    limit,
-    search,
-    totalPages: Math.ceil(total / limit),
-  };
-}
+      return {
+        ...PaginationUtil.getPaginationResponse(
+        data,
+        total,
+        page,
+        limit,
+      ),
+        search,
+      };
+    }
 
   async findById(id: string) {
     return this.userModel

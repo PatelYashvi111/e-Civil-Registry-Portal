@@ -12,7 +12,14 @@ export class HolidayService {
   ) {}
 
   async createHoliday(createHolidayDto: CreateHolidayDto) {
-    const { holidayDate } = createHolidayDto;
+    // const { holidayDate } = createHolidayDto;
+
+      // Convert ISO string to Date
+    const holidayDate = new Date(createHolidayDto.holidayDate);
+
+    if (isNaN(holidayDate.getTime())) {
+      throw new BadRequestException('Invalid holiday date');
+    }
 
     const existingHoliday = await this.holidayRepository.findOne({
       holidayDate,
@@ -41,24 +48,14 @@ export class HolidayService {
       }
     }
 
-    return await this.holidayRepository.createHoliday(createHolidayDto);
+    return await this.holidayRepository.createHoliday({
+      ...createHolidayDto,
+      holidayDate,
+  });
   }
 
   async findAll(paginationDto: PaginationDto) {
-  const {
-    page = 1,
-    limit = 5,
-    search,
-  } = paginationDto;
-
-  const skip = (page - 1) * limit;
-
-  return await this.holidayRepository.findAll(
-    skip,
-    limit,
-    page,
-    search,
-  );
+    return await this.holidayRepository.findAll(paginationDto);
 }
 
   async findById(id: string) {
@@ -88,19 +85,43 @@ export class HolidayService {
       throw new NotFoundException('Holiday not found');
     }
 
-    if (
-      updateHolidayDto.holidayDate &&
-      updateHolidayDto.year &&
-      updateHolidayDto.holidayDate.getFullYear() !== updateHolidayDto.year
-    ) {
-      throw new BadRequestException( 'Year does not match holiday date' );
-    }
+     // Convert ISO string to Date
+  const holidayDate = updateHolidayDto.holidayDate
+    ? new Date(updateHolidayDto.holidayDate)
+    : holiday.holidayDate;
+
+  // Validate date
+  if (
+    updateHolidayDto.holidayDate &&
+    isNaN(holidayDate.getTime())
+  ) {
+    throw new BadRequestException('Invalid holiday date');
+  }
+
+    // if (
+    //   updateHolidayDto.holidayDate &&
+    //   updateHolidayDto.year &&
+    //   updateHolidayDto.holidayDate.getFullYear() !== updateHolidayDto.year
+    // ) {
+    //   throw new BadRequestException( 'Year does not match holiday date' );
+    // }
+
+    // Check year
+  if (
+    updateHolidayDto.holidayDate &&
+    updateHolidayDto.year &&
+    holidayDate.getFullYear() !== updateHolidayDto.year
+  ) {
+    throw new BadRequestException(
+      'Year does not match holiday date',
+    );
+  }
 
     if ( updateHolidayDto.holidayDate || updateHolidayDto.officeId ) {
       const existingHoliday = await this.holidayRepository.findOne({
-          holidayDate:
-          updateHolidayDto.holidayDate ??
-          holiday.holidayDate,
+          holidayDate,
+          // updateHolidayDto.holidayDate ??
+          // holiday.holidayDate,
           officeId: new Types.ObjectId(
           updateHolidayDto.officeId ?? holiday.officeId,
           ),
@@ -113,10 +134,10 @@ export class HolidayService {
 
     if (updateHolidayDto.isNationalHoliday) {
       const existingNationalHoliday = await this.holidayRepository.findOne({
-          holidayDate:
-          updateHolidayDto.holidayDate ??
-          holiday.holidayDate,
-          isNationalHoliday: true,
+          holidayDate,
+          // updateHolidayDto.holidayDate ??
+          // holiday.holidayDate,
+           isNationalHoliday: true,
         });
 
       if ( existingNationalHoliday && existingNationalHoliday._id.toString() !== id ) {
@@ -124,7 +145,12 @@ export class HolidayService {
       }
     }
 
-    return await this.holidayRepository.updateHoliday( id, updateHolidayDto );
+    return await this.holidayRepository.updateHoliday( id,{ 
+      ...updateHolidayDto,
+     ...(updateHolidayDto.holidayDate && {
+      holidayDate,
+    }),
+    });
   }
 
   async deleteHoliday(id: string) {

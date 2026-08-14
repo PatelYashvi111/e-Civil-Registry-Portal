@@ -5,6 +5,8 @@ import { Office } from '../office/schema/office.schema';
 import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { toObjectId } from 'src/common/utils/objectId.utils';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginationUtil } from 'src/common/utils/pagination.utils';
 
 @Injectable()
 export class OfficeRepository {
@@ -24,12 +26,11 @@ export class OfficeRepository {
   return createdOffice.save();
 }
 
-async findAll(
-  skip: number,
-  limit: number,
-  page: number,
-  search?: string,
-) {
+async findAll(paginationDto: PaginationDto) {
+  const { page = 1, limit = 5, search } = paginationDto;
+
+  const skip = PaginationUtil.getSkip(page, limit);
+    
   const pipeline: any[] = [
     {
       $lookup: {
@@ -134,12 +135,14 @@ async findAll(
   const data = await this.model.aggregate(pipeline);
 
   return {
+      ...PaginationUtil.getPaginationResponse(
+
     data,
     total,
     page,
     limit,
-    search,
-    totalPages: Math.ceil(total / limit),
+      ),
+      search
   };
 }
 

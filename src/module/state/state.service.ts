@@ -22,11 +22,7 @@ export class StateService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-      const {page=1, limit=5, search} = paginationDto;
-
-      const skip = (page-1) * limit;
-
-      return await this.stateRepository.findAll(skip, limit, page, search);
+      return await this.stateRepository.findAll(paginationDto);
   }
 
   async findById(id: string) {
@@ -38,6 +34,10 @@ export class StateService {
 
     return state;
   }
+
+  async findByName(name: string) {
+  return this.stateRepository.findByName(name);
+}
 
   async update(id: string, updateStateDto: UpdateStateDto) {
       const state = await this.stateRepository.findById(id);

@@ -1,6 +1,12 @@
-import { IsString, IsNotEmpty, IsMongoId, IsDateString, IsNumber, IsBoolean } from "class-validator";
+import { IsString, IsNotEmpty, IsMongoId, IsDateString, IsDate, IsNumber, IsBoolean } from "class-validator";
+import { Type } from "class-transformer";
 
 export class CreateHolidayDto {
+
+     // @IsDate()
+     // @IsNotEmpty()
+     // @Type(() => Date)
+     // holidayDate!: Date;
 
      @IsDateString()
      @IsNotEmpty()

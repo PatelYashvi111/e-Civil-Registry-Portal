@@ -98,17 +98,17 @@ export class Birth {
   })
    slotId!: Types.ObjectId;
 
-    @Prop({
-        required: true,
-        type: String,
-    })
-    motherVerificationToken!: string;
+    // @Prop({
+    //     required: true,
+    //     type: String,
+    // })
+    // motherVerificationToken!: string;
 
-    @Prop({
-        required: true,
-        type: String,
-    })
-    fatherVerificationToken!: string;
+    // @Prop({
+    //     required: true,
+    //     type: String,
+    // })
+    // fatherVerificationToken!: string;
 
 }
 

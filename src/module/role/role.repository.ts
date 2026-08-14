@@ -4,6 +4,8 @@ import { Model } from 'mongoose';
 import { Role, RoleDocument } from './schema/role.schema';
 import { RoleEnum } from 'src/common/enums/role.enums';
 import { CreateRoleDto } from './dto/create-role.dto';
+import { PaginationUtil } from 'src/common/utils/pagination.utils';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
 
 @Injectable()
 export class RoleRepository {
@@ -17,16 +19,21 @@ export class RoleRepository {
     return await this.roleModel.create(createRoleDto);
   }
 
-  async findAll(skip: number, limit: number, page: number) {
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, limit = 5 } = paginationDto;
+    
+    const skip = PaginationUtil.getSkip(page, limit);
+    
     const data =await this.roleModel.find().skip(skip).limit(limit);
+    
     const total = await this.roleModel.countDocuments();
-    return {
+    
+    return PaginationUtil.getPaginationResponse(
       data,
       total,
       page,
       limit,
-      totalPages: Math.ceil(total / limit),
-      };
+    );
   }
 
   async findByName(name: RoleEnum) {

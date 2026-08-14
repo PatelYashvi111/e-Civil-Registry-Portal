@@ -32,11 +32,7 @@ export class AadharService {
     }
 
     async findAll(paginationDto: PaginationDto) {
-        const { page = 1, limit = 10 } = paginationDto;
-
-        const skip = (page - 1) * limit;
-
-        return await this.aadharRepository.findAll(skip,limit,page);
+        return await this.aadharRepository.findAll(paginationDto);
     }
 
     async findById( id: string ) {
@@ -67,8 +63,8 @@ export class AadharService {
             throw new NotFoundException('Aadhar Record not Found');
         }
 
-          if (data.aadharNumber) {
-        const existing = await this.aadharRepository.findByAadharNumber(data.aadharNumber);
+       if (data.aadharNumber) {
+           const existing = await this.aadharRepository.findByAadharNumber(data.aadharNumber);
 
         if (existing && existing.id !== id) {
             throw new BadRequestException('Aadhar number already exists');

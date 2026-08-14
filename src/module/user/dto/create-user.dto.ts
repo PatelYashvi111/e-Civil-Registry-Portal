@@ -62,4 +62,9 @@ export class CreateUserDto {
   @IsOptional()
   @IsString()
   refreshToken?: string;
+
+    // @IsNotEmpty()
+    // @IsString()
+    // verificationToken!: string;
+  
 }

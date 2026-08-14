@@ -20,6 +20,11 @@ export class RoleController {
     return this.roleService.findAll(paginationDto);
    }
 
+     @Get(':id')
+  async findById(@Param('id') id: string) {
+    return this.roleService.findById(id);
+  }
+
    @Get(':name')
     async findByName(@Param('name') name: RoleEnum){
      return this.roleService.findByName( name );

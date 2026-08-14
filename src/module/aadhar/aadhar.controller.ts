@@ -18,12 +18,12 @@ export class AadharController {
    @UseInterceptors(
     FileInterceptor('photo', {})
   )
-  async createAadhar(
-    @Body() dto: CreateAadharDto,
-    @UploadedFile() file: Express.Multer.File,
-  ) {
-    return this.aadharService.createAadhar(dto, file);
-  }
+    async createAadhar(
+      @Body() dto: CreateAadharDto,
+      @UploadedFile() file: Express.Multer.File,
+    ) {
+      return this.aadharService.createAadhar(dto, file);
+    }
 
    @Get('all')
    async findAll(@Query() paginationDto: PaginationDto) {

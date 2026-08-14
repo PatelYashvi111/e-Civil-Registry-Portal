@@ -31,6 +31,18 @@ export class Meeting {
 
   @Prop({
     type: Date,
+    required: true,
+  })
+  meetingDate?: Date;
+  
+  @Prop({
+    type: String,
+    required: true,
+  })
+  meetingTime?: string;
+
+  @Prop({
+    type: Date,
     default: null,
   })
   userJoinedAt?: Date;

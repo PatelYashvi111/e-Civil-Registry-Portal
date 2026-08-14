@@ -14,6 +14,9 @@ import { AadharService } from "../aadhar/aadhar.service";
 import { Types } from 'mongoose';
 import { GenderEnum } from "src/common/enums/gender.enums";
 import { ServiceEnum } from "src/common/enums/service.enums";
+import { CreateApplicationDto } from "../application/dto/create-application.dto";
+import { MeetingService } from "../meeting/meeting.service";
+import { PaginationUtil } from "src/common/utils/pagination.utils";
 
 @Injectable()
 export class BirthService {
@@ -47,33 +50,28 @@ export class BirthService {
         throw new BadRequestException('Invalid birth date and time.');
     }
 
-        const existingBirth = await this.birthRepository.findDuplication(
-        createBirthDto.babyName,
-        birthDate,
-        createBirthDto.fatherAadharId,
-        createBirthDto.motherAadharId,
-        );
-
-       if(existingBirth) {
-          throw new BadRequestException('Birth record is already exists.');
-       }
-
+    
        if( createBirthDto.babyWeight <= 0 ) {
           throw new BadRequestException('Baby weight must be greater than 0.')
        }
 
-       if (!createBirthDto.fatherVerificationToken) {
-         throw new BadRequestException('Verification token is required');
-       }
+    //    if (!createBirthDto.fatherVerificationToken) {
+    //      throw new BadRequestException('Verification token is required');
+    //    }
               
-      const fatherpayload = this.jwtService.verify(createBirthDto.fatherVerificationToken);
+    //   const fatherpayload = this.jwtService.verify(createBirthDto.fatherVerificationToken);
 
-       if (fatherpayload.purpose !== 'registration') {
-         throw new BadRequestException('Invalid token');
-       }
+    //    if (fatherpayload.purpose !== 'registration') {
+    //      throw new BadRequestException('Invalid token');
+    //    }
        
         
-       let fatherAadhar;
+
+//     const fatherAadhar = await this.aadharService.findById(
+//   createBirthDto.fatherAadharId,
+// );
+
+     let fatherAadhar;
 
         if (Types.ObjectId.isValid(createBirthDto.fatherAadharId)) {
         fatherAadhar = await this.aadharService.findById(
@@ -90,17 +88,22 @@ export class BirthService {
         }
 
 
-         if (!createBirthDto.motherVerificationToken) {
-         throw new BadRequestException('Verification token is required');
-       }
+    //      if (!createBirthDto.motherVerificationToken) {
+    //      throw new BadRequestException('Verification token is required');
+    //    }
 
-      const motherpayload = this.jwtService.verify(createBirthDto.motherVerificationToken);
+    //   const motherpayload = this.jwtService.verify(createBirthDto.motherVerificationToken);
 
-       if (motherpayload.purpose !== 'registration') {
-         throw new BadRequestException('Invalid token');
-       }
+    //    if (motherpayload.purpose !== 'registration') {
+    //      throw new BadRequestException('Invalid token');
+    //    }
 
-       let motherAadhar;
+       
+//     const motherAadhar = await this.aadharService.findById(
+//   createBirthDto.motherAadharId,
+// );
+
+     let motherAadhar;
 
        if (Types.ObjectId.isValid(createBirthDto.motherAadharId)) {
         motherAadhar = await this.aadharService.findById(
@@ -116,6 +119,18 @@ export class BirthService {
                 throw new NotFoundException('Mother Aadhar ID not found')
             }
 
+          const existingBirth = await this.birthRepository.findDuplication(
+        createBirthDto.babyName.trim(),
+        birthDate,
+        fatherAadhar._id.toString(),
+        motherAadhar._id.toString(),
+        );
+
+       if(existingBirth) {
+          throw new BadRequestException('Birth record is already exists.');
+       }
+
+        
         let officeDepartment;
 
         if (Types.ObjectId.isValid(createBirthDto.officeDepartmentId)) {
@@ -209,22 +224,31 @@ export class BirthService {
 
         const birth = await this.birthRepository.create(finalData as any);
 
-      await this.applicationService.createApplicationFromService({
+        console.log("Creating Application with data:", {
+  userId: user.userId,
+  officeDepartmentId: birth.officeDepartmentId.toString(),
+  slotId: birth.slotId.toString(),
+  serviceId: birth._id.toString(),
+  serviceType: ServiceEnum.BIRTH,
+  applicationNumber,
+});
+        
+      const application = await this.applicationService.createApplication({
         userId: user.userId,
         officeDepartmentId: birth.officeDepartmentId.toString(),
         slotId: birth.slotId.toString(),
         serviceId: birth._id.toString(),
         serviceType: ServiceEnum.BIRTH,
         applicationNumber,
-    });
+    }as CreateApplicationDto,user);
 
+    console.log("Application Created:", application);
+    
        return birth;
     }
 
     async findAll(paginationDto: PaginationDto) {
-        const { page=1 , limit=10 } = paginationDto;
-        const skip = (page - 1) * limit;
-        return await this.birthRepository.findAll(skip, limit, page);
+        return await this.birthRepository.findAll(paginationDto);
     }
 
     async findById( id: string ) {

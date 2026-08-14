@@ -56,7 +56,7 @@ async create(
 }
 
     @Get('all')
-    async findAll(paginationDto: PaginationDto){
+    async findAll(@Query()paginationDto: PaginationDto){
         return this.deathService.findAll(paginationDto);
     }
 

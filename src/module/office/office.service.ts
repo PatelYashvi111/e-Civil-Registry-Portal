@@ -3,6 +3,7 @@ import { CreateOfficeDto } from './dto/create-office.dto';
 import { UpdateOfficeDto } from './dto/update-office.dto';
 import { OfficeRepository } from './office.repository';
 import { PaginationDto } from '../../common/pagination/dto/pagination.dto';
+import { PaginationUtil } from 'src/common/utils/pagination.utils';
 
 @Injectable()
 export class OfficeService {
@@ -23,11 +24,7 @@ export class OfficeService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page=1, limit=5, search } = paginationDto;
-
-    const skip = (page-1) * limit;
-
-    return await this.officeRepository.findAll(skip, limit, page, search);
+    return await this.officeRepository.findAll(paginationDto);
   }
 
   async findOne(id: string) {
@@ -40,9 +37,13 @@ export class OfficeService {
     return office;
   }
 
+  async findByName(name: string) {
+  return this.officeRepository.findByName(name);
+}
+
   async update(id: string, updateOfficeDto: UpdateOfficeDto) {
     const office = await this.officeRepository.findById(id);
-
+    
     if (!office) {
       throw new NotFoundException('Office not found');
     }

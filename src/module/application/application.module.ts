@@ -1,4 +1,4 @@
-import { Module } from "@nestjs/common";
+import { forwardRef, Module } from "@nestjs/common";
 import { MongooseModule } from "@nestjs/mongoose";
 import { ApplicationRepository } from "../application/application.repository";
 import { ApplicationService } from "../application/application.service";
@@ -12,6 +12,7 @@ import { SlotModule } from "../slot/slot.module";
 import { EmailModule } from "../email/email.module";
 import { AadharModule } from "../aadhar/aadhar.module";
 import { ClerkModule } from "../clerk/clerk.module";
+import { MeetingModule } from "../meeting/meeting.module";
 
 @Module({
     imports: [
@@ -29,7 +30,8 @@ import { ClerkModule } from "../clerk/clerk.module";
         EmailModule,
         AadharModule,
         ClerkModule,
-    ],
+        forwardRef(() => MeetingModule),
+      ],
 
     controllers: [ApplicationController],
     providers: [ApplicationService,ApplicationRepository],

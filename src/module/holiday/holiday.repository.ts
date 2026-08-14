@@ -4,6 +4,8 @@ import { QueryFilter, Model, Types, UpdateQuery } from 'mongoose';
 import { Holiday, HolidayDocument } from './schema/holiday.schema';
 import { CreateHolidayDto } from './dto/create-holiday.dto';
 import { UpdateHolidayDto } from './dto/update-holiday.dto';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginationUtil } from 'src/common/utils/pagination.utils';
 
 @Injectable()
 export class HolidayRepository {
@@ -17,13 +19,11 @@ export class HolidayRepository {
     return await holiday.save();
   }
 
-  async findAll( 
-    skip: number, 
-    limit: number,
-    page: number, 
-    search?: string
-  ) {
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, limit = 5, search } = paginationDto;
    
+    const skip = PaginationUtil.getSkip(page, limit);
+
     const pipeline: any[] = [
   {
     $lookup: {
@@ -131,12 +131,13 @@ pipeline.push({
 const data = await this.holidayModel.aggregate(pipeline);
 
   return {
+    ...PaginationUtil.getPaginationResponse(
   data,
   total,
   page,
   limit,
+    ),
   search,
-  totalPages: Math.ceil(total / limit),
 };
   }
 

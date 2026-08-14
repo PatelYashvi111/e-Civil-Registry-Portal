@@ -1,4 +1,4 @@
-import { IsMongoId, IsOptional, IsEnum, IsString, IsNotEmpty } from "class-validator";
+import { IsMongoId, IsOptional, IsEnum, IsString, IsNotEmpty, IsDateString } from "class-validator";
 import { MeetingStatusEnum } from "../../../common/enums/meeting.status.enums";
 
 export class CreateMeetingDto {
@@ -18,4 +18,12 @@ export class CreateMeetingDto {
     @IsOptional()
     @IsString()
     meetingLink?: string;
+
+    @IsOptional()
+    @IsDateString()
+    meetingDate?: Date;
+
+    @IsOptional()
+    @IsString()
+    meetingTime?: string;
 }

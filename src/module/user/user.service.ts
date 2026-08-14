@@ -78,14 +78,10 @@ export class UserService{
     }
 
   async findAll(paginationDto: PaginationDto) {
-        const { page=1, limit=10, search } = paginationDto;
-
-        const skip = (page - 1) * limit;
 
         const userRole = await this.roleService.findByName(RoleEnum.USER);
-
-
-        return this.userRepository.findAll(userRole._id.toString(), skip, limit, page, search);
+    
+        return this.userRepository.findAll(userRole._id.toString(), paginationDto);
     }
 
   async updateUser( id: string, updateUserDto: UpdateUserDto ){

@@ -5,6 +5,8 @@ import { District } from '../district/schema/district.schema';
 import { CreateDistrictDto } from './dto/create-district.dto';
 import { UpdateDistrictDto } from './dto/update-district.dto';
 import { toObjectId } from 'src/common/utils/objectId.utils';
+import { PaginationDto } from 'src/common/pagination/dto/pagination.dto';
+import { PaginationUtil } from 'src/common/utils/pagination.utils';
 
 
 @Injectable()
@@ -24,12 +26,10 @@ export class DistrictRepository {
   return createdDistrict.save();
   }
   
-  async findAll(
-  skip: number,
-  limit: number,
-  page: number,
-  search?: string,
-) {
+  async findAll(paginationDto: PaginationDto) {
+    const { page = 1, limit = 5, search } = paginationDto;
+
+    const skip = PaginationUtil.getSkip(page, limit);
 
   const pipeline: any[] = [
     {
@@ -109,12 +109,13 @@ export class DistrictRepository {
   const data = await this.model.aggregate(pipeline);
 
   return {
+    ...PaginationUtil.getPaginationResponse(
     data,
     total,
     page,
     limit,
+    ),
     search,
-    totalPages: Math.ceil(total / limit),
   };
 }
 

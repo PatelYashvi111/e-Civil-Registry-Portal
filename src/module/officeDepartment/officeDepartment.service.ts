@@ -41,11 +41,7 @@ export class OfficeDepartmentService {
   }
 
   async findAll(paginationDto: PaginationDto) {
-    const { page=1, limit=10 } = paginationDto;
-
-    const skip = (page-1) * limit;
-
-    return await this.officeDepartmentRepository.findAll(skip, limit, page);
+    return await this.officeDepartmentRepository.findAll(paginationDto);
   }
 
 async findById(id: string) {
