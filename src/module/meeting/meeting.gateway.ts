@@ -49,8 +49,7 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
   afterInit() {
     this.logger.log('Meeting Gateway initialized');
   }
-
-
+  
   async handleConnection(client: AuthSocket) {
     const token = client.handshake.auth?.token;
 
@@ -106,7 +105,6 @@ import { IceCandidateDto } from './dto/ice-candidate.dto';
       userId: socket.data.userId,
     }));
   }
-
 
   private async getRoomState(roomId: string) {
     const participants = await this.getRoomParticipants(roomId);
